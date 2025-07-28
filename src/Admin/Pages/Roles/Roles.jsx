@@ -9,28 +9,29 @@ import Loading from "../../../ui/Loading";
 import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
-const UsersManagement = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState("");
-  const [update, setUpdate] = useState(false);
-
-  useEffect(() => {
+const Roles = () => {
+      const [data, setData] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [searchQuery, setSearchQuery] = useState("");
+      const navigate = useNavigate();
+      const [selectedFilter, setSelectedFilter] = useState("");
+      const [update, setUpdate] = useState(false);
+        useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/users`, {
+      .get(`https://tickethub-tours.com/api/admin/admins`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
       })
       .then((response) => {
         setData(
-          response.data.data.users.map((item) => ({
+          response.data.data.admins.map((item) => ({
             id: item.id,
             name: item.name,
             email: item.email,
             phoneNumber: item.phoneNumber,
+            isSuperAdmin: item.isSuperAdmin,
+            imagePath: item.imagePath,
           }))
         );
         setLoading(false);
@@ -40,9 +41,14 @@ const UsersManagement = () => {
         setLoading(false);
       });
   }, [update]);
-
-  const handleEdit = (id) => {
-    navigate("/admin/addusersmanagement", { state: { sendData: id } });
+   const columns = [
+    { key: "name", label: "Name" },
+    { key: "phoneNumber", label: "Phone" },
+    { key: "email", label: "Email" },
+    { key: "imagePath", label: "Image" },
+  ];
+   const handleEdit = (id) => {
+    navigate("/admin/addroles", { state: { sendData: id } });
   };
 
   const handleDelete = (userId, userName) => {
@@ -57,7 +63,7 @@ const UsersManagement = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/users/${userId}`, {
+          .delete(`https://tickethub-tours.com/api/admin/admins/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -82,12 +88,6 @@ const UsersManagement = () => {
       }
     });
   };
-
-  const columns = [
-    { key: "name", label: "Name" },
-    { key: "phoneNumber", label: "Phone" },
-    { key: "email", label: "Email" },
-  ];
   const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
@@ -109,15 +109,39 @@ const UsersManagement = () => {
 
     return matchesSearch;
   });
+    const handleToggleStatus = (row) => {
+//     const newStatus = row.status === "active" ? "disabled" : "active";
+//     const token = localStorage.getItem("token");
 
-   if (loading) {
+//     const updatedPopup = {
+//       title: row.title,
+//       startDate: row.startDate,
+//       endDate: row.endDate,
+//       status: newStatus,
+//     };
+
+//     axios
+//       .put(`https://app.15may.club/api/admin/popups/${row.id}`, updatedPopup, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       })
+//       .then(() => {
+//         toast.success(t("Statusupdatedsuccessfully"));
+//   setTimeout(() => {
+//           setUpdate((prev) => !prev);
+//   }, 1000);
+//       })
+//       .catch(() => {
+//         toast.error(t("Statuswasnotupdatedsuccessfully"));
+//       });
+  };
+ if (loading) {
       return (
           <Loading/>
       );}
   return (
-    <div>
+ <div>
       <NavAndSearch
-        nav="/admin/addusersmanagement"
+        nav="/admin/addroles"
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
@@ -138,9 +162,32 @@ const UsersManagement = () => {
             />
           </div>
         )}
+         customRender={(key, value) =>
+          key === "imagePath" ? (
+           <div className={`flex justify-start`}>
+             <img
+              src={value}
+              alt="popup"
+              className="w-16 h-16 object-cover rounded"
+            />
+           </div>
+          ) : null
+        }
+        buttonstatus={(row) => (
+          <td className={`flex gap-1  justify-start `}>
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={row.isSuperAdmin}
+                onChange={() => handleToggleStatus(row)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-300 peer-checked:bg-green-500 rounded-full peer relative after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:left-0.5 after:top-0.5 after:transition-all peer-checked:after:translate-x-full" />
+            </label>
+          </td>
+        )}
       />
-    </div>
-  );
-};
+    </div>  )
+}
 
-export default UsersManagement;
+export default Roles

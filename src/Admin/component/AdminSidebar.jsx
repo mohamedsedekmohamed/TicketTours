@@ -9,6 +9,9 @@ import IconsUsersManagement from '../../Icons/IconsUsersManagement';
 import IconsPromoCodes from '../../Icons/IconsPromoCodes';
 import IconsFinancialSection from '../../Icons/IconsFinancialSection';
 import IconsBookingsManagement from '../../Icons/IconsBookingsManagement';
+import IconCurrencies from '../../Icons/IconCurrencies'
+import IconExtras from '../../Icons/IconExtras'
+import IconRoles from '../../Icons/IconRoles'
 const links = [
   {
     to: "home",
@@ -48,6 +51,24 @@ const links = [
     icon: <IconsBookingsManagement />,
     iconActive: <IconsBookingsManagement active />
   },
+   {
+    to: "currencies",
+    name: "Currencies",
+    icon: <IconCurrencies />,
+    iconActive: <IconCurrencies active />
+  },
+   {
+    to: "extras",
+    name: "Extras",
+    icon: <IconExtras />,
+    iconActive: <IconExtras active />
+  },
+   {
+    to: "roles",
+    name: "Admin Roles",
+    icon: <IconRoles />,
+    iconActive: <IconRoles active />
+  },
 
  
   
@@ -64,6 +85,9 @@ const AdminSidebar = ({ setIsOpen, isOpen }) => {
       '/admin/addpromocodes': '/admin/promocodes',
       '/admin/addtoursmanagement': '/admin/toursmanagement',
       '/admin/addusersmanagement': '/admin/usersmanagement',
+      '/admin/addcurrencies': '/admin/currencies',
+      '/admin/addextras': '/admin/extras',
+      '/admin/addroles': '/admin/roles',
      
      
     };

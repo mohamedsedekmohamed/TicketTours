@@ -167,7 +167,7 @@ const filteredData = data.filter((item) => {
         <span
           className={`px-2 py-1 rounded text-sm font-medium ${
             value === 0
-              ? "bg-three/80 text-one font-light"
+              ? "bg-three/10 text-green-700 font-light"
               : "bg-three/50 text-one/90"
           }`}
         >

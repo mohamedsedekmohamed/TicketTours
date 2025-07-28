@@ -13,6 +13,12 @@ import FinancialSection from "../Admin/Pages/FinancialSection/FinancialSection.j
 import BookingsManagement from "../Admin/Pages/BookingsManagement/BookingsManagement.jsx";
 import AddCategoriesManagement from "../Admin/Pages/CategoriesManagement/AddCategoriesManagement.jsx";
 import AddFinancialSection from '../Admin/Pages/FinancialSection/AddFinancialSection.jsx'
+import AddCurrencies from '../Admin/Pages/Currencies/AddCurrencies.jsx'
+import Currencies from '../Admin/Pages/Currencies/Currencies.jsx'
+import Extras from '../Admin/Pages/Extras/Extras.jsx'
+import AddExtras from '../Admin/Pages/Extras/AddExtras.jsx'
+import Roles from '../Admin/Pages/Roles/Roles.jsx';
+import AddRoles from '../Admin/Pages/Roles/AddRoles.jsx';
 const AppRoutes = ({setIsLoggedIn}) => {
   return (
   <Routes>
@@ -33,6 +39,14 @@ const AppRoutes = ({setIsLoggedIn}) => {
                   <Route path="addfinancialsection" element={<AddFinancialSection/>} />
                   <Route path="bookingsmanagement" element={<BookingsManagement/>} />
 
+                  <Route path="addcurrencies" element={<AddCurrencies/>} />
+                  <Route path="currencies" element={<Currencies/>} />
+
+                  <Route path="extras" element={<Extras/>} />
+                  <Route path="addextras" element={<AddExtras/>} />
+
+                  <Route path="roles" element={<Roles/>} />
+                  <Route path="addroles" element={<AddRoles/>} />
           </Route>
           
 

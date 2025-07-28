@@ -16,8 +16,12 @@
   import { useNavigate, useLocation } from "react-router-dom";
   import { FaRegCalendarAlt } from "react-icons/fa";
   import Select from "react-select";
-
+import MapPicker from '../../../ui/MapPicker'
   const AddToursManagement = () => {
+     const [activeTab, setActiveTab] = useState(0);
+
+  
+ 
     const navigate = useNavigate();
     const location = useLocation();
     const { sendData } = location.state || {};
@@ -53,6 +57,10 @@
     const [meetingPointLocation, SetMeetingPointLocation] = useState("");
     const [meetingPointAddress, setMeetingPointAddress] = useState("");
     //
+    const [google, setgoogle] = useState({
+   lat: 31.200092, // الإسكندرية
+lng: 29.918739
+    });
     const [errors, setErrors] = useState({
       title: "",
       category: "",
@@ -80,7 +88,7 @@
       if (name === "meetingPointLocation") SetMeetingPointLocation(value);
       if (name === "meetingPointAddress") setMeetingPointAddress(value);
       if (name === "durationHours") SetDurationHours(value);
-      if (name === "durationDays") SetDurationDays - value;
+      if (name === "durationDays") SetDurationDays(value);
     };
     const handstartDate = (newData) => {
       if (newData) {
@@ -141,6 +149,9 @@
       setErrors(formErrors);
       return Object.keys(formErrors).length === 0;
     };
+
+ 
+  
 
     //highlights
     const [fields, setFields] = useState([""]);
@@ -333,13 +344,117 @@
     setSelectedDays(selectedOptions.map((option) => option.value));
   };
 
+ const handleSave = async () => {
+  if (!validateForm()) return;
+
+  const payload = {
+    title,
+    description: describtion,
+    startDate:String(startDate),
+    endDate:String(endDate),
+    durationDays: parseInt(durationDays),
+    durationHours: parseInt(durationHours),
+    points: parseInt(points),
+    meetingPoint,
+    meetingPointAddress: meetingPoint ? meetingPointAddress : null,
+    meetingPointLocation: meetingPoint ? meetingPointLocation : null,
+    maxUsers: parseInt(maxUsers),
+    categoryId: parseInt(category),
+    country,
+    city,
+    mainImage, 
+    images: arrayimage.map(b=>b.imagePath),
+    includes: fieldstwo.filter((val) => val),
+    excludes: fieldsthree.filter((val) => val),
+    prices: prices.map((p) => ({
+      adult: parseFloat(p.adult),
+      child: parseFloat(p.child),
+      infant: parseFloat(p.infant),
+      currencyId: parseInt(p.currencyId),
+    })),
+    extras: extras.map((extra) => ({
+      extraId: parseInt(extra.extraId),
+      price: {
+        adult: parseFloat(extra.price.adult),
+        child: parseFloat(extra.price.child),
+        infant: parseFloat(extra.price.infant),
+        currencyId: parseInt(extra.price.currencyId),
+      },
+    })),
+    discounts: discounts.map((item) => ({
+      targetGroup: item.targetGroup,
+      type: item.type,
+      value: parseFloat(item.value),
+      minPeople: parseInt(item.minPeople),
+      maxPeople: parseInt(item.maxPeople),
+    })),
+    faq: titles.map((item) => ({
+      question: item.title,
+      answer: item.description,
+    })),
+    itinerary: faq.map((item) => ({
+      title: item.title,
+      description: item.description,
+      imagePath: item.image
+    })),
+    daysOfWeek: selectedDays,
+    status,
+    featured,
+  };
+    console.log("Payload to send:", payload);
+    console.log("-----------------");
+
+ axios.post("https://tickethub-tours.com/api/admin/tours", payload, {
+          // headers: {
+          //   Authorization: `Bearer ${token}`,
+          // },
+        })
+      .then(() => {
+        toast.success(`User ${edit ? "updated" : "added"} successfully`);
+        setTimeout(() => {
+          navigate("/admin/toursmanagement");
+        }, 1000);})
+    }
+    const tabs = ['Info', 'Images', 'Options', 'Pricing',"Faq"];
+const addFaq = () => {
+  setFag([...faq, { title: "", description: "", image: null }]);
+};
+
+const removeFaq = (index) => {
+  const updated = faq.filter((_, i) => i !== index);
+  setFag(updated);
+};
+
+ 
 
     return (
       <div>
         <Head kind={edit ? "Edit" : "Add"} name="Tours Management" />
         <ToastContainer />
+ <div className="flex justify-around w-full mt-6 bg-gradient-to-r from-white via-gray-50 to-white rounded-xl shadow-inner p-2 gap-2">
+  {tabs.map((tab, index) => (
+    <button
+      key={index}
+      onClick={() => setActiveTab(index)}
+      className={`flex-1 text-center px-6 py-3 rounded-lg font-semibold text-base md:text-lg transition-all duration-300 ease-in-out
+        ${
+          activeTab === index
+            ? 'bg-one text-white shadow-lg scale-100'
+            : 'bg-white text-gray-600 hover:bg-one hover:text-white hover:shadow-md hover:scale-100'
+        }
+      `}
+    >
+      {tab}
+    </button>
+  ))}
+</div>
+
+
         <div className=" flex gap-7 flex-wrap  mt-10 pr-5 ">
-          <InputField
+
+       {activeTab === 0 && (
+        <>
+                 <InputField
             placeholder="Title"
             name="title"
             value={title}
@@ -405,19 +520,19 @@
             setValue={setFeatured}
             title="Featured"
           />
-          <SwitchButton
+            <SwitchButton
             value={meetingPoint}
             setValue={setMeetingPoint}
             title="Meeting Point"
           />
           <div className="flex flex-col">
-    <label className="mb-2 font-medium text-gray-700">Select Days</label>
+    <label className="mb-2 font-medium text-one">Select Days</label>
     <Select
       isMulti
       options={days}
       value={days.filter((d) => selectedDays.includes(d.value))}
       onChange={handleSelectChange}
-      className="basic-multi-select"
+      className="basic-multi-select w-75 h-[80px] rounded-2xl"
       classNamePrefix="select"
     />
   </div>
@@ -443,6 +558,7 @@
               />
             </div>
           </div>
+
           <div className="relative flex flex-col w-[300px] h-[80px]">
             <label className="text-sm font-semibold text-gray-700 mb-1">
               End Date
@@ -464,9 +580,8 @@
               />
             </div>
           </div>
-        </div>
-        {meetingPoint ? (
-          <div className=" flex  mt-5 flex-col gap-3">
+              {meetingPoint ? (
+          <div className=" flex   w-full flex-col gap-3">
             {" "}
             <InputField
               placeholder="Meeting Point Address"
@@ -474,15 +589,23 @@
               value={meetingPointAddress}
               onChange={handleChange}
             />
-            <InputField
-              placeholder="Meeting Point Location"
-              name="meetingPointLocation"
-              value={meetingPointLocation}
-              onChange={handleChange}
-            />
+
           </div>
         ) : null}
-        <FileUploadButton
+           {meetingPoint ? (
+          <div className=" flex  mt-5 flex-col w-full gap-3">
+            {" "}
+         
+                     <MapPicker location={google} onLocationChange={(newLocation)=>{setgoogle(newLocation)}} />
+
+          </div>
+        ) : null}
+       
+        </>
+        )}
+ {activeTab === 1 && (
+        <div className="flex flex-col gap-2 w-full">
+          <FileUploadButton
           kind=" Mian image"
           onFileChange={setMainImage}
           pic={mainImage}
@@ -490,13 +613,19 @@
         />
         <FileUploadButtonArroy
           name="Image"
-          kind="Image"
+          kind="Gallery"
           flag={arrayimage}
           onFileChange={handleIamgesChange}
         />
+        </div>
+        )}
+ 
+  {activeTab === 2 && (
+      <div className="flex gap-7 flex-wrap w-full">
+
         {/* highlights */}
 
-        <div className="space-y-4 p-4">
+        <div className="space-y-4 p-4 w-f">
           <h2 className="text-xl font-bold">highlights</h2>
 
           {fields.map((value, index) => (
@@ -582,7 +711,7 @@
         </div>
 
         {/* extras */}
-        <div className="p-4 space-y-5">
+        <div className="p-4 space-y-5 w-full">
           <h2 className="text-xl font-bold mb-4">Extras</h2>
           {extras.map((extra, index) => (
             <div
@@ -650,10 +779,59 @@
             onClick={handleSubmit}
             className="px-6 py-2 bg-one text-white rounded hover:bg-green-700 block mt-4"
           >
-            حفظ البيانات
-          </button>
+Save Data          </button>
         </div>
-        {/* price */}
+        <div className="p-4 space-y-5 w-full border-1 mt-2">
+    <h2 className="text-xl font-bold text-one mb-4">Itinerary</h2>
+
+  {faq.map((item, index) => (
+  <div key={index} className="bg-gray-100 p-4 rounded relative mb-4 space-y-3">
+    <InputField
+      type="text"
+      placeholder="Title"
+      value={item.title}
+      onChange={(e) => handlefaqChange(index, "title", e.target.value)}
+    />
+    <textarea
+      placeholder="Description"
+      value={item.description}
+      onChange={(e) => handlefaqChange(index, "description", e.target.value)}
+      className="w-full p-2 rounded border border-gray-300 resize-none leading-5 overflow-hidden"
+      rows={3}
+      maxLength={300}
+      onInput={(e) => {
+        const el = e.target;
+        el.style.height = "auto";
+        el.style.height = `${Math.min(el.scrollHeight, 90)}px`;
+      }}
+    />
+    <FileUploadButton
+      kind={`FAQ Image ${index + 1}`}
+      onFileChange={(file) => handlefaqChange(index, "image", file)}
+      pic={item.image}
+      des="FAQ image preview"
+    />
+    <button
+      onClick={() => removeFaq(index)}
+      className="text-one font-bold text-lg absolute top-2 right-2"
+    >
+      ✕
+    </button>
+  </div>
+))}
+
+    {/* Add new QA */}
+    <button onClick={addTitle} className="bg-one text-white p-3 mt-2 rounded">
+      Add
+    </button>
+  </div>
+ 
+      </div>
+        )}
+        
+ {activeTab === 3 && (
+          <div className="flex flex-col w-full gap-2">
+             {/* price */}
         <div className="p-4 space-y-5  border-1 ">
           <h2 className="text-xl font-bold text-one mb-4">price</h2>
           {prices.map((price, index) => (
@@ -706,110 +884,8 @@
             Add Price
           </button>
         </div>
-        {/* Question & Answer */}
-  <div className="p-4 space-y-5 border-1 mt-2">
-    <h2 className="text-xl font-bold text-one mb-4">Question & Answer</h2>
-
-    {titles.map((item, index) => (
-      <div key={index} className="bg-gray-100 p-4 rounded relative mb-4">
-        <InputField
-          type="text"
-          placeholder="Question"
-          value={item.title}
-          onChange={(e) => handleTitleChange(index, "title", e.target.value)}
-        />
-        <textarea
-          placeholder="Answer"
-          value={item.description}
-          onChange={(e) => handleTitleChange(index, "description", e.target.value)}
-          className="w-full mt-3 p-2 rounded border border-gray-300"
-          rows={3}
-          
-        />
-
-        <button
-          onClick={() => removeTitle(index)}
-          className="text-one font-bold text-lg absolute top-2 right-2"
-        >
-          ✕
-        </button>
-      </div>
-    ))}
-
-    <button onClick={addTitle} className="bg-one text-white p-3 mt-2 rounded">
-      Add 
-    </button>
-  </div>
-  <div className="p-4 space-y-5 border-1 mt-2">
-    <h2 className="text-xl font-bold text-one mb-4">Title & Description + Image</h2>
-
-    {titles.map((item, index) => (
-      <div key={index} className="bg-gray-100 p-4 rounded relative mb-4 space-y-3">
-        {/* Question input */}
-        <InputField
-          type="text"
-          placeholder="Title"
-          value={item.title}
-          onChange={(e) => handleTitleChange(index, "title", e.target.value)}
-        />
-
-        {/* Answer textarea (3 lines max height) */}
-        <textarea
-          placeholder="Description"
-          value={item.description}
-          onChange={(e) => handleTitleChange(index, "description", e.target.value)}
-          className="w-full p-2 rounded border border-gray-300 resize-none leading-5 overflow-hidden"
-          rows={3}
-          maxLength={300}
-          onInput={(e) => {
-            const el = e.target;
-            el.style.height = "auto";
-            el.style.height = `${Math.min(el.scrollHeight, 90)}px`; // max ~3 lines
-          }}
-        />
-
-        {/* Image upload */}
-        <div className="flex items-center gap-4">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handlefaqChange(index, "image", e.target.files[0])}
-            className="text-sm"
-          />
-
-          {/* Preview image if exists */}
-          {item.image && typeof item.image === "object" && (
-            <img
-              src={URL.createObjectURL(item.image)}
-              alt="Preview"
-              className="w-16 h-16 object-cover rounded border"
-            />
-          )}
-          {item.image && typeof item.image === "string" && (
-            <img
-              src={item.image}
-              alt="Preview"
-              className="w-16 h-16 object-cover rounded border"
-            />
-          )}
-        </div>
-
-        {/* Remove item button */}
-        <button
-          onClick={() => removeTitle(index)}
-          className="text-one font-bold text-lg absolute top-2 right-2"
-        >
-          ✕
-        </button>
-      </div>
-    ))}
-
-    {/* Add new QA */}
-    <button onClick={addTitle} className="bg-one text-white p-3 mt-2 rounded">
-      Add
-    </button>
-  </div>
-  <div className="p-4 space-y-5 border-1 mt-2">
+          {/*  */}
+           <div className="p-4 space-y-5 border-1 mt-2">
     <h2 className="text-xl font-bold text-one mb-4">Discounts</h2>
 
     {discounts.map((item, index) => (
@@ -880,12 +956,59 @@
       Add Discount
     </button>
   </div>
+          </div>
+        )}
 
-        {/* <ButtonDone
+        </div>
+       
+      {activeTab===4&&(
+<div className="w-full ">
+ {/* Question & Answer */}
+  <div className="p-4 space-y-5 border-1 mt-2">
+    <h2 className="text-xl font-bold text-one mb-4">Question & Answer</h2>
+
+    {titles.map((item, index) => (
+      <div key={index} className="bg-gray-100 p-4 rounded relative mb-4">
+        <InputField
+          type="text"
+          placeholder="Question"
+          value={item.title}
+          onChange={(e) => handleTitleChange(index, "title", e.target.value)}
+        />
+        <textarea
+          placeholder="Answer"
+          value={item.description}
+          onChange={(e) => handleTitleChange(index, "description", e.target.value)}
+          className="w-full mt-3 p-2 rounded border border-gray-300"
+          rows={3}
+          
+        />
+
+        <button
+          onClick={() => removeTitle(index)}
+          className="text-one font-bold text-lg absolute top-2 right-2"
+        >
+          ✕
+        </button>
+      </div>
+    ))}
+
+    <button onClick={addTitle} className="bg-one text-white p-3 mt-2 rounded">
+      Add 
+    </button>
+  </div>
+</div>
+      )}
+
+       
+       
+  
+
+        <ButtonDone
           checkLoading={checkLoading}
           handleSave={handleSave}
           edit={edit}
-        /> */}
+        />
       </div>
     );
   };

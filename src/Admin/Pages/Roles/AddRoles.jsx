@@ -8,56 +8,62 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import ButtonDone from "../../../ui/ButtonDone";
-const AddUsersManagement = () => {
+import FileUploadButton from '../../../ui/FileUploadButton'
+import Inputfiltter from '../../../ui/Inputfiltter'
+
+const AddRoles = () => {
   const navigate = useNavigate();
-    const location = useLocation();
-    const { sendData } = location.state || {};
-    const [edit, setEdit] = useState(false);
-    const [checkLoading, setCheckLoading] = useState(false);
-    const [loading, setLoading] = useState(true);
-  
-     const [name, setName] = useState("");
+  const location = useLocation();
+  const { sendData } = location.state || {};
+  const [edit, setEdit] = useState(false);
+  const [checkLoading, setCheckLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-     const [errors, setErrors] = useState({
+  const [password, setPassword] = useState("");
+  const [isSuperAdmin, setIsSuperAdmin] = useState("");
+  const [imagePath, setimagePath] = useState(null);
+  const [imagePathtwo, setimagePathtwo] = useState(null);
+const [errors, setErrors] = useState({
     name: "",
     phone: "",
     email: "",
     password: "",
   });
-   useEffect(() => {
+    useEffect(() => {
     if (sendData) {
       setEdit(true);
 
       const token = localStorage.getItem("token");
       axios
-        .get(`https://tickethub-tours.com/api/admin/users/${sendData}`, {
+        .get(`https://tickethub-tours.com/api/admin/admins/${sendData}`, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
         })
         .then((response) => {
-          const user = response.data.data.user;
+          const user = response.data.data;
           if (user) {
             setName(user.name || "");
             setPhone(user.phoneNumber || "");
-            setEmail(user.email || "");          }
+            setEmail(user.email || ""); 
+           setIsSuperAdmin((user.isSuperAdmin?"admin":"superAdmin"))
+           setimagePath(user.imagePath||null)
+           setimagePathtwo(user.imagePath||null)
+          }
         })
         .catch((error) => {
           toast.error("Error fetching this User:", error);
         });
     }
-
     const timeout = setTimeout(() => {
       setLoading(false);
     }, 1000);
-
     return () => clearTimeout(timeout);
   }, [location.state]);
-
-    const handleChange = (e) => {
+   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "name") setName(value);
     if (name === "phone") setPhone(value);
@@ -65,20 +71,21 @@ const AddUsersManagement = () => {
     if (name === "password") setPassword(value);
   };
    const validateForm = () => {
-    let formErrors = {};
-
-    if (!name) formErrors.name = "Name is required";
-
- if (!phone) {
-  formErrors.phone = "Phone is required";
-} else if (!/^\d+$/.test(phone)) {
-  formErrors.phone = "Phone must contain digits only";
-}
-
-    if (!email.includes("@gmail.com")) {
-      formErrors.email = "Email should contain @gmail.com";
-    }
- if (!edit) {
+      let formErrors = {};
+  
+      if (!name) formErrors.name = "Name is required";
+      if (!isSuperAdmin) formErrors.TypeRole = "Type Role is required";
+      if (!imagePath) formErrors.image = "Iamge is required";
+  
+   if (!phone) {
+    formErrors.phone = "Phone is required";
+  } else if (!/^\d+$/.test(phone)) {
+    formErrors.phone = "Phone must contain digits only";
+  }
+      if (!email.includes("@gmail.com")) {
+        formErrors.email = "Email should contain @gmail.com";
+      }
+   if (!edit) {
   if (!password) {
     formErrors.password = "Password is required";
   } else if (password.length  <= 7) {
@@ -86,15 +93,13 @@ const AddUsersManagement = () => {
   }
 }
 
-
-    Object.values(formErrors).forEach((error) => {
-      toast.error(error);
-    });
-
-    setErrors(formErrors);
-    return Object.keys(formErrors).length === 0;
-  };
-  const handleSave = () => {
+      Object.values(formErrors).forEach((error) => {
+        toast.error(error);
+      });
+      setErrors(formErrors);
+      return Object.keys(formErrors).length === 0;
+    };
+ const handleSave = () => {
     setCheckLoading(true);
     if (!validateForm()) {
       setCheckLoading(false);
@@ -104,8 +109,11 @@ const AddUsersManagement = () => {
   name,
   phoneNumber: phone,
   email,
+  isSuperAdmin
 };
-
+if(imagePath!==imagePathtwo){
+  newUser.imagePath=imagePath
+}
 if (!edit) {
   newUser.password = password;
 }
@@ -117,7 +125,7 @@ if (edit && password && password.length >= 8) {
 
     const request = edit
       ? axios.put(
-          `https://tickethub-tours.com/api/admin/users/${sendData}`,
+          `https://tickethub-tours.com/api/admin/admins/${sendData}`,
           newUser,
           // {
           //   headers: {
@@ -125,7 +133,7 @@ if (edit && password && password.length >= 8) {
           //   },
           // }
         )
-      : axios.post("https://tickethub-tours.com/api/admin/users", newUser, {
+      : axios.post("https://tickethub-tours.com/api/admin/admins", newUser, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
@@ -133,15 +141,18 @@ if (edit && password && password.length >= 8) {
 
     request
       .then(() => {
-        toast.success(`User ${edit ? "updated" : "added"} successfully`);
+        toast.success(`admins ${edit ? "updated" : "added"} successfully`);
         setTimeout(() => {
-          navigate("/admin/usersmanagement");
+          navigate("/admin/roles");
         }, 1000);
 
         setName("");
         setPhone("");
         setEmail("");
         setPassword("");
+        setIsSuperAdmin(false)
+        setimagePath(null)
+        setimagePathtwo(null)
         setEdit(false);
       })
       .catch((error) => {
@@ -159,13 +170,12 @@ if (edit && password && password.length >= 8) {
         setCheckLoading(false);
       });
   };
-   if (loading) {
+      if (loading) {
       return (
           <Loading/>
       );}
-  return (
-    <div>
-      <Head kind={edit ? "Edit" : "Add"} name="Users Management" />
+  return  <div>
+      <Head kind={edit ? "Edit" : "Add"} name="Admin Roles" />
       <ToastContainer/>
         <div className=" flex gap-7 flex-wrap  mt-10 pr-5 space-y-5 ">
         <InputField
@@ -180,6 +190,12 @@ if (edit && password && password.length >= 8) {
           value={phone}
           onChange={handleChange}
         />
+        <Inputfiltter
+          placeholder="Type Admin"
+          name="role"
+          value={isSuperAdmin}
+          onChange={setIsSuperAdmin}
+        />
         <InputField
           placeholder="Gmail"
           name="email"
@@ -192,10 +208,16 @@ if (edit && password && password.length >= 8) {
           value={password}
           onChange={handleChange}
         />
+           <FileUploadButton
+          kind="Image"
+          des="Select one pic"
+          pic={imagePath}
+          onFileChange={(File)=> setimagePath(File)}
+        />
+
     </div>
     <ButtonDone  checkLoading={checkLoading} handleSave={handleSave}  edit={edit}/>
     </div>
-  );
 };
 
-export default AddUsersManagement;
+export default AddRoles;

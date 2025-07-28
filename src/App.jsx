@@ -1,5 +1,5 @@
 import './App.css'
-import Home from './Landpage/Pages/Home';
+import Home from './Landpage/Pages/Home/Home';
 import Contactus from './Landpage/Pages/Contactus';
 import {
   BrowserRouter as Router,

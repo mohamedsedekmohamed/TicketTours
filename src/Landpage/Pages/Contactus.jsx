@@ -1,34 +1,33 @@
-import React from 'react'
-import contactImage from '../../assets/content.png'
-import Footer from './Footer'
-import { FaPhoneAlt } from 'react-icons/fa'
-import Navtwo from '../component/Navtwo'
+import React from 'react';
+import contactImage from '../../assets/content.png';
+import Footer from './Footer';
+import Navtwo from '../component/Navtwo';
 
 const Contactus = () => {
   return (
     <div>
-      <Navtwo/>
+      <Navtwo />
 
       {/* Main Section */}
-      <div className="flex flex-col lg:flex-row pt-10 min-h-screen">
-        
-      {/* Image Section */}
-<div className="w-full lg:w-1/2 min-h-[400px] max-h-[800px] lg:min-h-full flex items-center justify-center bg-gray-100">
+      <div className="flex flex-col lg:flex-row pt-8 px-4 lg:px-16 gap-6">
+        {/* Image Section */}
+      <div className="w-full lg:w-1/2 max-h-[600px] lg:max-h-[90vh] overflow-hidden rounded-xl shadow-md">
   <img
     src={contactImage}
     alt="Contact Us"
-    className="w-full h-full object-cover lg:rounded-r-none rounded-lg shadow-md"
+    className="w-full h-full object-cover object-center"
   />
-</div>
-
+</div>  
         {/* Contact Form */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-start px-6 lg:px-10 pt-4">
-          <h2 className="text-one text-[32px] lg:text-[48px] mb-4 font-semibold judson-regular">
-Get in Touch with Us          </h2>
-          <p className="text-seven text-[18px] lg:text-[20px] mb-6  text-three open-sans-regular leading-relaxed">
-We’d love to hear from you! Whether you have a question about our trips, need assistance with booking, or just want to say hi — our team is ready to help.          </p>
+        <div className="w-full lg:w-1/2">
+          <h2 className="text-one text-3xl sm:text-4xl lg:text-5xl mb-4 font-semibold judson-regular">
+            Get in Touch with Us
+          </h2>
+          <p className="text-base sm:text-lg lg:text-xl mb-6 text-three open-sans-regular leading-relaxed">
+            We’d love to hear from you! Whether you have a question about our trips, need assistance with booking, or just want to say hi — our team is ready to help.
+          </p>
 
-          <form className="w-full space-y-4 judson-bold">
+          <form className="w-full space-y-5 judson-bold">
             {/* Name */}
             <div>
               <label className="block text-seven text-sm mb-1">Name</label>
@@ -52,9 +51,9 @@ We’d love to hear from you! Whether you have a question about our trips, need 
             {/* Phone */}
             <div>
               <label className="block text-seven text-sm mb-1">Phone</label>
-              <div className="flex">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
                 <select
-                  className="border border-gray-300 border-r-0 p-3 rounded-l-3xl text-sm text-gray-700 bg-white focus:outline-none"
+                  className="border border-gray-300 p-3 rounded-3xl sm:rounded-r-none text-sm text-gray-700 bg-white focus:outline-none w-full sm:w-1/4"
                   defaultValue="EG"
                 >
                   <option value="US">🇺🇸 +1</option>
@@ -64,7 +63,7 @@ We’d love to hear from you! Whether you have a question about our trips, need 
                 <input
                   type="tel"
                   placeholder="Your Phone"
-                  className="w-full rounded-r-3xl p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-one"
+                  className="w-full sm:w-3/4 rounded-3xl sm:rounded-l-none p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-one"
                 />
               </div>
             </div>
@@ -84,7 +83,7 @@ We’d love to hear from you! Whether you have a question about our trips, need 
                 type="submit"
                 className="bg-one text-white text-lg px-6 py-3 rounded-3xl transition transform hover:scale-95"
               >
-                Send 
+                Send
               </button>
             </div>
           </form>
@@ -93,7 +92,7 @@ We’d love to hear from you! Whether you have a question about our trips, need 
 
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Contactus
+export default Contactus;
