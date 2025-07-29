@@ -174,7 +174,7 @@ if (edit && password && password.length >= 8) {
       return (
           <Loading/>
       );}
-  return  <div>
+  return ( <div>
       <Head kind={edit ? "Edit" : "Add"} name="Admin Roles" />
       <ToastContainer/>
         <div className=" flex gap-7 flex-wrap  mt-10 pr-5 space-y-5 ">
@@ -218,6 +218,7 @@ if (edit && password && password.length >= 8) {
     </div>
     <ButtonDone  checkLoading={checkLoading} handleSave={handleSave}  edit={edit}/>
     </div>
+    )
 };
 
 export default AddRoles;

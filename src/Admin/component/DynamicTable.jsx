@@ -28,13 +28,38 @@ const DynamicTable = ({
   );
   if (!data.length) {
     return (
-      <div className="mt-6 text-center text-one">No data available</div>
+      <div className="flex flex-col gap-4 mt-5">
+  <table className="w-full min-w-[800px] border border-one text-left">
+        <thead className="bg-gray-200">
+          <tr>
+            <th className="py-3 text-one px-4">S/N</th>
+            {columns.map((col) => (
+              <th key={col.key} className="py-3 text-one px-4">
+                {col.label}
+              </th>
+            ))}
+            {Seen && <th className="py-3 text-one px-4">Seen</th>}
+            {view && <th className="py-3 text-one px-4">view</th>}
+            {buttonstatus && <th className="py-3 text-one px-4">Status Actions</th>}
+            {actions && <th className="py-3 text-one px-4">Actions</th>}
+            {actionsstates && (
+              <th className="py-3 text-one px-4">Change Status</th>
+            )}
+            {actionsviewselect && (
+              <th className="py-3 text-one px-4">Options</th>
+            )}
+          </tr>
+        </thead>
+        </table>
+                <div className="mt-6 text-center text-one">No data available</div>
+
+      </div>
     );
   }
 
   const keys = columns.map((col) => col.key);
 
-  const truncate = (text, max = 15) => {
+  const truncate = (text, max = 20) => {
     if (!text) return "N/A";
     return text.toString().length > max
       ? text.toString().slice(0, max) + "..."
@@ -105,14 +130,14 @@ const DynamicTable = ({
   shape="rounded"
   sx={{
           '& .MuiPaginationItem-root': {
-            color: '#091A2E', // لون النص
+            color: '#091A2E', 
             borderColor: '#091A20',
           },
           '& .Mui-selected': {
             backgroundColor: '#091A2E',
             color: 'white',
             '&:hover': {
-              backgroundColor: '#091A2E', // بني أغمق عند التمرير
+              backgroundColor: '#091A2E', 
             },
           },
         

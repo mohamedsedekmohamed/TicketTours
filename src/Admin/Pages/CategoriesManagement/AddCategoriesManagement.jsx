@@ -89,6 +89,10 @@ imagePath:iamge
         setCheckLoading(false);
       });
   };
+    if (loading) {
+      return (
+          <Loading/>
+      );}
   return (
     <div>
       <Head kind="Edit" name="Categories Management"/>

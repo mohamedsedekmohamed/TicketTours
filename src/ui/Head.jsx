@@ -1,19 +1,29 @@
 import React from 'react'
-import { useNavigate  } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-const Head = ({name,kind}) => {
-  const navigate =useNavigate ()
+const Head = ({ name, kind, nav = -1 }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (typeof nav === 'number') {
+      navigate(nav);
+    } else if (typeof nav === 'object') {
+      navigate(nav.pathname, { state: nav.state });
+    } else if (typeof nav === 'string') {
+      navigate(nav); 
+    }
+  };
+
   return (
-<div className='relative flex items-center mt-5'>
-  <button onClick={()=>navigate(-1)} className='text-seven text-2xl font-normal'>
-    {name} / <span className='text-one'>{kind}</span>
-  </button>
-  {/* <span className='absolute left-1/2 transform -translate-x-1/2 font-bold text-one text-2xl'>
-    {kind}
-  </span> */}
-</div>
+    <div className="relative flex items-center mt-5">
+      <button
+        onClick={handleClick}
+        className="text-seven text-2xl font-normal"
+      >
+        {name} / <span className="text-one">{kind}</span>
+      </button>
+    </div>
+  );
+};
 
-  )
-}
-
-export default Head
+export default Head;

@@ -12,6 +12,10 @@ import IconsBookingsManagement from '../../Icons/IconsBookingsManagement';
 import IconCurrencies from '../../Icons/IconCurrencies'
 import IconExtras from '../../Icons/IconExtras'
 import IconRoles from '../../Icons/IconRoles'
+import IconCounnty from '../../Icons/IconCounnty'
+import IconCity from '../../Icons/IconCity'
+import IconFrontWebsiteManagement from '../../Icons/IconFrontWebsiteManagement'
+import IconPaymentMethod from '../../Icons/IconPaymentMethod'
 const links = [
   {
     to: "home",
@@ -69,6 +73,30 @@ const links = [
     icon: <IconRoles />,
     iconActive: <IconRoles active />
   },
+   {
+    to: "county",
+    name: "County",
+    icon: <IconCounnty />,
+    iconActive: <IconCounnty active />
+  },
+   {
+    to: "city",
+    name: "City",
+    icon: <IconCity />,
+    iconActive: <IconCity active />
+  },
+   {
+    to: "frontwebsitemanagement",
+    name: "Website Management",
+    icon: <IconFrontWebsiteManagement />,
+    iconActive: <IconFrontWebsiteManagement active />
+  },
+   {
+    to: "paymentmethod",
+    name: "Payment Method",
+    icon: <IconPaymentMethod />,
+    iconActive: <IconPaymentMethod active />
+  },
 
  
   
@@ -88,6 +116,10 @@ const AdminSidebar = ({ setIsOpen, isOpen }) => {
       '/admin/addcurrencies': '/admin/currencies',
       '/admin/addextras': '/admin/extras',
       '/admin/addroles': '/admin/roles',
+      '/admin/addcounty': '/admin/county',
+      '/admin/addcity': '/admin/city',
+      '/admin/addhomecover': '/admin/frontwebsitemanagement',
+      '/admin/addfaq': '/admin/frontwebsitemanagement',
      
      
     };
@@ -192,7 +224,7 @@ useEffect(() => {
                 })}
               </div>
               {isOpen && (
-                <span className={`font-normal text-[14px]  ${isCurrent ? 'text-one' : 'text-white'}`}>
+                <span className={`font-normal  text-[14px]  ${isCurrent ? 'text-one' : 'text-white'}`}>
                   {link.name}
                 </span>
               )}

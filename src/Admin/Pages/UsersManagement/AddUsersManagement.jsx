@@ -66,15 +66,12 @@ const AddUsersManagement = () => {
   };
    const validateForm = () => {
     let formErrors = {};
-
     if (!name) formErrors.name = "Name is required";
-
  if (!phone) {
   formErrors.phone = "Phone is required";
 } else if (!/^\d+$/.test(phone)) {
   formErrors.phone = "Phone must contain digits only";
 }
-
     if (!email.includes("@gmail.com")) {
       formErrors.email = "Email should contain @gmail.com";
     }
@@ -85,8 +82,6 @@ const AddUsersManagement = () => {
     formErrors.password = "Password must be at least 8 characters";
   }
 }
-
-
     Object.values(formErrors).forEach((error) => {
       toast.error(error);
     });

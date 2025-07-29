@@ -1,34 +1,36 @@
 import React, { useEffect, useState } from "react";
-import DynamicTable from "../../component/DynamicTable";
+import DynamicTable from "../../../component/DynamicTable";
 import { useNavigate } from "react-router-dom";
-import NavAndSearch from "../../component/NavAndSearch";
+import NavAndSearch from "../../../component/NavAndSearch";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import Loading from "../../../ui/Loading";
+import Loading from "../../../../ui/Loading";
 import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
-const Extras = () => {
-     const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState("");
-  const [update, setUpdate] = useState(false);
-   useEffect(() => {
+const Faq = () => {
+      const [data, setData] = useState([]);
+          const [loading, setLoading] = useState(true);
+          const [searchQuery, setSearchQuery] = useState("");
+          const navigate = useNavigate();
+          const [selectedFilter, setSelectedFilter] = useState("");
+          const [update, setUpdate] = useState(false);
+                  useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/extras`, {
+      .get(`https://tickethub-tours.com/api/admin/faq`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
       })
       .then((response) => {
         setData(
-          response.data.data.extras.map((item) => ({
+          response.data.data.faqs.map((item) => ({
             id: item.id,
-            name: item.name,
-          }))
+            question: item.question,
+            answer: item.answer,
+            status: item.status  
+                }))
         );
         setLoading(false);
       })
@@ -36,11 +38,15 @@ const Extras = () => {
         toast.error("Error fetching data");
         setLoading(false);
       });
-  }, [update]);
-   const handleEdit = (id) => {
-    navigate("/admin/addextras", { state: { sendData: id } });
+  }, [update])
+ const columns = [
+    { key: "question", label: "Question" },
+    { key: "answer", label: "Answer" },
+  ];
+    const handleEdit = (id) => {
+    navigate("/admin/addfaq", { state: { sendData: id } });
   };
-   const handleDelete = (userId, userName) => {
+const handleDelete = (userId, userName) => {
     const token = localStorage.getItem("token");
 
     Swal.fire({
@@ -52,7 +58,7 @@ const Extras = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/extras/${userId}`, {
+          .delete(`https://tickethub-tours.com/api/admin/faq/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -77,9 +83,28 @@ const Extras = () => {
       }
     });
   };
-  const columns = [
-    { key: "name", label: "Name" },
-  ];
+   const handleToggleStatus = (row) => {
+    const newStatus = row.status ?   false : true;
+    const token = localStorage.getItem("token");
+
+    const updateHome = {
+      status: newStatus,
+    };
+
+    axios
+      .put(`https://tickethub-tours.com/api/admin/faq/${row.id}`, updateHome, {
+        // headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(() => {
+        toast.success("Status updated successfully");
+  setTimeout(() => {
+          setUpdate((prev) => !prev);
+  }, 1000);
+      })
+      .catch(() => {
+        toast.error("Status was not updated successfully");
+      });
+  };
    const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
@@ -101,14 +126,17 @@ const Extras = () => {
 
     return matchesSearch;
   });
- if (loading) {
+
+if (loading) {
       return (
+       <div className="mt-20">
           <Loading/>
-      );}
+
+        </div>      );}
   return (
  <div>
-      <NavAndSearch
-        nav="/admin/addextras"
+      <NavAndSearch 
+        nav="/admin/addfaq"
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
@@ -125,13 +153,26 @@ const Extras = () => {
             />
             <RiDeleteBin6Line
               className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
+              onClick={() => handleDelete(row.id, row.question)}
             />
           </div>
         )}
+ 
+      buttonstatus={(row) => (
+          <td className={`flex gap-1  justify-start `}>
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={row.status}
+                onChange={() => handleToggleStatus(row)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-300 peer-checked:bg-one rounded-full peer relative after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:left-0.5 after:top-0.5 after:transition-all peer-checked:after:translate-x-full" />
+            </label>
+          </td>
+        )}
       />
-    </div> 
-     )
+    </div>   )
 }
 
-export default Extras
+export default Faq

@@ -20,8 +20,6 @@ import MapPicker from '../../../ui/MapPicker'
   const AddToursManagement = () => {
      const [activeTab, setActiveTab] = useState(0);
 
-  
- 
     const navigate = useNavigate();
     const location = useLocation();
     const { sendData } = location.state || {};
