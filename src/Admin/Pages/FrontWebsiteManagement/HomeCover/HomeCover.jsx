@@ -20,7 +20,7 @@ const HomeCover = () => {
       
         useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/homepage`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/homepage`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -55,7 +55,7 @@ const HomeCover = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/homepage/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/homepage/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -92,7 +92,7 @@ const HomeCover = () => {
     };
 
     axios
-      .put(`https://tickethub-tours.com/api/admin/homepage/${row.id}`, updateHome, {
+      .put(`https://bcknd.tickethub-tours.com/api/admin/homepage/${row.id}`, updateHome, {
         // headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {

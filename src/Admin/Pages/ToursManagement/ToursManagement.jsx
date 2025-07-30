@@ -19,7 +19,7 @@ const ToursManagement = () => {
   { key: "mainImage", label: "Image" },
   { key: "durationDays", label: "Duration Days" },
   { key: "status", label: "Status" },
-  { key: "city", label: "City" },
+  { key: "maxUsers", label: "Max Users" },
 ]; 
       const [loading, setLoading] = useState(false);
         const [searchQuery, setSearchQuery] = useState("");
@@ -29,7 +29,7 @@ const ToursManagement = () => {
 
     useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/tours`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/tours`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -44,7 +44,7 @@ const ToursManagement = () => {
             mainImage: item.mainImage,
             durationDays: item.durationDays,
             status: item.status,
-            city: item.city,
+            maxUsers: item.maxUsers,
           }))
         );
         setLoading(false);
@@ -73,7 +73,7 @@ const ToursManagement = () => {
       if (result.isConfirmed) {
         axios
           .delete(
-            `https://tickethub-tours.com/api/admin/tours/${userId}`,
+            `https://bcknd.tickethub-tours.com/api/admin/tours/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

@@ -19,7 +19,7 @@ const UsersManagement = () => {
 
   useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/users`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/users`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -57,7 +57,7 @@ const UsersManagement = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/users/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/users/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

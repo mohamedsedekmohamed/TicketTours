@@ -30,7 +30,7 @@ const AddCountry = () => {
 
       const token = localStorage.getItem("token");
       axios
-        .get(`https://tickethub-tours.com/api/admin/country/${sendData}`, {
+        .get(`https://bcknd.tickethub-tours.com/api/admin/country/${sendData}`, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
@@ -82,7 +82,7 @@ if(imagePath!==imagePathtwo){
 }
     const request = edit
       ? axios.put(
-          `https://tickethub-tours.com/api/admin/country/${sendData}`,
+          `https://bcknd.tickethub-tours.com/api/admin/country/${sendData}`,
           newUser,
           // {
           //   headers: {
@@ -90,7 +90,7 @@ if(imagePath!==imagePathtwo){
           //   },
           // }
         )
-      : axios.post("https://tickethub-tours.com/api/admin/country", newUser, {
+      : axios.post("https://bcknd.tickethub-tours.com/api/admin/country", newUser, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },

@@ -29,7 +29,7 @@ const AddCurrencies = () => {
 
       const token = localStorage.getItem("token");
       axios
-        .get(`https://tickethub-tours.com/api/admin/currencies/${sendData}`, {
+        .get(`https://bcknd.tickethub-tours.com/api/admin/currencies/${sendData}`, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
@@ -87,7 +87,7 @@ const AddCurrencies = () => {
 };
     const request = edit
       ? axios.put(
-          `https://tickethub-tours.com/api/admin/currencies/${sendData}`,
+          `https://bcknd.tickethub-tours.com/api/admin/currencies/${sendData}`,
           newUser,
           // {
           //   headers: {
@@ -95,7 +95,7 @@ const AddCurrencies = () => {
           //   },
           // }
         )
-      : axios.post("https://tickethub-tours.com/api/admin/currencies", newUser, {
+      : axios.post("https://bcknd.tickethub-tours.com/api/admin/currencies", newUser, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },

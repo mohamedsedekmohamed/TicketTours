@@ -5,7 +5,7 @@ import { CiMenuBurger } from "react-icons/ci";
 import { CiMenuFries } from "react-icons/ci";
 import { GoArrowDownRight } from "react-icons/go";
 import AOS from "aos";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/newlogo.png";
 import "aos/dist/aos.css";
 
 const Navtwo = () => {

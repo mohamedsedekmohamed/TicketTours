@@ -18,7 +18,7 @@ const Faq = () => {
           const [update, setUpdate] = useState(false);
                   useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/faq`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/faq`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -58,7 +58,7 @@ const handleDelete = (userId, userName) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/faq/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/faq/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -92,7 +92,7 @@ const handleDelete = (userId, userName) => {
     };
 
     axios
-      .put(`https://tickethub-tours.com/api/admin/faq/${row.id}`, updateHome, {
+      .put(`https://bcknd.tickethub-tours.com/api/admin/faq/${row.id}`, updateHome, {
         // headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {

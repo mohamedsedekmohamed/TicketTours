@@ -15,7 +15,7 @@ const InputArrow = ({
   const containerRef = useRef(null);
 
   useEffect(() => {
-    axios.get(`https://tickethub-tours.com/api/admin/${name}`)
+    axios.get(`https://bcknd.tickethub-tours.com/api/admin/${name}`)
       .then(response => {
         const list = response.data.data[namedata]; // dynamic key
         if (Array.isArray(list)) {

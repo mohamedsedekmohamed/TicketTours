@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CiMenuBurger, CiMenuFries } from "react-icons/ci";
 import AOS from "aos";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/newlogo.png";
 import "aos/dist/aos.css";
 import { MdArrowOutward } from "react-icons/md";
 

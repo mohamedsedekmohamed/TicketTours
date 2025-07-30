@@ -18,7 +18,7 @@ const Extras = () => {
   const [update, setUpdate] = useState(false);
    useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/extras`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/extras`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -52,7 +52,7 @@ const Extras = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/extras/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/extras/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

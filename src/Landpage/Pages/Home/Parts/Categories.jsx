@@ -1,25 +1,14 @@
 import React, { useEffect } from 'react';
-import oneb from '../../../../assets/oneb.jpg';
-import twob from '../../../../assets/twob.jpg';
-import threeb from '../../../../assets/threeb.jpg';
-import fourb from '../../../../assets/fourb.jpg';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-const Categories = () => {
+const Categories = ({ data }) => {
   useEffect(() => {
     AOS.init({
       duration: 1000,
       once: true,
     });
   }, []);
-
-  const items = [
-    { title: "Local Tourism", image: oneb },
-    { title: "International Tourism", image: twob },
-    { title: "Religious Tourism", image: threeb },
-    { title: "Medical Tourism", image: fourb },
-  ];
 
   return (
     <div className="w-screen h-fit py-20 flex flex-col px-4 gap-5 justify-center items-center">
@@ -40,21 +29,21 @@ const Categories = () => {
       </span>
 
       <div className="flex flex-wrap gap-6 py-4 px-5 items-center justify-center lg:px-10">
-        {items.map((item, index) => (
+        {data?.map((item, index) => (
           <a
             href="#"
-            key={index}
+            key={item.id}
             data-aos="zoom-in"
-            data-aos-delay={300 + index * 150} // تدريج تأخير الانميشن لكل كرت
+            data-aos-delay={300 + index * 150}
             className="group relative flex items-end w-75 h-75 md:w-100 md:h-100 lg:w-150 lg:h-150 bg-black overflow-hidden rounded-xl"
           >
             <img
-              alt=""
-              src={item.image}
+              alt={item.name}
+              src={item.imagePath}
               className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
             />
             <p className="text-xl font-bold text-white sm:text-2xl p-4 sm:p-6 lg:p-8 z-10">
-              {item.title}
+              {item.name}
             </p>
           </a>
         ))}

@@ -21,42 +21,25 @@ useEffect(()=>{
 
 },[])
   const handleLogin = () => {
-  if(username==="1"&&password==='1')
- {
-     setIsLoggedIn(true)
-     setTimeout(() => {
-        setIsLoggedIn(true);
-        navigate('/admin/home');
-      }, 3000);
- }
-    //   axios.post('https://backndVoo.voo-hub.com/api/login', { 
-    //     email: username, 
-    //     password: password 
-    //   })
-    //   .then(response => {
-    //     if (response.data.user.role=== "admin") {
-    //       localStorage.setItem('token', response.data.token);
-    //       toast.success("Welcome !");
-       
-    //       setTimeout(() => {
-    //         setIsLoggedIn(true);
-    //         setorganiztionLayout(false);
-    //         navigate('/admin/home');
-    //       }, 3000); 
-    //     } else if (response.data.user.role === "organization") {
-    //       toast.success("Welcome !");
-    //           localStorage.setItem('token', response.data.token);
 
-    //       setTimeout(() => {
-    //         setIsLoggedIn(true);
-    //         setorganiztionLayout(true);
-    //         navigate('/organiztion/user');
-    //       }, 3000);         
-    //     }
-    //   })
-    //   .catch(() => {
-    //     toast.error('Connection failed');
-    //   });
+      axios.post('https://bcknd.tickethub-tours.com/api/admin/auth/login', { 
+        email: username, 
+        password: password 
+      })
+      .then(response => {
+        if (response.data.data.message=== "login Successful") {
+          localStorage.setItem('token', response.data.data.token);
+          toast.success("Welcome Admin");
+       
+          setTimeout(() => {
+            setIsLoggedIn(true);
+            navigate('/admin/home');
+          }, 3000); 
+        }
+      })
+      .catch(() => {
+        toast.error('Connection failed');
+      });
   };
   
   
@@ -98,17 +81,15 @@ useEffect(()=>{
     </button>
   </div>
 
-  {/* Forgot password */}
-  <div className="w-full max-w-md text-right mb-4">
+  {/* <div className="w-full max-w-md text-right mb-4">
     <button
       onClick={() => navigate('/forgot-password')}
       className="text-sm text-one hover:underline"
     >
       Forgot Password?
     </button>
-  </div>
+  </div> */}
 
-  {/* Login button */}
   <button
     onClick={handleLogin}
     className="w-full max-w-md h-14 bg-one text-white rounded-lg font-semibold mb-4 transition-transform hover:scale-95"
@@ -116,14 +97,12 @@ useEffect(()=>{
     Login
   </button>
 
-  {/* Divider */}
-  <div className="w-full max-w-md flex items-center gap-2 mb-4">
+  {/* <div className="w-full max-w-md flex items-center gap-2 mb-4">
     <div className="flex-1 h-px bg-gray-300" />
     <span className="text-sm text-gray-500">or continue with</span>
     <div className="flex-1 h-px bg-gray-300" />
   </div>
 
-  {/* Social login buttons */}
   <div className="w-full max-w-md flex flex-col md:flex-row gap-4">
     <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition">
       <FaGoogle size={18} />
@@ -134,7 +113,7 @@ useEffect(()=>{
       <FaFacebookF size={18} />
       <span className="text-sm font-medium">Continue with Facebook</span>
     </button>
-  </div>
+  </div> */}
 </div>
 
      

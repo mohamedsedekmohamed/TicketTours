@@ -18,7 +18,7 @@ const PromoCodes = () => {
     const [update, setUpdate] = useState(false);
     useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/promocodes`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/promocodes`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -68,7 +68,7 @@ const handleEdit = (id) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/promocodes/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/promocodes/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

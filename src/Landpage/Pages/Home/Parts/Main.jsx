@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-import home from '../../../../assets/home.jpg';
+// import home from '../../../../assets/home.jpg';
 import Nav from '../../../component/Nav';
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IoMdSearch } from "react-icons/io";
+const Main = ({data}) => {
+    
 
-const Main = () => {
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -20,7 +21,7 @@ const Main = () => {
     <div>
       <div
         className="w-screen h-screen bg-cover bg-center relative flex flex-col items-center"
-        style={{ backgroundImage: `url(${home})` }}
+        style={{ backgroundImage: `url(${data.cover.imagePath})` }}
       >
         {/* Navbar */}
         <div className='absolute top-7 lg:top-5 z-10 w-full'>

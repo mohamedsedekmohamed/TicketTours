@@ -9,7 +9,7 @@ const InputField = ({
   disabled = false,
 }) => {
   const maxLength =
-    type === "number" ? 20 : type === "email" ? 45 : 50;
+    type === "number" ? 20 : type === "email" ? 45 : 200;
 
   const hasValue = value && value.trim() !== "";
 

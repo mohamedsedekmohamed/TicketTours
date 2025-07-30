@@ -13,7 +13,7 @@ import CompleteBooking from '../../../Landpage/Pages/CompleteBooking'
 const Home = () => {
   return (
     <div>
-      <InputField placeholder="name" value="aa"/> 
+      {/* <InputField placeholder="name" value="aa"/> 
     <InputArrow  placeholder="name" value="aa"/>
     <Inputfiltter  placeholder="name" value="aa"/>
     <SwitchButton />
@@ -29,7 +29,7 @@ const Home = () => {
       <ButtonDone />
       <NavAndSearch/>
       <Card/>
-      <CompleteBooking/>
+      <CompleteBooking/> */}
      </div>
   )
 }

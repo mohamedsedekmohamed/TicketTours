@@ -23,7 +23,7 @@ const CategoriesManagement = () => {
   const [update, setUpdate] = useState(false);
  useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/categories`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/categories`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },

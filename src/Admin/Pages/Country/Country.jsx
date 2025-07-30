@@ -18,7 +18,7 @@ const Country = () => {
     const [update, setUpdate] = useState(false);
       useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/country`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/country`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -57,7 +57,7 @@ const Country = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/country/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/country/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

@@ -18,7 +18,7 @@ const City = () => {
     const [update, setUpdate] = useState(false);
       useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/city`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/city`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -57,7 +57,7 @@ const City = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/city/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/city/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

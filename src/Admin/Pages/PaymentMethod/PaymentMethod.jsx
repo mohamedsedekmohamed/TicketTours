@@ -19,7 +19,7 @@ const PaymentMethod = () => {
           const [update, setUpdate] = useState(false);
                 useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/paymentmethod`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/paymentmethod`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },

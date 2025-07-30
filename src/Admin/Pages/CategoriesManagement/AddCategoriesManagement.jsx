@@ -22,7 +22,7 @@ const AddCategoriesManagement = () => {
 
       const token = localStorage.getItem("token");
       axios
-        .get(`https://tickethub-tours.com/api/admin/categories/${sendData}`, {
+        .get(`https://bcknd.tickethub-tours.com/api/admin/categories/${sendData}`, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
@@ -60,7 +60,7 @@ const handleSave = () => {
 imagePath:iamge
 };
  axios.put(
-          `https://tickethub-tours.com/api/admin/categories/${sendData}`,
+          `https://bcknd.tickethub-tours.com/api/admin/categories/${sendData}`,
           newUser,
           // {
           //   headers: {

@@ -18,7 +18,7 @@ const Currencies = () => {
   const [update, setUpdate] = useState(false);
   useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/currencies`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/currencies`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -55,7 +55,7 @@ const Currencies = () => {
       if (result.isConfirmed) {
         axios
           .delete(
-            `https://tickethub-tours.com/api/admin/currencies/${userId}`,
+            `https://bcknd.tickethub-tours.com/api/admin/currencies/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

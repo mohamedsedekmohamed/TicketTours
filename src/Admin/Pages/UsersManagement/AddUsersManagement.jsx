@@ -33,7 +33,7 @@ const AddUsersManagement = () => {
 
       const token = localStorage.getItem("token");
       axios
-        .get(`https://tickethub-tours.com/api/admin/users/${sendData}`, {
+        .get(`https://bcknd.tickethub-tours.com/api/admin/users/${sendData}`, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
@@ -112,7 +112,7 @@ if (edit && password && password.length >= 8) {
 
     const request = edit
       ? axios.put(
-          `https://tickethub-tours.com/api/admin/users/${sendData}`,
+          `https://bcknd.tickethub-tours.com/api/admin/users/${sendData}`,
           newUser,
           // {
           //   headers: {
@@ -120,7 +120,7 @@ if (edit && password && password.length >= 8) {
           //   },
           // }
         )
-      : axios.post("https://tickethub-tours.com/api/admin/users", newUser, {
+      : axios.post("https://bcknd.tickethub-tours.com/api/admin/users", newUser, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },

@@ -239,6 +239,7 @@ lng: 29.918739
     };
 
     const handleSubmit = async () => {
+      setCheckLoading(true)
       const payload = {
         extras: extras.map((extra) => ({
           extraId: parseInt(extra.extraId),
@@ -402,7 +403,7 @@ lng: 29.918739
     console.log("Payload to send:", payload);
     console.log("-----------------");
 
- axios.post("https://tickethub-tours.com/api/admin/tours", payload, {
+ axios.post("https://bcknd.tickethub-tours.com/api/admin/tours", payload, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
@@ -411,8 +412,23 @@ lng: 29.918739
         toast.success(`User ${edit ? "updated" : "added"} successfully`);
         setTimeout(() => {
           navigate("/admin/toursmanagement");
-        }, 1000);})
+        }, 1000);}).catch((error) => {
+                const err = error?.response?.data?.error;
+        
+                if (err?.details && Array.isArray(err.details)) {
+                  err.details.forEach((detail) => {
+                    toast.error(`${detail.field}: ${detail.message}`);
+                  });
+                } else if (err?.message) {
+                  toast.error(err.message);
+                } else {
+                  toast.error("Something went wrong.");
+                }
+                setCheckLoading(false);
+              });
     }
+
+
     const tabs = ['Info', 'Images', 'Options', 'Pricing',"Faq"];
 const addFaq = () => {
   setFag([...faq, { title: "", description: "", image: null }]);
@@ -464,18 +480,22 @@ const removeFaq = (index) => {
             value={describtion}
             onChange={handleChange}
           />
-          <InputField
-            placeholder="Country"
-            name="country"
+            <InputArrow
+            name="tours/add-data"
+            namedata="countries"
+            placeholder="Select Country"
             value={country}
-            onChange={handleChange}
+            onChange={(val) => setCountry(val)}
           />
-          <InputField
-            placeholder="City"
-            name="city"
+       
+           <InputArrow
+            name="tours/add-data"
+            namedata="cities"
+            placeholder="Select City"
             value={city}
-            onChange={handleChange}
+            onChange={(val) => setCity(val)}
           />
+      
           <InputField
             type="number"
             placeholder="Max Users"

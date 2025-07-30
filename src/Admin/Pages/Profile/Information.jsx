@@ -31,10 +31,10 @@ const Information = () => {
   const token = localStorage.getItem("token");
 
   axios
-    .get(`https://tickethub-tours.com/api/admin/profile`, {
-      // headers: {
-      //   Authorization: `Bearer ${token}`,
-      // },
+    .get(`https://bcknd.tickethub-tours.com/api/admin/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },  
     })
     .then((response) => {
       const user = response.data.data.admin;
@@ -103,7 +103,7 @@ if (edit && password && password.length >= 8) {
   newUser.password = password;
 }
  axios.put(
-          `https://tickethub-tours.com/api/admin/profile`,
+          `https://bcknd.tickethub-tours.com/api/admin/profile`,
           newUser,
           // {
           //   headers: {

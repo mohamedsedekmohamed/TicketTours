@@ -18,7 +18,7 @@ const Roles = () => {
       const [update, setUpdate] = useState(false);
         useEffect(() => {
     axios
-      .get(`https://tickethub-tours.com/api/admin/admins`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/admins`, {
         // headers: {
         //   Authorization: `Bearer ${token}`,
         // },
@@ -63,7 +63,7 @@ const Roles = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://tickethub-tours.com/api/admin/admins/${userId}`, {
+          .delete(`https://bcknd.tickethub-tours.com/api/admin/admins/${userId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
