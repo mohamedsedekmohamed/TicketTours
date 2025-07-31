@@ -22,19 +22,18 @@ function Loginuser({ setIsLoggedIn }) {
   const handleLogin = () => {
 
     axios
-      .post("https://bcknd.tickethub-tours.com/api/admin/auth/login", {
+      .post("https://bcknd.tickethub-tours.com/api/user/auth/local/login", {
         email: username,
         password: password,
       })
       .then((response) => {
         if (response.data.data.message === "login Successful") {
           localStorage.setItem("token", response.data.data.token);
-          toast.success("Welcome Admin");
+          toast.success("Welcome ");
 
           setTimeout(() => {
-            setIsLoggedIn(true);
-            navigate("/admin/home");
-          }, 3000);
+            navigate("/");
+          }, 1000);
         }
       })
    .catch((error) => {

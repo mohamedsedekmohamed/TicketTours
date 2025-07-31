@@ -120,7 +120,7 @@ const Trips = () => {
         </span>
 
         <div className="w-full overflow-x-auto">
-          <div className="flex gap-4 w-max px-4 py-6">
+          <div className="flex gap-4 w-max px-4  relative py-10">
             {data.map((item, index) => (
               <a
                 key={index}
@@ -139,20 +139,20 @@ const Trips = () => {
                   alt={item.title}
                   className="h-56 w-full object-cover rounded-t-xl"
                 />
-                <div className="p-4">
+                <div className="p-4 pb-10">
                   <h3 className="text-lg font-bold text-one">{item.title}</h3>
 
-                  <p className="mt-2 text-sm text-three">{item.describtion}</p>
+<p className="mt-2 text-sm text-three">
+  {item.discribtion.length > 50
+    ? item.discribtion.slice(0, 50) + '...'
+    : item.discribtion}
+</p>
 
                   <span className="text-sm text-three">
-                    {Math.ceil(
-                      (new Date(item.endDate) - new Date(item.startDate)) /
-                        (1000 * 60 * 60 * 24)
-                    )}{" "}
-                    days
+                  <span className="font-bold"> Country:</span>{" "}{ item.country}
                   </span>
 
-                  <div className="flex gap-2 items-center mt-4">
+                  <div className="flex absolute bottom-2 gap-2 items-center mt-4">
                     <span className="text-four font-bold">  ${item.price-item.discount}</span>
                     <span className="text-sm text-three line-through">
 ${item.price}                    </span>

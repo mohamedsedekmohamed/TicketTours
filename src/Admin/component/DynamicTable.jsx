@@ -134,10 +134,10 @@ const DynamicTable = ({
             borderColor: '#091A20',
           },
           '& .Mui-selected': {
-            backgroundColor: '#091A2E',
-            color: 'white',
+            backgroundColor: '#9AA6AC',
+            color: '#091A2E',
             '&:hover': {
-              backgroundColor: '#091A2E', 
+              backgroundColor: '#2F2F2F', 
             },
           },
         

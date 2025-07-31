@@ -52,13 +52,12 @@ import MapPicker from '../../../ui/MapPicker'
     const [featured, setFeatured] = useState(false);
     //
     const [meetingPoint, setMeetingPoint] = useState(false);
-    const [meetingPointLocation, SetMeetingPointLocation] = useState("");
-    const [meetingPointAddress, setMeetingPointAddress] = useState("");
-    //
-    const [google, setgoogle] = useState({
+    const [meetingPointLocation, SetMeetingPointLocation]=useState({
    lat: 31.200092, // الإسكندرية
 lng: 29.918739
     });
+    const [meetingPointAddress, setMeetingPointAddress] = useState("");
+  
     const [errors, setErrors] = useState({
       title: "",
       category: "",
@@ -126,27 +125,7 @@ lng: 29.918739
         setArrayImagechange(true);
       }
     };
-    const validateForm = () => {
-      let formErrors = {};
-
-      if (!title) formErrors.name = "Title is required";
-      if (!category) formErrors.category = "Category is required";
-      if (!describtion) formErrors.describtion = "Describtion is required";
-      if (!country) formErrors.country = "country is required";
-      if (!city) formErrors.city = "city is required";
-      if (!maxUsers) formErrors.maxUsers = "maxUsers is required";
-      if (!points) formErrors.points = "points is required";
-      if (meetingPoint) {
-        if (!meetingPointLocation) formErrors.points = "points is required";
-        if (!meetingPointAddress) formErrors.points = "points is required";
-      }
-      Object.values(formErrors).forEach((error) => {
-        toast.error(error);
-      });
-
-      setErrors(formErrors);
-      return Object.keys(formErrors).length === 0;
-    };
+   
 
  
   
@@ -342,7 +321,34 @@ lng: 29.918739
   const handleSelectChange = (selectedOptions) => {
     setSelectedDays(selectedOptions.map((option) => option.value));
   };
+ const validateForm = () => {
+      let formErrors = {};
 
+      if (!title) formErrors.name = "Title is required";
+      if (!category) formErrors.category = "Category is required";
+      if (!describtion) formErrors.describtion = "Describtion is required";
+      if (!country) formErrors.country = "country is required";
+      if (!city) formErrors.city = "city is required";
+      if (!maxUsers) formErrors.maxUsers = "maxUsers is required";
+      if (!points) formErrors.points = "points is required";
+
+      if (!startDate) formErrors.startDate = "Start Date is required";
+      if (!endDate) formErrors.endDate = "End Date Date is required";
+      if (!mainImage) formErrors.mainImage = "Mian image is required";
+      if (arrayimage.length==0) formErrors.arrayimage = "Gallery  is required";
+      // if (!fields) formErrors.highlights = "highlights  is required";
+      
+      if (meetingPoint) {
+        if (!meetingPointLocation) formErrors.meetingPointLocation = "meeting Point Location is required";
+        if (!meetingPointAddress) formErrors.meetingPointAddress = "meeting Point Address is required";
+      }
+      Object.values(formErrors).forEach((error) => {
+        toast.error(error);
+      });
+
+      setErrors(formErrors);
+      return Object.keys(formErrors).length === 0;
+    };
  const handleSave = async () => {
   if (!validateForm()) return;
 
@@ -409,7 +415,7 @@ lng: 29.918739
           // },
         })
       .then(() => {
-        toast.success(`User ${edit ? "updated" : "added"} successfully`);
+        toast.success(`Tours ${edit ? "updated" : "added"} successfully`);
         setTimeout(() => {
           navigate("/admin/toursmanagement");
         }, 1000);}).catch((error) => {
@@ -614,7 +620,7 @@ const removeFaq = (index) => {
           <div className=" flex  mt-5 flex-col w-full gap-3">
             {" "}
          
-                     <MapPicker location={google} onLocationChange={(newLocation)=>{setgoogle(newLocation)}} />
+                     <MapPicker location={meetingPointLocation} onLocationChange={(newLocation)=>{SetMeetingPointLocation(newLocation)}} />
 
           </div>
         ) : null}

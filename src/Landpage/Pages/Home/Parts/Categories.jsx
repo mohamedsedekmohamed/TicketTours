@@ -1,21 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const Categories = ({ data }) => {
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
   useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: true,
-    });
+    AOS.init({ duration: 1000, once: true });
   }, []);
+
+  useEffect(() => {
+    if (data?.length) {
+      const imagePromises = data.map((item) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = item.imagePath;
+          img.onload = resolve;
+          img.onerror = resolve; // to avoid hanging if image fails
+        });
+      });
+
+      Promise.all(imagePromises).then(() => setImagesLoaded(true));
+    }
+  }, [data]);
+
+  if (!imagesLoaded) {
+    return (
+      <div className="w-full h-[50vh] flex items-center justify-center bg-white">
+        <p className="text-lg text-gray-600">Loading categories...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-screen h-fit py-20 flex flex-col px-4 gap-5 justify-center items-center">
-      <span
-        data-aos="fade-up"
-        className="text-[32px] font-semibold text-one"
-      >
+      <span data-aos="fade-up" className="text-[32px] font-semibold text-one">
         Explore Our Travel Categories
       </span>
 

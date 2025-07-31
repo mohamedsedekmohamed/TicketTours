@@ -35,17 +35,21 @@ const ToursManagement = () => {
         // },
       })
       .then((response) => {
-        setData(
-          response.data.data.tours.map((item) => ({
-            id: item.id,
-            title: item.title,
-            startDate: item.startDate,
-            endDate: item.endDate,
-            mainImage: item.mainImage,
-            durationDays: item.durationDays,
-            status: item.status,
-            maxUsers: item.maxUsers,
-          }))
+      setData(
+  response.data.data.tours.map((item) => ({
+    id: item.tours.id,
+    title: item.tours.title,
+    startDate: item.tours.startDate,
+    endDate: item.tours.endDate,
+    mainImage: item.tours.mainImage,
+    durationDays: item.tours.durationDays,
+    status: item.tours.status,
+    maxUsers: item.tours.maxUsers,
+    description: item.tours.describtion, // لاحظ الكتابة
+    cityName: item.cityName,
+    countryName: item.countryName,
+  }))
+
         );
         setLoading(false);
       })
@@ -141,10 +145,10 @@ const filteredData = data.filter((item) => {
 
   actions={(row) => (
     <div className="flex gap-1">
-      <CiEdit
+      {/* <CiEdit
         className="w-[24px] h-[24px] text-green-600 cursor-pointer"
         onClick={() => handleEdit(row.id)}
-      />
+      /> */}
       <RiDeleteBin6Line
         className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
         onClick={() => handleDelete(row.id, row.title)}

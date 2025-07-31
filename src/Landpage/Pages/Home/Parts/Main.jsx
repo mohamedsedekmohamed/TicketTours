@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-// import home from '../../../../assets/home.jpg';
 import Nav from '../../../component/Nav';
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IoMdSearch } from "react-icons/io";
-const Main = ({data}) => {
-    
+
+const Main = ({ data }) => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   useEffect(() => {
     AOS.init({
@@ -16,6 +16,22 @@ const Main = ({data}) => {
       once: true,
     });
   }, []);
+
+  useEffect(() => {
+    if (data?.cover?.imagePath) {
+      const img = new Image();
+      img.src = data.cover.imagePath;
+      img.onload = () => setIsImageLoaded(true);
+    }
+  }, [data]);
+
+  if (!isImageLoaded) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-gray-500 text-xl">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div>

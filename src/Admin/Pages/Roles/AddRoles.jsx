@@ -208,14 +208,14 @@ if (edit && password && password.length >= 8) {
           value={password}
           onChange={handleChange}
         />
+
+    </div>
            <FileUploadButton
           kind="Image"
           des="Select one pic"
           pic={imagePath}
           onFileChange={(File)=> setimagePath(File)}
         />
-
-    </div>
     <ButtonDone  checkLoading={checkLoading} handleSave={handleSave}  edit={edit}/>
     </div>
     )

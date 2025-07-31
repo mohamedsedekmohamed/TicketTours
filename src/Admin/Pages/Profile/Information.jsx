@@ -33,7 +33,7 @@ const Information = () => {
   axios
     .get(`https://bcknd.tickethub-tours.com/api/admin/profile`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZXMiOlsic3VwZXJfYWRtaW4iXSwiaWF0IjoxNzUzNzE4NTg4LCJleHAiOjE3NTQzMjMzODh9.X8VMfyEQDRkkwHqCc2PkgoPd3qY5XggZ92PketIG2II`}`,
       },  
     })
     .then((response) => {

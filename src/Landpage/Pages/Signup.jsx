@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useRef } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -12,9 +12,52 @@ const Signup = () => {
   const [phone, setPhone] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [userId,setUserId]=useState("")
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const CODE_LENGTH = 6;
+  const [step, setStep] = useState(1);
+    const [code, setCode] = useState(new Array(CODE_LENGTH).fill(""));
+    const [timer, setTimer] = useState(60);
+    const inputsRef = useRef([]);
+  const handleChangeCode = (e, index) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    if (value) {
+      const newCode = [...code];
+      newCode[index] = value;
+      setCode(newCode);
+      if (index < CODE_LENGTH - 1) {
+        inputsRef.current[index + 1].focus();
+      }
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    const enteredCode = code.join("");
+    if (enteredCode.length < CODE_LENGTH) {
+      toast.error("Please enter the full code");
+      return;
+    }
+
+    try {
+      await axios.post(
+        "https://bcknd.tickethub-tours.com/api/user/auth/local/verify-email",
+        { userId, code: enteredCode }
+      );
+      toast.success("Code verified successfully!");
+ setTimeout(() => {
+            navigate("/");
+          }, 3000);
+            } catch (error) {
+      toast.error(
+        error?.response?.data?.error?.message || "Verification failed"
+      );
+    }
+  };
+
+
 
   const handleGoogleLogin = () => {
     window.location.href =
@@ -51,11 +94,11 @@ const Signup = () => {
           response.data.data.message ===
           "User Signup Successfully Go Verify Email"
         ) {
+          setStep(2)
+          setUserId(response.data.data.userId)
           localStorage.setItem("token", response.data.data.token);
           toast.success(`Welcome ${name} `);
-          setTimeout(() => {
-            navigate("/");
-          }, 3000);
+         
         }
       })
       .catch((error) => {
@@ -72,6 +115,26 @@ const Signup = () => {
         }
       });
   };
+  // const handleResendCode = async () => {
+  //   try {
+  //     await axios.post(
+  //       "https://bcknd.tickethub-tours.com/api/user/auth/local/forget-password",
+  //       { email }
+  //     );
+  //     toast.success("Verification code resent!");
+  //     setTimer(60);
+  //     setCode(new Array(CODE_LENGTH).fill(""));
+  //   } catch (error) {
+  //     const err = error?.response?.data?.error;
+  //     if (err?.details) {
+  //       err.details.forEach((detail) =>
+  //         toast.error(`${detail.field}: ${detail.message}`)
+  //       );
+  //     } else {
+  //       toast.error(err?.message || "Something went wrong.");
+  //     }
+  //   }
+  // };
 
   return (
     <div className="w-screen h-screen flex gap-1 bg-white">
@@ -91,7 +154,8 @@ const Signup = () => {
           className="absolute top-2 right-2 text-3xl text-one cursor-pointer"
           onClick={() => navigate(-1)}
         />
-
+   {step === 1 && (
+          <>
         <h2 className="text-2xl sm:text-3xl md:text-4xl text-one font-semibold mb-2">
           Create New Account
         </h2>
@@ -180,7 +244,7 @@ const Signup = () => {
         {/* Submit Button */}
         <button
           onClick={handleLogin}
-          className="w-full max-w-md h-12 bg-one text-white rounded-lg font-semibold mb-4 transition-transform hover:scale-95"
+          className="w-full max-w-md h-12 py-3 bg-one text-white rounded-lg font-semibold mb-4 transition-transform hover:scale-95"
         >
           Sign Up
         </button>
@@ -216,6 +280,53 @@ const Signup = () => {
             Login
           </button>
         </span>
+        </> )}
+    {step === 2 && (
+          <>
+            <h2 className="text-2xl font-semibold text-one">Enter Verification Code</h2>
+            <p className="text-sm text-gray-500">
+              Code sent to <span className="text-blue-500">{username}</span>
+            </p>
+
+            <div className="flex justify-center gap-3">
+              {code.map((digit, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleChangeCode(e, index)}
+                  ref={(el) => (inputsRef.current[index] = el)}
+                  className="w-12 h-12 text-center text-xl border border-gray-600 rounded-lg"
+                />
+              ))}
+            </div>
+
+            <p className="text-sm text-gray-400">
+              Retry After {String(Math.floor(timer / 60)).padStart(2, "0")}:
+              {String(timer % 60).padStart(2, "0")}
+            </p>
+
+            <button
+              onClick={handleVerifyCode}
+              className="w-full max-w-md h-12 bg-one text-white rounded-lg font-semibold"
+            >
+              Verify Code
+            </button>
+
+            <p className="text-sm text-gray-500">
+              Didn’t receive the code?{" "}
+              {/* <button
+                className="text-one underline"
+                onClick={handleResendCode}
+                disabled={timer > 0}
+              >
+                Resend
+              </button> */}
+            </p>
+          </>
+        )}
+
       </div>
 
       <ToastContainer />

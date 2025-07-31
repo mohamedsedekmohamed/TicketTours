@@ -15,7 +15,7 @@ const HomeCover = () => {
       const [loading, setLoading] = useState(true);
       const [searchQuery, setSearchQuery] = useState("");
       const navigate = useNavigate();
-      const [selectedFilter, setSelectedFilter] = useState("");
+      // const [selectedFilter, setSelectedFilter] = useState("");
       const [update, setUpdate] = useState(false);
       
         useEffect(() => {
