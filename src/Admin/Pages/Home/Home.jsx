@@ -9,7 +9,7 @@ import { MdOutlineAccessTimeFilled } from "react-icons/md";
 import { FaEarthAsia } from "react-icons/fa6";
 import { BsShieldLockFill } from "react-icons/bs";
 import axios from "axios";
-
+import BarChart from '../../../ui/BarChart'
 const Home = () => {
    const [stats, setStats] = useState([]);
 
@@ -97,7 +97,7 @@ const Home = () => {
           ))}
         </div>
       </div>
-
+<BarChart/>
       {/* Latest Security Activities & Quick Links */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Security */}

@@ -66,7 +66,7 @@ const AddHomeCover = () => {
     if (iamge !== iamgetwo) {
       newUser.imagePath = iamge;
     }
-    const newStatus = value=="active"?true  : false;
+    const newStatus = value? true  : false;
 
     const eidtUser = {
       status: newStatus,

@@ -38,7 +38,7 @@ const AppRoutes = ({setIsLoggedIn}) => {
       <Route path="/" element={<Navigate to="/admin/home" />} />  
         <Route path="*" element={<Navigate to="/admin/home" replace />} />
 
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminLayout setIsLoggedIn={setIsLoggedIn} />}>
                   <Route path="home" element={<Home/>} />
                   <Route path="categoriesmanagement" element={<CategoriesManagement/>} />
                   <Route path="addcategoriesmanagement" element={<AddCategoriesManagement/>} />

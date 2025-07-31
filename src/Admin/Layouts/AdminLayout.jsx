@@ -3,7 +3,7 @@ import AdminSidebar from "../component/AdminSidebar";
 import AdminNavbar from "../component/AdminNavbar";
 import { Outlet, useLocation } from "react-router-dom";
 
-const AdminLayout = () => {
+const AdminLayout = ({setIsLoggedIn}) => {
   const [isOpen, setIsOpen] = useState(false);
 
 
@@ -37,7 +37,7 @@ const AdminLayout = () => {
 
       <div className="flex-1 flex flex-col w-full overflow-auto p-2">
         <header className="rounded-[12px] shadow p-4 m-2">
-          <AdminNavbar setIsOpen={setIsOpen} isOpen={isOpen} />
+          <AdminNavbar setIsOpen={setIsOpen} isOpen={isOpen} setIsLoggedIn={setIsLoggedIn}/>
         </header>
 
         <main className="flex-1  w-full ">

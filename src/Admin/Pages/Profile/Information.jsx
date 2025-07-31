@@ -33,7 +33,7 @@ const Information = () => {
   axios
     .get(`https://bcknd.tickethub-tours.com/api/admin/profile`, {
       headers: {
-        Authorization: `Bearer ${`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZXMiOlsic3VwZXJfYWRtaW4iXSwiaWF0IjoxNzUzNzE4NTg4LCJleHAiOjE3NTQzMjMzODh9.X8VMfyEQDRkkwHqCc2PkgoPd3qY5XggZ92PketIG2II`}`,
+        Authorization: `Bearer ${token}`,
       },  
     })
     .then((response) => {
@@ -102,14 +102,16 @@ if (!edit) {
 if (edit && password && password.length >= 8) {
   newUser.password = password;
 }
+  const token = localStorage.getItem("token");
+
  axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/profile`,
           newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         ).then(() => {
         toast.success(`Admin ${edit ? "updated" : "added"} successfully`);
         setTimeout(() => {
@@ -146,7 +148,7 @@ if (edit && password && password.length >= 8) {
         Profile
       </p>
 <div className="w-full min-h-screen flex flex-col md:flex-row ">
-  <div className="w-full md:w-2/5 h-[250px] md:h-auto flex justify-center items-center p-4 ">
+  <div className="w-full md:w-2/5 h-[250px] md:h-auto  max-h-150 flex justify-center items-center p-4 ">
     <FileUploadButton
       pic={imagePathtwo}
       onFileChange={(base64) => setimagePath(base64)}

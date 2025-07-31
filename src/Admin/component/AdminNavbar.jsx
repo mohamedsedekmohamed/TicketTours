@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
+import { HiOutlineLogout } from "react-icons/hi";
 
-const AdminNavbar = () => {
+const AdminNavbar = ({setIsLoggedIn}) => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -19,7 +20,12 @@ const AdminNavbar = () => {
       });
   }, []);
 
-
+const loghandled = () => {
+  localStorage.removeItem("token");
+sessionStorage.clear();
+  setIsLoggedIn(false);
+  navigate("/");
+};
 
   return (
     <div className="w-full flex justify-between items-center relative">
@@ -40,6 +46,11 @@ const AdminNavbar = () => {
         <button onClick={() => navigate('/admin/information')}>
           <IoPersonCircleSharp className='text-[12px] md:text-2xl text-one' />
         </button>
+   <button onClick={loghandled}>
+  <HiOutlineLogout className='text-[12px] md:text-2xl text-one' />
+</button>
+
+
 
       </div>
  

@@ -41,8 +41,8 @@ function App() {
         <Route path="/contactus" element={<Contactus />} />
         <Route path="/aboutus" element={<Aboutus />} />
         <Route path="/loginadmin" element={<Login   setIsLoggedIn={setIsLoggedIn}/>} />
-        <Route path="/login" element={<Loginuser   setIsLoggedIn={setIsLoggedIn}/>} />
-        <Route path="/signup" element={<Signup   setIsLoggedIn={setIsLoggedIn}/>} />
+        <Route path="/login" element={<Loginuser  />} />
+        <Route path="/signup" element={<Signup  />} />
         <Route path="/localtourism" element={<Local/>} />
         <Route path="/internationaltourism" element={<International />} />
         <Route path="/religioustourism" element={<Religious />} />

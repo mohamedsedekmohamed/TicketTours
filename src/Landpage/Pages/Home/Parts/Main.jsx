@@ -6,7 +6,7 @@ import Nav from '../../../component/Nav';
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IoMdSearch } from "react-icons/io";
-
+import Loading from '../../../../ui/Loading'
 const Main = ({ data }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
