@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import fawry from '../../assets/fawry.png'
-import instapay from '../../assets/instapay.png'
-import visa from '../../assets/Visa.png'
-import vodafone from '../../assets/vodafone.png'
+import fawry from '../../../assets/fawry.png'
+import instapay from '../../../assets/instapay.png'
+import visa from '../../../assets/Visa.png'
+import vodafone from '../../../assets/vodafone.png'
 
 const CompleteBooking = () => {
   const [adults, setAdults] = useState(10)

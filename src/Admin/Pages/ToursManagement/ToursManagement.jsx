@@ -141,14 +141,14 @@ const filteredData = data.filter((item) => {
   <DynamicTable
   data={data}
   columns={columns}
-    filteredData={filteredData} // 👈 هذا مهم جداً
+    filteredData={filteredData} 
 
   actions={(row) => (
     <div className="flex gap-1">
-      {/* <CiEdit
+      <CiEdit
         className="w-[24px] h-[24px] text-green-600 cursor-pointer"
         onClick={() => handleEdit(row.id)}
-      /> */}
+      />
       <RiDeleteBin6Line
         className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
         onClick={() => handleDelete(row.id, row.title)}

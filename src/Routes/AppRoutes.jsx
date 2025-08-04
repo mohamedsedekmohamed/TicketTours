@@ -76,7 +76,7 @@ const AppRoutes = ({setIsLoggedIn}) => {
                   <Route path="addfaq" element={<AddFaq/>} />
 
                   <Route path="information" element={<Information/>} />
-
+                    
           </Route>
           
 

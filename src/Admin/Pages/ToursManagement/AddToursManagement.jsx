@@ -17,6 +17,7 @@
   import { FaRegCalendarAlt } from "react-icons/fa";
   import Select from "react-select";
 import MapPicker from '../../../ui/MapPicker'
+
   const AddToursManagement = () => {
      const [activeTab, setActiveTab] = useState(0);
 
@@ -25,7 +26,8 @@ import MapPicker from '../../../ui/MapPicker'
     const { sendData } = location.state || {};
     const [edit, setEdit] = useState(false);
     const [checkLoading, setCheckLoading] = useState(false);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
+  
 
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
@@ -58,6 +60,140 @@ lng: 29.918739
     });
     const [meetingPointAddress, setMeetingPointAddress] = useState("");
   
+
+ useEffect(() => {
+    if (sendData) {
+      setEdit(true);
+
+      const token = localStorage.getItem("token");
+      axios
+        .get(`https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`, {
+          // headers: {
+          //   Authorization: `Bearer ${token}`,
+          // },
+        })
+        .then((response) => {
+          const user = response.data.data;
+          if (user) {
+            setTitle(user.title || "");
+            setDescribtion(user.description || "");
+            setCategory(user.category || "");        
+          setCountry(user.country || "");
+          setCity(user.city || "");
+            setMaxUsers(String(user.maxUsers )|| 0);
+            setMainImage(user.mainImage || "");
+            setStartDate(user.startDate || "");
+            SetEndDate(user.endDate || "");
+            setStatus(user.status || false);
+            setFeatured(user.featured || false);
+              SetDurationDays(String(user.durationDays) || "");
+              SetDurationHours(String(user.durationHours) || "");
+       setSelectedDays(user.daysOfWeek || []);
+     setFields(user.highlights || []);
+          setFieldstwo(user.includes || []);
+          setFieldsthree(user.excludes || []);  
+     if (user.price) {
+  setPrices([
+    {
+      adult: user.price.adult || "",
+      child: user.price.child || "",
+      infant: user.price.infant || "",
+      currencyId: user.price.currency || "",
+    },
+  ]);
+}
+     if (user.discounts) {
+  setDiscounts(
+    user.discounts.map((item) => ({
+      targetGroup: item.targetGroup || "",
+      type: item.type || "",
+      value: item.value || "",
+      minPeople: String(item.minPeople )|| "",
+      maxPeople: String(item.maxPeople )|| "",
+    }))
+  );
+}
+     if (user.extras) {
+  setExtras(
+  user.extras.map((extra) => ({
+    extraId: extra.id, 
+    price: {
+      adult: extra.price.adult || "",
+      child: extra.price.child || "",
+      infant: extra.price.infant || "",
+      currencyId: extra.price.currencyId || "", 
+    },
+  })))
+}
+
+     if (user.faq) {
+  setTitles(user.faq.map((item) => ({
+    title: item.question || "",
+    description: item.answer || "",
+  })));
+}
+
+
+          // setPoints(user.points || "");
+              // setMainImage(user.mainImage || "");
+              // setArrayImage(
+              //   user.images.map((img) => ({
+              //     id: img.id,
+              //     imagePath: img.imagePath,
+              //   }))
+              // );
+              // setOriginalImages(
+              //   user.images.map((img) => ({
+              //     id: img.id,
+              //     imagePath: img.imagePath,
+              //   }))
+              // );
+              // setStatus(user.status);
+              // setFeatured(user.featured);
+              // setMeetingPoint(user.meetingPoint);
+              // setMeetingPointAddress(user.meetingPointAddress || "");
+              // SetMeetingPointLocation({
+              //   lat: user.meetingPointLocation?.lat || 31.200092,
+              //   lng: user.meetingPointLocation?.lng || 29.918739,
+              // });
+          }
+        })
+        .catch(() => {
+        });
+    }
+
+    const timeout = setTimeout(() => {
+      // setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [location.state]);
+
+
+   const [faq, setFag] = useState([
+    {
+      title: "",
+      description: "",
+      image: null, 
+    },
+  ]);
+const handlefaqChange = (index, key, value) => {
+  setFag((prevFaq) => {
+    const updated = [...prevFaq];
+    updated[index] = { ...updated[index], [key]: value };
+    return updated;
+  });
+};
+
+const addFaq = () => {
+  setFag([...faq, { title: "", description: "", image: null }]);
+};
+
+const removeFaq = (index) => {
+  const updated = faq.filter((_, i) => i !== index);
+  setFag(updated);
+};
+
     const [errors, setErrors] = useState({
       title: "",
       category: "",
@@ -72,6 +208,14 @@ lng: 29.918739
       meetingPointLocation: "",
       mainImage: "",
       meetingPointAddress: "",
+      highlights: "",
+      excludes: "",
+      includes: "",
+      prices: "",
+      selectedDays: "",
+      arrayimage: "",
+      status: "",
+      featured: "",
     });
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -87,18 +231,23 @@ lng: 29.918739
       if (name === "durationHours") SetDurationHours(value);
       if (name === "durationDays") SetDurationDays(value);
     };
-    const handstartDate = (newData) => {
-      if (newData) {
-        const formatted = newData.toISOString().split("T")[0];
-        setStartDate(formatted);
-      } else {
-        setStartDate("");
-      }
-    };
+  const handstartDate = (newData) => {
+  if (newData) {
+    const localDate = new Date(newData.getTime() - newData.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+    setStartDate(localDate);
+  } else {
+    setStartDate("");
+  }
+};
+
     const handEndtDate = (newData) => {
       if (newData) {
-        const formatted = newData.toISOString().split("T")[0];
-        SetEndDate(formatted);
+ const localDate = new Date(newData.getTime() - newData.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+      SetEndDate(localDate);
       } else {
         SetEndDate("");
       }
@@ -217,20 +366,6 @@ lng: 29.918739
       setExtras(updated);
     };
 
-    const handleSubmit = async () => {
-      setCheckLoading(true)
-      const payload = {
-        extras: extras.map((extra) => ({
-          extraId: parseInt(extra.extraId),
-          price: {
-            adult: parseFloat(extra.price.adult),
-            child: parseFloat(extra.price.child),
-            infant: parseFloat(extra.price.infant),
-            currencyId: parseInt(extra.price.currencyId),
-          },
-        })),
-      };
-    };
     const [prices, setPrices] = useState([
       { adult: "", child: "", infant: "", currencyId: "" },
     ]);
@@ -263,22 +398,15 @@ lng: 29.918739
     setTitles([...titles, { title: "", description: "" }]);
   };
 
+ 
   const removeTitle = (index) => {
     const updated = titles.filter((_, i) => i !== index);
     setTitles(updated);
   };
-  const [faq, setFag] = useState([
-    {
-      title: "",
-      description: "",
-      image: null, // يمكن أن تكون Base64 أو File
-    },
-  ]);
-  const handlefaqChange = (index, key, value) => {
-    const updated = [...faq];
-    updated[index][key] = value;
-    setFag(updated);
-  };
+ 
+
+
+ 
   const [discounts, setDiscounts] = useState([
     {
       targetGroup: "",
@@ -323,7 +451,6 @@ lng: 29.918739
   };
  const validateForm = () => {
       let formErrors = {};
-
       if (!title) formErrors.name = "Title is required";
       if (!category) formErrors.category = "Category is required";
       if (!describtion) formErrors.describtion = "Describtion is required";
@@ -336,7 +463,81 @@ lng: 29.918739
       if (!endDate) formErrors.endDate = "End Date Date is required";
       if (!mainImage) formErrors.mainImage = "Mian image is required";
       if (arrayimage.length==0) formErrors.arrayimage = "Gallery  is required";
-      // if (!fields) formErrors.highlights = "highlights  is required";
+      if (selectedDays.length==0) formErrors.selectedDays = "Days  is required";
+if (!Array.isArray(fields) || fields.length === 0 || fields.every(h => h.trim() === "")) {
+  formErrors.highlights = "Highlights are required";
+}
+if (!Array.isArray(fieldstwo) || fieldstwo.length === 0 || fieldstwo.every(h => h.trim() === "")) {
+  formErrors.includes = "includes are required";
+}
+if (!Array.isArray(fieldsthree) || fieldsthree.length === 0 || fieldsthree.every(h => h.trim() === "")) {
+  formErrors.excludes = "excludes are required";
+}
+if (
+  !Array.isArray(prices) ||
+  prices.length === 0 ||
+  prices.some((item) =>
+    !item.adult.toString().trim() ||
+    !item.child.toString().trim() ||
+    !item.infant.toString().trim() ||
+    !item.currencyId?.toString().trim()
+  )
+) {
+  formErrors.prices = "All price fields (adult, child, infant, currency) are required";
+}
+if (
+  !Array.isArray(discounts) ||
+  discounts.length === 0 ||
+  discounts.some((item) =>
+    !item.targetGroup.toString().trim() ||
+    !item.type.toString().trim() ||
+    !item.value.toString().trim() ||
+    !item.minPeople.toString().trim() ||
+    !item.maxPeople.toString().trim()
+  )
+) {
+  formErrors.discounts = "All discount fields are required for each entry";
+}
+if (
+  !Array.isArray(extras) ||
+  extras.length === 0 ||
+  extras.some(
+    (item) =>
+      !item.extraId.toString().trim() ||
+      !item.price ||
+      !item.price.adult.toString().trim() ||
+      !item.price.child.toString().trim() ||
+      !item.price.infant.toString().trim() ||
+      !item.price.currencyId.toString().trim()
+  )
+) {
+  formErrors.extras = "All extras fields are required for each entry";
+}
+// if (
+//   !Array.isArray(faq) ||
+//   faq.length === 0 ||
+//   faq.some(
+//     (item) =>
+//       !item.title.toString().trim() ||
+//       !item.description.toString().trim() ||
+//       !item.image // null أو undefined
+//   )
+// ) {
+//   formErrors.faq = "Each Itinerary must include a title, description, and image";
+// }
+
+if (
+  !Array.isArray(titles) ||
+  titles.length === 0 ||
+  titles.some(
+    (item) =>
+      !item.title.toString().trim() ||
+      !item.description.toString().trim()
+  )
+) {
+  formErrors.titles = "FAQ  (title and description) is required";
+}
+
       
       if (meetingPoint) {
         if (!meetingPointLocation) formErrors.meetingPointLocation = "meeting Point Location is required";
@@ -369,6 +570,7 @@ lng: 29.918739
     city,
     mainImage, 
     images: arrayimage.map(b=>b.imagePath),
+    highlights: fields.filter((val) => val),
     includes: fieldstwo.filter((val) => val),
     excludes: fieldsthree.filter((val) => val),
     prices: prices.map((p) => ({
@@ -407,8 +609,6 @@ lng: 29.918739
     featured,
   };
     console.log("Payload to send:", payload);
-    console.log("-----------------");
-
  axios.post("https://bcknd.tickethub-tours.com/api/admin/tours", payload, {
           // headers: {
           //   Authorization: `Bearer ${token}`,
@@ -435,17 +635,8 @@ lng: 29.918739
     }
 
 
-    const tabs = ['Info', 'Images', 'Options', 'Pricing',"Faq"];
-const addFaq = () => {
-  setFag([...faq, { title: "", description: "", image: null }]);
-};
 
-const removeFaq = (index) => {
-  const updated = faq.filter((_, i) => i !== index);
-  setFag(updated);
-};
-
- 
+const tabs = ['Info', 'Images', 'Options', 'Pricing',"Faq"];
 
     return (
       <div>
@@ -796,14 +987,9 @@ const removeFaq = (index) => {
             onClick={addExtra}
             className="px-4 py-2 bg-one text-white rounded hover:bg-one/70"
           >
-            + إضافة Extra
+            +Add Extra
           </button>
-
-          <button
-            onClick={handleSubmit}
-            className="px-6 py-2 bg-one text-white rounded hover:bg-green-700 block mt-4"
-          >
-Save Data          </button>
+{/*  */}
         </div>
         <div className="p-4 space-y-5 w-full border-1 mt-2">
     <h2 className="text-xl font-bold text-one mb-4">Itinerary</h2>
@@ -816,6 +1002,7 @@ Save Data          </button>
       value={item.title}
       onChange={(e) => handlefaqChange(index, "title", e.target.value)}
     />
+    <label className="py-2 text-one mb-4">Description </label>
     <textarea
       placeholder="Description"
       value={item.description}
@@ -829,12 +1016,15 @@ Save Data          </button>
         el.style.height = `${Math.min(el.scrollHeight, 90)}px`;
       }}
     />
-    <FileUploadButton
-      kind={`FAQ Image ${index + 1}`}
-      onFileChange={(file) => handlefaqChange(index, "image", file)}
-      pic={item.image}
-      des="FAQ image preview"
-    />
+<FileUploadButton
+  kind={`${index}`}
+  like
+  onFileChange={(file) => handlefaqChange(index, "image", file)}
+  pic={item.image}
+  des="Image preview"
+/>
+
+
     <button
       onClick={() => removeFaq(index)}
       className="text-one font-bold text-lg absolute top-2 right-2"
@@ -844,8 +1034,7 @@ Save Data          </button>
   </div>
 ))}
 
-    {/* Add new QA */}
-    <button onClick={addTitle} className="bg-one text-white p-3 mt-2 rounded">
+    <button onClick={addFaq} className="bg-one text-white p-3 mt-2 rounded">
       Add
     </button>
   </div>
@@ -894,19 +1083,18 @@ Save Data          </button>
       }
     />
 
-    {/* زر الحذف على الطرف */}
-    <button
+    {/* <button
       onClick={() => removePrice(index)}
       className="text-one font-bold text-lg ml-2 my-auto mt-11"
     >
       ✕
-    </button>
+    </button> */}
   </div>
 
           ))}
-          <button onClick={addPrice} className="bg-one text-white p-3 mt-2">
+          {/* <button onClick={addPrice} className="bg-one text-white p-3 mt-2">
             Add Price
-          </button>
+          </button> */}
         </div>
           {/*  */}
            <div className="p-4 space-y-5 border-1 mt-2">
@@ -940,7 +1128,6 @@ Save Data          </button>
           <option value="percent">Percent</option>
         </select>
 
-        {/* Numeric Fields */}
         <div className="flex gap-2">
           <InputField
             type="number"
@@ -966,19 +1153,19 @@ Save Data          </button>
         </div>
 
         {/* Remove button */}
-        <button
+        {/* <button
           onClick={() => removeDiscount(index)}
           className="text-one font-bold text-lg absolute top-2 right-2"
         >
           ✕
-        </button>
+        </button> */}
       </div>
     ))}
 
     {/* Add discount button */}
-    <button onClick={addDiscount} className="bg-one text-white p-3 mt-2 rounded">
+    {/* <button onClick={addDiscount} className="bg-one text-white p-3 mt-2 rounded">
       Add Discount
-    </button>
+    </button> */}
   </div>
           </div>
         )}
@@ -989,7 +1176,7 @@ Save Data          </button>
 <div className="w-full ">
  {/* Question & Answer */}
   <div className="p-4 space-y-5 border-1 mt-2">
-    <h2 className="text-xl font-bold text-one mb-4">Question & Answer</h2>
+    <h2 className="text-xl font-bold text-one mb-4">FAQ </h2>
 
     {titles.map((item, index) => (
       <div key={index} className="bg-gray-100 p-4 rounded relative mb-4">
@@ -999,8 +1186,9 @@ Save Data          </button>
           value={item.title}
           onChange={(e) => handleTitleChange(index, "title", e.target.value)}
         />
+        <label className="py-2 text-one mb-4">Description </label>
         <textarea
-          placeholder="Answer"
+          placeholder="description"
           value={item.description}
           onChange={(e) => handleTitleChange(index, "description", e.target.value)}
           className="w-full mt-3 p-2 rounded border border-gray-300"

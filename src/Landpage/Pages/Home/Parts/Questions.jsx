@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-const Questions = ({ data }) => {
+const Questions = ({ data ,stopstatus}) => {
   useEffect(() => {
     AOS.init({ duration: 800 });
   }, []);
@@ -33,6 +33,37 @@ const Questions = ({ data }) => {
       </p>
 
       <div className="w-full px-4 lg:px-10 mx-auto flex flex-col open-sans-regular gap-5">
+        {stopstatus && data.map((item, index) => {
+          const isOpen = openIndex === index;
+          const animation =
+            index % 3 === 0 ? 'fade-right' : index % 3 === 1 ? 'zoom-in' : 'fade-left';
+
+          return (
+            <div
+              key={item.id}
+              className="bg-five rounded-lg shadow"
+              data-aos={animation}
+            >
+              <div
+                className="flex justify-between items-center cursor-pointer p-4"
+                onClick={() => toggle(index)}
+              >
+                <h3 className="text-xl font-semibold text-threeteen">{item.question}</h3>
+                <span className="text-2xl text-threeteen">
+                  {isOpen ? '-' : '+'}
+                </span>
+              </div>
+
+              <div className="h-1 bg-white w-full" />
+
+              {isOpen && (
+                <div className="mt-2 px-4 pb-4">
+                  <p className="text-[18px] text-threeteen">{item.answer}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
         {filteredData.map((item, index) => {
           const isOpen = openIndex === index;
           const animation =

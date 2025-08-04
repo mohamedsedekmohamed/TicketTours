@@ -3,6 +3,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Loading from "../../../../ui/Loading";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Trips = () => {
   useEffect(() => {
@@ -33,80 +34,6 @@ const Trips = () => {
         <Loading />
       </div>
     );
-  // const destinations = [
-  //   {
-  //     title: "Sharm El-Sheikh, Egypt",
-  //     desc: "Dive into the Red Sea",
-  //     image:
-  //       "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 170,
-  //     oldPrice: 200,
-  //   },
-  //   {
-  //     title: "Cairo, Egypt",
-  //     desc: "Explore the history of the pyramids",
-  //     image:
-  //       "https://images.unsplash.com/photo-1591871930973-bfc0483b2643?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 150,
-  //     oldPrice: 180,
-  //   },
-  //   {
-  //     title: "Luxor, Egypt",
-  //     desc: "Walk through ancient temples",
-  //     image:
-  //       "https://images.unsplash.com/photo-1595327451857-1ed4dcdf5706?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 120,
-  //     oldPrice: 160,
-  //   },
-  //   {
-  //     title: "Sharm El-Sheikh, Egypt",
-  //     desc: "Dive into the Red Sea",
-  //     image:
-  //       "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 170,
-  //     oldPrice: 200,
-  //   },
-  //   {
-  //     title: "Cairo, Egypt",
-  //     desc: "Explore the history of the pyramids",
-  //     image:
-  //       "https://images.unsplash.com/photo-1591871930973-bfc0483b2643?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 150,
-  //     oldPrice: 180,
-  //   },
-  //   {
-  //     title: "Luxor, Egypt",
-  //     desc: "Walk through ancient temples",
-  //     image:
-  //       "https://images.unsplash.com/photo-1595327451857-1ed4dcdf5706?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 120,
-  //     oldPrice: 160,
-  //   },
-  //   {
-  //     title: "Sharm El-Sheikh, Egypt",
-  //     desc: "Dive into the Red Sea",
-  //     image:
-  //       "https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 170,
-  //     oldPrice: 200,
-  //   },
-  //   {
-  //     title: "Cairo, Egypt",
-  //     desc: "Explore the history of the pyramids",
-  //     image:
-  //       "https://images.unsplash.com/photo-1591871930973-bfc0483b2643?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 150,
-  //     oldPrice: 180,
-  //   },
-  //   {
-  //     title: "Luxor, Egypt",
-  //     desc: "Walk through ancient temples",
-  //     image:
-  //       "https://images.unsplash.com/photo-1595327451857-1ed4dcdf5706?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80",
-  //     price: 120,
-  //     oldPrice: 160,
-  //   },
-  // ];
 
   return (
     <div>
@@ -122,9 +49,9 @@ const Trips = () => {
         <div className="w-full overflow-x-auto">
           <div className="flex gap-4 w-max px-4  relative py-10">
             {data.map((item, index) => (
-              <a
+              <Link
                 key={index}
-                href="#"
+                to={`/tripdetails/${item.id}`}
                 data-aos={
                   index % 3 === 0
                     ? "fade-up"
@@ -142,23 +69,27 @@ const Trips = () => {
                 <div className="p-4 pb-10">
                   <h3 className="text-lg font-bold text-one">{item.title}</h3>
 
-<p className="mt-2 text-sm text-three">
-  {item.discribtion.length > 50
-    ? item.discribtion.slice(0, 50) + '...'
-    : item.discribtion}
-</p>
+                  <p className="mt-2 text-sm text-three">
+                    {item.discribtion.length > 50
+                      ? item.discribtion.slice(0, 50) + "..."
+                      : item.discribtion}
+                  </p>
 
                   <span className="text-sm text-three">
-                  <span className="font-bold"> Country:</span>{" "}{ item.country}
+                    <span className="font-bold"> Country:</span> {item.country}
                   </span>
 
                   <div className="flex absolute bottom-2 gap-2 items-center mt-4">
-                    <span className="text-four font-bold">  ${item.price-item.discount}</span>
+                    <span className="text-four font-bold">
+                      {" "}
+                      ${item.price - item.discount}
+                    </span>
                     <span className="text-sm text-three line-through">
-${item.price}                    </span>
+                      ${item.price}{" "}
+                    </span>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MdOutlineCloudDownload } from "react-icons/md";
 
-const FileUploadButton = ({ onFileChange, kind,des, pic }) => {
+const FileUploadButton = ({ onFileChange, kind,des, pic ,like}) => {
   const [showed, setShowed] = useState(pic);
   const [error, setError] = useState('');
 
@@ -30,7 +30,7 @@ const FileUploadButton = ({ onFileChange, kind,des, pic }) => {
 
   return (
     <div className='flex flex-col gap-1 mt-3 items-start justify-center px-5 rounded-2xl'>
-      <span className='font-bold text-one'>{kind}</span>
+  {!like&&   <span className='font-bold text-one'>{kind}</span>}  
       <span className='  text-one'>{des}</span>
       <input
         type="file"

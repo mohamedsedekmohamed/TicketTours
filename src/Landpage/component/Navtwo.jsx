@@ -49,12 +49,12 @@ const Navtwo = () => {
     <div className="open-sans-light  h-fit  z-50 w-full ">
       <div className="w-screen mx-auto px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between md:gap-5 backdrop-blur-md  px-3 my-2 rounded-2xl lg:gap-20 h-[100px] items-center">
-          <div className="flex gap-1 items-center">
+          <a href="/" className="flex gap-1 items-center">
             <img src={logo} className=" w-10 h-10 md:w-20 md:h-20 " />
-            <span className="text-four   text-[16px] md:text-[20px] lg:text-[32px]">
+            <span href="/" className="text-four text-[16px] md:text-[20px] lg:text-[32px]">
               Ticket Hub
             </span>
-          </div>
+          </a>
 
           <div className="hidden md:flex gap-6 relative">
             {navLinks.map((link, i) => {
