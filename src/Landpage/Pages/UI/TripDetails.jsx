@@ -15,6 +15,8 @@ import Footer from "../Footer";
 import QuestionsWithimage from "../QuestionsWithimage";
 import BulkDiscountTable from "../BulkDiscountTable";
 import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom";
+import Loading from '../../../ui/Loading'
 
 const TripDetails = () => {
   const { id } = useParams();
@@ -24,6 +26,7 @@ const TripDetails = () => {
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,34 +44,77 @@ const TripDetails = () => {
     fetchData();
   }, [id]);
 
-  if (loading) return <div className="p-4">Loading...</div>;
-  if (!data) return <div className="p-4">No data found</div>;
+
+
+  if (loading) return <div className="h-screen w-screen"><Loading/></div>;
 
   const images = data.images || [];
   const [second, third] = [images[1], images[2]];
   const remainingImages = images.slice(3);
 
-  const pricePerAdult = data.price.adult || 0;
-  const pricePerChild = data.price.child || 0;
-  const pricePerInfant = data.price.infant || 0;
+ const pricePerAdult = data.price?.adult || 0;
+const pricePerChild = data.price?.child || 0;
+const pricePerInfant = data.price?.infant || 0;
 
-  const discountValue = data.discounts?.value || 0;
-  const minPeople = data.discounts?.minPeople || 0;
-  const maxPeople = data.discounts?.maxPeople || 0;
-  const discount = adults >= minPeople && adults <= maxPeople ? discountValue : 0;
+// Helper function to calculate discount
+const getDiscount = (group, count) => {
+  const groupDiscount = data.discounts?.find(
+    (d) =>
+      d.targetGroup === group &&
+      count >= d.minPeople &&
+      count <= d.maxPeople
+  );
 
-  const adultsTotal = adults * pricePerAdult;
-  const childrenTotal = children * pricePerChild;
-  const infantsTotal = infants * pricePerInfant;
-  const discountAmount = adultsTotal * discount;
-  const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
+  if (!groupDiscount) return 0;
 
+  if (groupDiscount.type === "fixed") {
+    return Number(groupDiscount.value) * count;
+  } else if (groupDiscount.type === "percentage") {
+    const price =
+      group === "adult"
+        ? pricePerAdult
+        : group === "child"
+        ? pricePerChild
+        : pricePerInfant;
+    return price * count * (Number(groupDiscount.value) / 100);
+  }
+
+  return 0;
+};
+
+// Calculate totals
+const adultsTotal = adults * pricePerAdult;
+const childrenTotal = children * pricePerChild;
+const infantsTotal = infants * pricePerInfant;
+
+const adultsDiscount = getDiscount("adult", adults);
+const childrenDiscount = getDiscount("child", children);
+const infantsDiscount = getDiscount("infant", infants);
+
+const discountAmount = adultsDiscount + childrenDiscount + infantsDiscount;
+const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
+
+
+   const bookingDetails = {
+    adultsTotal,
+    childrenTotal,
+    infantsTotal,
+    discountAmount,
+    total,
+    adults,
+    children,
+    infants,
+    
+  };
+  const handleBooking = () => {
+    navigate(`/completebooking/${data.id}`, { state: bookingDetails });
+  };
   return (
     <div>
       <Navtwo />
 
       <span className="px-3 text-[14px] font-normal text-ten">
-        {data.category} / <span className="text-four">{data.city}</span>
+     <button onClick={()=>navigate(-1) }>{data.category}</button>    / <span className="text-four">{data.city}</span>
       </span>
 
       <h4 className="text-2xl sm:text-3xl md:text-4xl text-one font-semibold text-center mb-4 mt-2">
@@ -170,14 +216,14 @@ const TripDetails = () => {
                 <ul className="space-y-2">
                   {data.includes?.map((inc, i) => (
                     <li key={i} className="flex items-center text-one">
-                      <FaCheck className="text-four mr-2" /> {inc}
+                      <FaCheck className="text-four mr-2" /> {inc}aa
                     </li>
                   ))}
                 </ul>
                 <ul className="space-y-2">
                   {data.excludes?.map((exc, i) => (
-                    <li key={i} className="flex items-center text-red-500">
-                      <VscError className="mr-2" /> {exc}
+                    <li key={i} className="flex items-center">
+                      <VscError  className="mr-2  text-red-500" /> <span className="text-one">{exc} </span>
                     </li>
                   ))}
                 </ul>
@@ -188,18 +234,21 @@ const TripDetails = () => {
 
         {/* Right: Booking Box */}
         <div className="w-full lg:w-1/3 bg-gray-50 border border-one rounded-3xl p-6 shadow-lg sticky top-6 max-h-[90vh] overflow-y-auto">
-          <div className="mb-2 text-sm">
-            <span className="line-through text-gray-400 pl-12">${data?.price?.adult}</span>
-            <span className="block text-lg font-semibold text-gray-900">From: $225.00</span>
-          </div>
-          <p className="text-sm text-gray-600 mb-4">
-            Destination: <span className="text-gray-900 font-medium">{data.city}, {data.country}</span>
-          </p>
+                  <h2 className="text-xl font-bold text-one mb-2">INFO</h2>
 
-          {/* Date */}
-          <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-800 mb-1">Date</h4>
-            <p className="text-gray-500">07/16/2025</p>
+          <div className="mb-2 text-sm">
+            {/* <span className="line-through text-gray-400 pl-12">${data?.price?.adult}</span> */}
+            {/* <span className="block text-lg font-semibold text-gray-900">From: $225.00</span> */}
+          </div>
+          <div className="text-sm text-gray-500 mb-4">
+            Destination: <span className="text-one font-medium">{data.country}, {data.city}</span>
+          </div>
+
+                  <div className="mb-4 flex gap-2">
+            <h4 className="font-medium text-gray-800">Date:</h4>
+            <p className="text-one">
+              { new Date(data.startDate).toISOString().split('T')[0] }
+            </p>
           </div>
 
           {/* People Counters */}
@@ -237,9 +286,12 @@ const TripDetails = () => {
             </div>
           </div>
 
-          <button className="text-lg font-medium bg-one text-white rounded-2xl w-full mt-4 py-3 hover:opacity-90">
-            Book now
-          </button>
+           <button
+      onClick={handleBooking}
+      className="bg-one text-white px-4 py-2 rounded mt-6"
+    >
+      Book Now
+    </button>
         </div>
       </div>
 
@@ -259,10 +311,11 @@ const TripDetails = () => {
       {/* Itinerary & FAQ */}
       <QuestionsWithimage data={data?.itinerary} />
       <div className="px-4 py-6">
-        <h2 className="text-xl font-bold mb-6">Bulk Discount (By Percent)</h2>
-        <BulkDiscountTable title="Bulk Discount Adult" data={data?.discounts?.filter(d => d.targetGroup === "adult")} />
-        <BulkDiscountTable title="Bulk Discount Children" data={data?.discounts?.filter(d => d.targetGroup === "child")} />
-        <BulkDiscountTable title="Bulk Discount Infant" data={data?.discounts?.filter(d => d.targetGroup === "infant")} />
+        <p className=" text-one text-[30px] lg:text-[48px] font-normal ">
+Discount      </p>
+        <BulkDiscountTable title=" Discount Adult" data={data?.discounts?.filter(d => d.targetGroup === "adult")} />
+        <BulkDiscountTable title=" Discount Children" data={data?.discounts?.filter(d => d.targetGroup === "child")} />
+        <BulkDiscountTable title=" Discount Infant" data={data?.discounts?.filter(d => d.targetGroup === "infant")} />
       </div>
       <Questions data={data?.faq} stopstatus />
       <Footer />

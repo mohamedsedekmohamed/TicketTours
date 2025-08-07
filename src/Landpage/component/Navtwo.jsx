@@ -31,7 +31,7 @@ const Navtwo = () => {
     { name: "Local Tourism", path: "/localtourism" },
     { name: "International Tourism ", path: "/internationaltourism" },
     { name: "Religious Tourism", path: "/religioustourism" },
-    { name: "Medical Tourism", path: "/medicalTtourism" },
+    { name: "Medical Tourism", path: "/medicaltourism" },
   ];
 
   const currentService = TripsLinks.find((service) =>
@@ -119,10 +119,13 @@ const Navtwo = () => {
           </div>
 
           <div className=" hidden md:flex gap-2">
-            <button 
-className="w-[110px] h-[40px] bg-one text-white hover:text-one/70  hover:bg-white/10 border border-one rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
-            >              {" "}
-              Sign In{" "}
+             <button
+              onClick={() => {
+                navigate("/signup");
+              }}
+              className="w-[110px] h-[40px] bg-one text-white hover:text-one/70  hover:bg-white/10 border border-one rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
+            >
+              Sign In
             </button>
             <button
               onClick={() => {

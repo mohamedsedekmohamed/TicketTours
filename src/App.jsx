@@ -14,6 +14,7 @@ import Medical from "./Landpage/Pages/Trips/Medical";
 import TripDetails from "./Landpage/Pages/UI/TripDetails";
 import Loginuser from "./Landpage/Pages/Loginuser";
 import ForgotPasswordFlow from "./Landpage/Pages/ForgotPasswordFlow";
+import CompleteBooking from '../src/Landpage/Pages/UI/CompleteBooking'
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const stored = sessionStorage.getItem("isLoggedIn");
@@ -42,9 +43,10 @@ function App() {
               <Route path="/localtourism" element={<Local />} />
               <Route path="/internationaltourism" element={<International />} />
               <Route path="/religioustourism" element={<Religious />} />
-              <Route path="/medicalTtourism" element={<Medical />} />
+              <Route path="/medicaltourism" element={<Medical />} />
               <Route path="/tripdetails/:id" element={<TripDetails />} />
               <Route path="/forgotpassword" element={<ForgotPasswordFlow />} />
+              <Route path="/completebooking/:id" element={<CompleteBooking />} />
             </>
           ) : (
             <>

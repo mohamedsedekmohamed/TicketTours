@@ -9,6 +9,7 @@ import Adventure from './Parts/Adventure';
 import Say from './Parts/Say';
 import Loading from '../../../ui/Loading'
 import axios from 'axios';
+import Nav from '../../component/Nav';
 
 const Home = () => {
    const [data, setData] = useState([]);
@@ -31,6 +32,7 @@ const Home = () => {
 
   if (loading) return (
   <div className='w-screen h-screen'>
+ 
 <Loading/>
   </div>
   );

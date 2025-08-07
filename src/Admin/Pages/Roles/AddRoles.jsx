@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Head from "../../../ui/Head";
 import Loading from "../../../ui/Loading";
-import InputField from "../../../ui/InputField";
-import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import ButtonDone from "../../../ui/ButtonDone";
-import FileUploadButton from '../../../ui/FileUploadButton'
-import Inputfiltter from '../../../ui/Inputfiltter'
 
 const AddRoles = () => {
   const navigate = useNavigate();
@@ -17,142 +13,63 @@ const AddRoles = () => {
   const { sendData } = location.state || {};
   const [edit, setEdit] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
+  const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
+  const [ids, setIds] = useState([]);
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSuperAdmin, setIsSuperAdmin] = useState("");
-  const [imagePath, setimagePath] = useState(null);
-  const [imagePathtwo, setimagePathtwo] = useState(null);
-const [errors, setErrors] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-    useEffect(() => {
-    if (sendData) {
+useEffect(() => {
+  const fetchData = async () => {
+    if (!sendData) return;
+
+    try {
       setEdit(true);
-
       const token = localStorage.getItem("token");
-      axios
-        .get(`https://bcknd.tickethub-tours.com/api/admin/admins/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
-        })
-        .then((response) => {
-          const user = response.data.data;
-          if (user) {
-            setName(user.name || "");
-            setPhone(user.phoneNumber || "");
-            setEmail(user.email || ""); 
-           setIsSuperAdmin((user.isSuperAdmin?"admin":"superAdmin"))
-           setimagePath(user.imagePath||null)
-           setimagePathtwo(user.imagePath||null)
-          }
-        })
-        .catch((error) => {
-          toast.error("Error fetching this User:", error);
-        });
-    }
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, [location.state]);
-   const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "name") setName(value);
-    if (name === "phone") setPhone(value);
-    if (name === "email") setEmail(value);
-    if (name === "password") setPassword(value);
-  };
-   const validateForm = () => {
-      let formErrors = {};
-  
-      if (!name) formErrors.name = "Name is required";
-      if (!isSuperAdmin) formErrors.TypeRole = "Type Role is required";
-      if (!imagePath) formErrors.image = "Iamge is required";
-  
-   if (!phone) {
-    formErrors.phone = "Phone is required";
-  } else if (!/^\d+$/.test(phone)) {
-    formErrors.phone = "Phone must contain digits only";
-  }
-      if (!email.includes("@gmail.com")) {
-        formErrors.email = "Email should contain @gmail.com";
+
+      const privsResponse = await axios.get(`https://bcknd.tickethub-tours.com/api/admin/privileges`);
+      setData(privsResponse.data?.data?.privilegs || {});
+
+      const adminResponse = await axios.get(`https://bcknd.tickethub-tours.com/api/admin/admins/${sendData}`);
+      const privileges = adminResponse?.data?.data?.privilegs;
+
+      if (privileges) {
+        const selectedIds = Object.values(privileges)
+          .flat()
+          .map((item) => item.id);
+        setIds(selectedIds);
+      } else {
+        setIds([]);
       }
-   if (!edit) {
-  if (!password) {
-    formErrors.password = "Password is required";
-  } else if (password.length  <= 7) {
-    formErrors.password = "Password must be at least 8 characters";
-  }
-}
 
-      Object.values(formErrors).forEach((error) => {
-        toast.error(error);
-      });
-      setErrors(formErrors);
-      return Object.keys(formErrors).length === 0;
-    };
- const handleSave = () => {
-    setCheckLoading(true);
-    if (!validateForm()) {
-      setCheckLoading(false);
-      return;
+    } catch (error) {
+      toast.error("Error fetching privileges");
     }
-   const newUser = {
-  name,
-  phoneNumber: phone,
-  email,
-  isSuperAdmin
-};
-if(imagePath!==imagePathtwo){
-  newUser.imagePath=imagePath
-}
-if (!edit) {
-  newUser.password = password;
-}
 
-if (edit && password && password.length >= 8) {
-  newUser.password = password;
-}
+    setLoading(false);
+  };
 
+  fetchData();
+}, [sendData]);
 
-    const request = edit
-      ? axios.put(
-          `https://bcknd.tickethub-tours.com/api/admin/admins/${sendData}`,
-          newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
-        )
-      : axios.post("https://bcknd.tickethub-tours.com/api/admin/admins", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
-        });
+  const handleToggle = (id) => {
+    setIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+  };
 
-    request
+  const handleSave = () => {
+   
+
+    
+    setCheckLoading(true);
+    const token = localStorage.getItem("token");
+
+    axios
+      .post(`https://bcknd.tickethub-tours.com/api/admin/admins/${sendData}/privileges`, {privilegesIds:ids}, {
+        // headers: { Authorization: `Bearer ${token}` },
+      })
       .then(() => {
-        toast.success(`admins ${edit ? "updated" : "added"} successfully`);
+        toast.success(`Admin ${edit ? "updated" : "added"} successfully`);
         setTimeout(() => {
           navigate("/admin/roles");
         }, 1000);
-
-        setName("");
-        setPhone("");
-        setEmail("");
-        setPassword("");
-        setIsSuperAdmin(false)
-        setimagePath(null)
-        setimagePathtwo(null)
         setEdit(false);
       })
       .catch((error) => {
@@ -170,55 +87,82 @@ if (edit && password && password.length >= 8) {
         setCheckLoading(false);
       });
   };
-      if (loading) {
-      return (
-          <Loading/>
-      );}
-  return ( <div>
-      <Head kind={edit ? "Edit" : "Add"} name="Admin Roles" />
-      <ToastContainer/>
-        <div className=" flex gap-7 flex-wrap  mt-10 pr-5 space-y-5 ">
-        <InputField
-          placeholder="User"
-          name="name"
-          value={name}
-          onChange={handleChange}
-        />
-        <InputField
-          placeholder="Phone"
-          name="phone"
-          value={phone}
-          onChange={handleChange}
-        />
-        <Inputfiltter
-          placeholder="Type Admin"
-          name="role"
-          value={isSuperAdmin}
-          onChange={setIsSuperAdmin}
-        />
-        <InputField
-          placeholder="Gmail"
-          name="email"
-          value={email}
-          onChange={handleChange}
-        />
-        <InputField
-          placeholder="Password"
-          name="password"
-          value={password}
-          onChange={handleChange}
-        />
 
-    </div>
-           <FileUploadButton
-          kind="Image"
-          des="Select one pic"
-          pic={imagePath}
-          onFileChange={(File)=> setimagePath(File)}
+  if (loading) return <Loading />;
+
+  return (
+    <div className="p-6">
+      <Head kind={edit ? "Edit" : "Add"} name=" Roles" />
+      <ToastContainer />
+<div className="flex items-center mt-4 space-x-3">
+  <input
+    type="checkbox"
+    className="w-5 h-5 accent-one"
+    checked={
+      Object.values(data).flat().every((item) => ids.includes(item.id))
+    }
+    onChange={(e) => {
+      if (e.target.checked) {
+        const allIds = Object.values(data).flat().map((item) => item.id);
+        setIds(allIds);
+      } else {
+        setIds([]);
+      }
+    }}
+  />
+  <label className="text-lg font-medium text-one">Select ALl  </label>
+</div>
+
+
+      {data && (
+        <div className="space-y-6 mt-4">
+          {Object.entries(data).map(([section, actions]) => (
+            <div key={section} className="border-b pb-4">
+<div className="flex items-center justify-between mb-2">
+  <div className="flex items-center space-x-2">
+    <input
+      type="checkbox"
+      className="w-4 h-4 accent-one"
+      checked={actions.every((item) => ids.includes(item.id))}
+      onChange={(e) => {
+        const sectionIds = actions.map((item) => item.id);
+        if (e.target.checked) {
+          const newIds = [...new Set([...ids, ...sectionIds])];
+          setIds(newIds);
+        } else {
+          setIds((prev) => prev.filter((id) => !sectionIds.includes(id)));
+        }
+      }}
+    />
+    <h2 className="text-xl font-semibold text-one">{section}</h2>
+  </div>
+</div>
+
+
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+    {actions.map(({ id, action }) => (
+      <label key={id} className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          className="accent-one w-4 h-4"
+          checked={ids.includes(id)}
+          onChange={() => handleToggle(id)}
         />
+        <span className="text-one">{action}</span>
+      </label>
+    ))}
+  </div>
+</div>
+
+          ))}
+        </div>
+      )}
+
+      <div className="mt-8">
     <ButtonDone  checkLoading={checkLoading} handleSave={handleSave}  edit={edit}/>
+      </div>
     </div>
-    )
+  );
 };
 
 export default AddRoles;

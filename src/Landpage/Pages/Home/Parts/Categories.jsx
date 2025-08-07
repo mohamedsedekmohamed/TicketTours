@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Loading from '../../../../ui/Loading'
-
+import { Link } from 'react-router-dom';
 const Categories = ({ data }) => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
@@ -17,18 +17,20 @@ const Categories = ({ data }) => {
           const img = new Image();
           img.src = item.imagePath;
           img.onload = resolve;
-          img.onerror = resolve; // to avoid hanging if image fails
+          img.onerror = resolve; 
         });
       });
 
       Promise.all(imagePromises).then(() => setImagesLoaded(true));
     }
   }, [data]);
+const formatCategoryNameToRoute = (name) =>
+  name.toLowerCase().replace(/\s+/g, '');
 
   if (!imagesLoaded) {
     return (
       <div className="w-full h-[50vh] flex items-center justify-center bg-white">
-        <p className="text-lg text-gray-600">Loading categories...</p>
+<Loading/>
       </div>
     );
   }
@@ -50,22 +52,23 @@ const Categories = ({ data }) => {
 
       <div className="flex flex-wrap gap-6 py-4 px-5 items-center justify-center lg:px-10">
         {data?.map((item, index) => (
-          <a
-            href="#"
-            key={item.id}
-            data-aos="zoom-in"
-            data-aos-delay={300 + index * 150}
-            className="group relative flex items-end w-75 h-75 md:w-100 md:h-100 lg:w-150 lg:h-150 bg-black overflow-hidden rounded-xl"
-          >
-            <img
-              alt={item.name}
-              src={item.imagePath}
-              className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
-            />
-            <p className="text-xl font-bold text-white sm:text-2xl p-4 sm:p-6 lg:p-8 z-10">
-              {item.name}
-            </p>
-          </a>
+         <Link
+  to={`/${formatCategoryNameToRoute(item.name)}`}
+  key={item.id}
+  data-aos="zoom-in"
+  data-aos-delay={300 + index * 150}
+  className="group relative flex items-end w-75 h-75 md:w-100 md:h-100 lg:w-150 lg:h-150 bg-black overflow-hidden rounded-xl"
+>
+  <img
+    alt={item.name}
+    src={item.imagePath}
+    className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
+  />
+  <p className="text-xl font-bold text-white sm:text-2xl p-4 sm:p-6 lg:p-8 z-10">
+    {item.name}
+  </p>
+</Link>
+
         ))}
       </div>
     </div>

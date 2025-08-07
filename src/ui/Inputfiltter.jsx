@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
 import { IoIosArrowDown } from "react-icons/io";
 
-const Inputfiltter = ({ placeholder, value, onChange, name, shara }) => {
+const Inputfiltter = ({ placeholder, value, onChange, name, shara ,namedata }) => {
   const [options, setOptions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef(null);
@@ -28,21 +28,16 @@ const Inputfiltter = ({ placeholder, value, onChange, name, shara }) => {
       ]);
       }
   else  {
-      axios.get(`https://backndVoo.voo-hub.com/api/admin/${name}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      axios.get(`https://bcknd.tickethub-tours.com/api/admin/${name}`, {
+        // headers: { Authorization: `Bearer ${token}` }
       })
         .then(response => {
-          if (name === "city") {
-            const cities = response.data.cities
-              .filter(city => city.country_id == shara)
+          if (namedata === "cities") {
+            const cities = response.data.data.cities
+              .filter(city => city.countryId == shara)
               .map(city => ({ name: city.name, id: city.id }));
             setOptions(cities);
-          } else if (name === "zone") {
-            const zones = response.data[0]?.zones || [];
-            const filteredZones = zones
-              .filter(zone => zone.city_id == shara)
-              .map(zone => ({ name: zone.name, id: zone.id }));
-            setOptions(filteredZones);
+            console.log(cities)
           }
         })
         .catch(error => console.log(error));

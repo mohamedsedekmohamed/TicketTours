@@ -12,6 +12,7 @@ import IconsBookingsManagement from '../../Icons/IconsBookingsManagement';
 import IconCurrencies from '../../Icons/IconCurrencies'
 import IconExtras from '../../Icons/IconExtras'
 import IconRoles from '../../Icons/IconRoles'
+import IconAdmins from '../../Icons/IconAdmins'
 import IconCounnty from '../../Icons/IconCounnty'
 import IconCity from '../../Icons/IconCity'
 import IconFrontWebsiteManagement from '../../Icons/IconFrontWebsiteManagement'
@@ -68,10 +69,16 @@ const links = [
     iconActive: <IconExtras active />
   },
    {
-    to: "roles",
-    name: "Admin Roles",
+    to: "admins",
+    name: "Admins ",
     icon: <IconRoles />,
     iconActive: <IconRoles active />
+  },
+   {
+    to: "roles",
+    name: "Roles ",
+    icon: <IconAdmins />,
+    iconActive: <IconAdmins active />
   },
    {
     to: "county",
@@ -116,12 +123,11 @@ const AdminSidebar = ({ setIsOpen, isOpen }) => {
       '/admin/addcurrencies': '/admin/currencies',
       '/admin/addextras': '/admin/extras',
       '/admin/addroles': '/admin/roles',
+      '/admin/addadmins': '/admin/admins',
       '/admin/addcounty': '/admin/county',
       '/admin/addcity': '/admin/city',
       '/admin/addhomecover': '/admin/frontwebsitemanagement',
       '/admin/addfaq': '/admin/frontwebsitemanagement',
-     
-     
     };
 
     const newPath = customPaths[location.pathname] || location.pathname;

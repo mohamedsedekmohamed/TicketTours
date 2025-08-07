@@ -17,8 +17,8 @@ import AddCurrencies from '../Admin/Pages/Currencies/AddCurrencies.jsx'
 import Currencies from '../Admin/Pages/Currencies/Currencies.jsx'
 import Extras from '../Admin/Pages/Extras/Extras.jsx'
 import AddExtras from '../Admin/Pages/Extras/AddExtras.jsx'
-import Roles from '../Admin/Pages/Roles/Roles.jsx';
-import AddRoles from '../Admin/Pages/Roles/AddRoles.jsx';
+import Admins from '../Admin/Pages/Admins/Admins.jsx';
+import AddAdmins from '../Admin/Pages/Admins/AddAdmins.jsx';
 import AddCounty from '../Admin/Pages/Country/AddCountry.jsx'
 import County from '../Admin/Pages/Country/Country.jsx'
 import City from '../Admin/Pages/City/City.jsx'
@@ -32,6 +32,9 @@ import PaymentMethod from '../Admin/Pages/PaymentMethod/PaymentMethod.jsx'
 import AddPaymentMethod from '../Admin/Pages/PaymentMethod/AddPaymentMethod.jsx'
 
 import Information from '../Admin/Pages/Profile/Information.jsx'
+
+import Roles from '../Admin/Pages/Roles/Roles.jsx';
+import AddRoles from '../Admin/Pages/Roles/AddRoles.jsx';
 const AppRoutes = ({setIsLoggedIn}) => {
   return (
   <Routes>
@@ -58,14 +61,17 @@ const AppRoutes = ({setIsLoggedIn}) => {
                   <Route path="extras" element={<Extras/>} />
                   <Route path="addextras" element={<AddExtras/>} />
 
-                  <Route path="roles" element={<Roles/>} />
-                  <Route path="addroles" element={<AddRoles/>} />
+                  <Route path="admins" element={<Admins/>} />
+                  <Route path="addadmins" element={<AddAdmins/>} />
 
                   <Route path="county" element={<County/>} />
                   <Route path="addcounty" element={<AddCounty/>} />
 
                   <Route path="city" element={<City/>} />
                   <Route path="addcity" element={<AddCity/>} />
+
+                  <Route path="roles" element={<Roles/>} />
+                  <Route path="addroles" element={<AddRoles/>} />
 
                   <Route path="paymentmethod" element={<PaymentMethod/>} />
                   <Route path="addpaymentmethod" element={<AddPaymentMethod/>} />

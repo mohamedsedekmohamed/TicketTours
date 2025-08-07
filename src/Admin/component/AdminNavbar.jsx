@@ -9,16 +9,16 @@ const AdminNavbar = ({setIsLoggedIn}) => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    axios.get("https://app.15may.club/api/admin/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    })
-      .then(response => {
-        setData(response.data.data)
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios.get("https://app.15may.club/api/admin/profile", {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     }
+  //   })
+  //     .then(response => {
+  //       setData(response.data.data)
+  //     });
+  // }, []);
 
 const loghandled = () => {
   localStorage.removeItem("token");

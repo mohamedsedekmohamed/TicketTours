@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-
+import Navtwo from '../../../component/Navtwo';
 import Nav from '../../../component/Nav';
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineDateRange } from "react-icons/md";
@@ -27,8 +27,9 @@ const Main = ({ data }) => {
 
   if (!isImageLoaded) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-gray-500 text-xl">Loading...</p>
+      <div className=" max-w-screen flex flex-col gap-3 h-screen  bg-gray-100">
+          <Navtwo />
+<Loading/>
       </div>
     );
   }

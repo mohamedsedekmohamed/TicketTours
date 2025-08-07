@@ -32,7 +32,7 @@ const Nav = () => {
     { name: "Local Tourism", path: "/localtourism" },
     { name: "International Tourism ", path: "/internationaltourism" },
     { name: "Religious Tourism", path: "/religioustourism" },
-    { name: "Medical Tourism", path: "/medicalTtourism" },
+    { name: "Medical Tourism", path: "/medicaltourism" },
   ];
 
   const currentService = TripsLinks.find((service) =>

@@ -1,27 +1,35 @@
-import React from 'react'
+import React from "react";
+import { Link } from "react-router-dom";
 
-const Card = () => {
+const Card = ({ id,image, title, description, duration, price, discount }) => {
   return (
-    <div><a href="#" className="block rounded-lg p-4 shadow-xs shadow-indigo-100">
-  <img
-    alt=""
-    src="https://images.unsplash.com/photo-1613545325278-f24b0cae1224?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-    className="h-56 w-full rounded-md object-cover"
-  />
-<div className="mt-2">
-  <h3 className="text-lg font-semibold text-gray-900">اسم المنتج</h3>
+    <div className=" w-70 md:w-80 lg:w-90 lx:w-100">
+      <Link to={`/tripdetails/${id}`} className="block rounded-lg p-4 shadow-xs shadow-indigo-100">
+        <img
+          alt={title}
+          src={image}
+          className="h-56 w-full rounded-md object-cover"
+        />
+        <div className="mt-2">
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            {" "}
+            {description.length > 40
+              ? description.slice(0, 100) + "  ....."
+              : description}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">Days: {duration}</p>
 
-  <p className="text-sm text-gray-500 mt-1">وصف بسيط للمنتج يوضح التفاصيل أو المميزات.</p>
-  <p className="text-sm text-gray-500 mt-1">Days </p>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-sm text-gray-400 line-through">
+              ${discount}
+            </span>
+            <span className="text-sm text-four font-medium">${price}</span>
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+};
 
-  <div className="mt-2 flex items-center gap-2">
-    <span className="text-sm text-gray-400 line-through">$200</span>
-    <span className="text-sm text-four font-medium">$170</span>
-  </div>
-</div>
-
-</a></div>
-  )
-}
-
-export default Card
+export default Card;

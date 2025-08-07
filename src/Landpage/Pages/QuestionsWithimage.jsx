@@ -14,7 +14,7 @@ const QuestionsWithimage = ({ data }) => {
   };
 
   return (
-    <div className="w-screen py-10 px-2 overflow-hidden">
+    <div className="w-screen py-10 px-4 overflow-hidden">
       <p className=" text-one text-[30px] lg:text-[48px] font-normal" data-aos="zoom-in-up">
 Itinerary      </p>
 

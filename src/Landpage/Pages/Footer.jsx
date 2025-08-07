@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import footer from "../../assets/footer.png";
@@ -14,16 +14,14 @@ const Footer = () => {
 
   const quickLinks = [
     { name: "Home", nav: "/" },
-    { name: "Trips", nav: "/trips" },
+    { name: "Trips", nav: "/localtourism" },
     { name: "Contact Us", nav: "/contactus" },
     { name: "About Us", nav: "/aboutus" },
   ];
-  useEffect(() => {
-    AOS.init({ duration: 800 });
-  }, []);
+ 
 
   return (
-    <footer className="bg-one text-white py-10 px-6 lg:px-20"         data-aos="fade-up"
+    <footer className="bg-one text-white py-10 px-6 lg:px-20"       
 >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         {/* About Us */}
