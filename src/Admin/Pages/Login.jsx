@@ -18,29 +18,37 @@ function Login({ setIsLoggedIn }) {
   // const togglePasswordVisibility = () => setShowPassword(!showPassword);
 useEffect(()=>{
   localStorage.removeItem('token');
+  localStorage.removeItem('groupedPrivileges');
 
 },[])
-  const handleLogin = () => {
+ const handleLogin = () => {
+  axios
+    .post("https://bcknd.tickethub-tours.com/api/admin/auth/login", {
+      email: username,
+      password: password,
+    })
+    .then((response) => {
+      if (response.data.data.message === "login Successful") {
+        localStorage.setItem("token", response.data.data.token);
 
-      axios.post('https://bcknd.tickethub-tours.com/api/admin/auth/login', { 
-        email: username, 
-        password: password 
-      })
-      .then(response => {
-        if (response.data.data.message=== "login Successful") {
-          localStorage.setItem('token', response.data.data.token);
-          toast.success("Welcome Admin");
-       
-          setTimeout(() => {
-            setIsLoggedIn(true);
-            navigate('/admin/home');
-          }, 3000); 
-        }
-      })
-      .catch(() => {
-        toast.error('Connection failed');
-      });
-  };
+        localStorage.setItem(
+          "groupedPrivileges",
+          JSON.stringify(response.data.data.groupedPrivileges)
+        );
+
+        toast.success("Welcome Admin");
+
+        setTimeout(() => {
+          setIsLoggedIn(true);
+          navigate("/admin/home");
+        }, 3000);
+      }
+    })
+    .catch(() => {
+      toast.error("Connection failed");
+    });
+};
+
   
   
 

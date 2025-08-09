@@ -797,34 +797,34 @@ const AddToursManagement = () => {
           <div className="flex gap-7 flex-wrap w-full">
             {/* highlights */}
 
-            <div className="space-y-4 p-4 w-f">
-              <h2 className="text-xl font-bold">highlights</h2>
+              <div className="space-y-4 p-4 w-f">
+                <h2 className="text-xl font-bold">highlights</h2>
 
-              {fields.map((value, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <input
-                    type="text"
-                    value={value}
-                    onChange={(e) => handleChangeInput(index, e.target.value)}
-                    placeholder={`Value ${index + 1}`}
-                    className="p-2 border border-gray-300 rounded-md w-64"
-                  />
-                  <button
-                    onClick={() => handleRemoveField(index)}
-                    className="text-red-600 font-semibold"
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
+                {fields.map((value, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      value={value}
+                      onChange={(e) => handleChangeInput(index, e.target.value)}
+                      placeholder={`Value ${index + 1}`}
+                      className="p-2 border border-gray-300 rounded-md w-64"
+                    />
+                    <button
+                      onClick={() => handleRemoveField(index)}
+                      className="text-red-600 font-semibold"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
 
-              <button
-                onClick={handleAddField}
-                className="px-4 py-2 bg-one text-white rounded-md"
-              >
-                + New
-              </button>
-            </div>
+                <button
+                  onClick={handleAddField}
+                  className="px-4 py-2 bg-one text-white rounded-md"
+                >
+                  + New
+                </button>
+              </div>
             {/* includes */}
             <div className="space-y-4 p-4">
               <h2 className="text-xl font-bold">Includes </h2>

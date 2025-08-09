@@ -17,6 +17,7 @@ import IconCounnty from '../../Icons/IconCounnty'
 import IconCity from '../../Icons/IconCity'
 import IconFrontWebsiteManagement from '../../Icons/IconFrontWebsiteManagement'
 import IconPaymentMethod from '../../Icons/IconPaymentMethod'
+import IconsPayment from '../../Icons/IconsPayment'
 const links = [
   {
     to: "home",
@@ -55,6 +56,12 @@ const links = [
     name: "Bookings Management",
     icon: <IconsBookingsManagement />,
     iconActive: <IconsBookingsManagement active />
+  },
+   {
+    to: "payment",
+    name: "Payment ",
+    icon: <IconsPayment />,
+    iconActive: <IconsPayment active />
   },
    {
     to: "currencies",

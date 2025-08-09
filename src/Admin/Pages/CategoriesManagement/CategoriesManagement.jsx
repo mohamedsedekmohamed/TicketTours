@@ -21,6 +21,9 @@ const CategoriesManagement = () => {
   const navigate = useNavigate();
     const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
+  const groupedPrivileges = JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Category"]?.map((p) => p.action) || [];
+
  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/categories`, {
@@ -84,10 +87,12 @@ const filteredData = data.filter((item) => {
 
   actions={(row) => (
     <div className="flex gap-1">
-      <CiEdit
-        className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-        onClick={() => handleEdit(row.id)}
-      />
+     {Privileges.includes("Edit") && (
+                   <CiEdit
+                     className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                     onClick={() => handleEdit(row.id)}
+                   />
+                 )}
 
     </div>
   )}
@@ -106,12 +111,12 @@ const filteredData = data.filter((item) => {
       return (
         <span
           className={`px-2 py-1 rounded text-sm font-medium ${
-            value === 0
+            value
               ? "bg-three/10 text-green-700 font-light"
               : "bg-three/50 text-one/90"
           }`}
         >
-          {value === 0 ? "Active" : "Disabled"}
+          {value ? "Active" : "Disabled"}
         </span>
       );
     }

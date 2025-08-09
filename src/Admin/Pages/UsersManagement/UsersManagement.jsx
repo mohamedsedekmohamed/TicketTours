@@ -9,21 +9,21 @@ import Loading from "../../../ui/Loading";
 import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
+
 const UsersManagement = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
+
+  const groupedPrivileges = JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["User"]?.map((p) => p.action) || [];
+
 
   useEffect(() => {
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/users`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
-      })
+      .get(`https://bcknd.tickethub-tours.com/api/admin/users`)
       .then((response) => {
         setData(
           response.data.data.users.map((item) => ({
@@ -64,21 +64,11 @@ const UsersManagement = () => {
           })
           .then(() => {
             setUpdate(!update);
-            Swal.fire(
-              "Deleted!",
-              `${userName} has been deleted successfully.`,
-              "success"
-            );
+            Swal.fire("Deleted!", `${userName} has been deleted successfully.`, "success");
           })
           .catch(() => {
-            Swal.fire(
-              "Error!",
-              `There was an error while deleting ${userName}.`,
-              "error"
-            );
+            Swal.fire("Error!", `There was an error while deleting ${userName}.`, "error");
           });
-      } else {
-        Swal.fire("Cancelled", `${userName} was not deleted.`, "info");
       }
     });
   };
@@ -88,54 +78,49 @@ const UsersManagement = () => {
     { key: "phoneNumber", label: "Phone" },
     { key: "email", label: "Email" },
   ];
+
   const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
-
-    const matchesSearch =
-      selectedFilter === ""
-        ? Object.values(item || {}).some((value) =>
-            typeof value === "object" && value !== null
-              ? Object.values(value || {}).some((sub) =>
-                  sub?.toString().toLowerCase().includes(query)
-                )
-              : value?.toString().toLowerCase().includes(query)
-          )
-        : (() => {
-            const keys = selectedFilter.split(".");
-            let value = item;
-            for (let key of keys) value = value?.[key];
-            return value?.toString().toLowerCase().includes(query);
-          })();
-
-    return matchesSearch;
+    return Object.values(item || {}).some((value) =>
+      value?.toString().toLowerCase().includes(query)
+    );
   });
 
-   if (loading) {
-      return (
-          <Loading/>
-      );}
+  if (loading) return <Loading />;
+
   return (
     <div>
-      <NavAndSearch
-        nav="/admin/addusersmanagement"
+{Privileges.includes("Add") ||Privileges.includes("Edit")?( <NavAndSearch
+        nav={"/admin/addusersmanagement"}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-      />
-      <ToastContainer/>
+      />):( <NavAndSearch like
+        nav={"/admin/addusersmanagement"}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />)}   
+  
+      <ToastContainer />
+
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
-            />
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+
+            {Privileges.includes("Delete") && (
+              <RiDeleteBin6Line
+                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                onClick={() => handleDelete(row.id, row.name)}
+              />
+            )}
           </div>
         )}
       />
