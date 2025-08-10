@@ -14,7 +14,7 @@ const QuestionsWithimage = ({ data }) => {
   };
 
   return (
-    <div className="w-screen py-10 px-4 overflow-hidden">
+    <div className="w-screen py-10  lg:py-15 px-4 overflow-hidden ">
       <p className=" text-one text-[30px] lg:text-[48px] font-normal" data-aos="zoom-in-up">
 Itinerary      </p>
 
@@ -41,14 +41,14 @@ Itinerary      </p>
                 {/* السؤال والرمز */}
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-threeteen">{item.question}</h3>
+                    <h3 className="text-xl font-semibold text-threeteen">{item.title}</h3>
                     <span className="text-2xl text-threeteen">
                       {isOpen ? '-' : '+'}
                     </span>
                   </div>
 
                   {isOpen && (
-                    <p className="mt-2 text-[18px] text-threeteen">{item.answer}</p>
+                    <p className="mt-2 text-[18px] text-threeteen">{item.description}</p>
                   )}
                 </div>
               </div>

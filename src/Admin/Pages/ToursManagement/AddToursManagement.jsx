@@ -26,7 +26,8 @@ const AddToursManagement = () => {
   const { sendData } = location.state || {};
   const [edit, setEdit] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [originalData, setOriginalData] = useState(null);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -39,16 +40,47 @@ const AddToursManagement = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, SetEndDate] = useState("");
   const [points, setPoints] = useState("");
+  const [prices, setPrices] = useState([
+    { adult: "", child: "", infant: "", currencyId: "" },
+  ]);
+  const [discounts, setDiscounts] = useState([
+    {
+      kindBy: "",
+      targetGroup: "",
+      type: "",
+      value: "",
+      minPeople: "",
+      maxPeople: "",
+    },
+  ]);
+  const [extras, setExtras] = useState([
+    {
+      extraId: "",
+      price: {
+        adult: "",
+        child: "",
+        infant: "",
+        currencyId: "",
+      },
+    },
+  ]);
+  const [faq, setFag] = useState([
+    {
+      title: "",
+      description: "",
+      image: null,
+    },
+  ]);
+  const [titles, setTitles] = useState([{ title: "", description: "" }]);
 
   const [mainImage, setMainImage] = useState("");
-  const [mainImagecheck, setMainImagecheck] = useState("");
+  // const [mainImagecheck, setMainImagecheck] = useState("");
 
   const [arrayimage, setArrayImage] = useState([]);
-  const [arrayimagechange, setArrayImagechange] = useState([]);
-  const [arrayimagedelete, setArrayImagedelete] = useState([]);
-  const [originalImages, setOriginalImages] = useState([]);
+  // const [arrayimagechange, setArrayImagechange] = useState([]);
+  // const [arrayimagedelete, setArrayImagedelete] = useState([]);
+  // const [originalImages, setOriginalImages] = useState([]);
 
-  const [currencies, setCurrencies] = useState("");
   const [status, setStatus] = useState(false);
   const [featured, setFeatured] = useState(false);
   //
@@ -82,6 +114,7 @@ const AddToursManagement = () => {
         })
         .then((response) => {
           const user = response.data.data;
+          setOriginalData(user);
           if (user) {
             setTitle(user.title || "");
             setDescribtion(user.description || "");
@@ -96,46 +129,101 @@ const AddToursManagement = () => {
             setFeatured(user.featured || false);
             SetDurationDays(String(user.durationDays) || "");
             SetDurationHours(String(user.durationHours) || "");
-
-            // FIXED: Map API data to match the days array structure
+            setArrayImage(
+              (user.images || []).map((img) => ({
+                imagePath: img,
+              }))
+            );
+            setPoints(String(user.points));
+            setMeetingPointAddress(user.meetingPointAddress);
+            SetMeetingPointLocation(user.meetingPointLocation);
             const formattedDays = user.daysOfWeek
               .map((day) => {
                 const capitalized =
                   day.charAt(0).toUpperCase() + day.slice(1).toLowerCase();
-                // Return the complete option object that matches the days array
                 return days.find((d) => d.value === capitalized);
               })
-              .filter(Boolean); // Remove any undefined values
-
-            console.log(formattedDays);
+              .filter(Boolean);
             setSelectedDays(formattedDays);
-
             setFields(user.highlights || []);
             setFieldstwo(user.includes || []);
             setFieldsthree(user.excludes || []);
+            setPrices([
+              {
+                adult: user.price.adult,
+                child: user.price.child,
+                infant: user.price.infant,
+                currencyId: user.price.currency,
+              },
+            ]);
+            setDiscounts(
+              user?.discounts?.map((discount) => ({
+                kindBy: discount.kindBy,
+                targetGroup: discount.targetGroup,
+                type: discount.type,
+                value: discount.value,
+                minPeople: String(discount.minPeople),
+                maxPeople: String(discount.maxPeople),
+              })) || []
+            );
+            setExtras(
+              user?.extras?.map((ex) => ({
+                extraId: ex.id,
+                price: {
+                  adult: String(ex.price?.adult ?? ""),
+                  child: String(ex.price?.child ?? ""),
+                  infant: String(ex.price?.infant ?? ""),
+                  currencyId: ex.price?.currency ?? "",
+                },
+              })) || []
+            );
 
-            // ... rest of your code
+            setFag(
+              user?.itinerary?.map((it) => ({
+                title: it.title,
+                description: it.description,
+                image: it.imagePath,
+              }))
+            );
+
+            setTitles(
+              user?.faq?.map((tit) => ({
+                title: tit.question,
+                description: tit.answer,
+              }))
+            );
           }
         })
         .catch(() => {
           // Handle error
         });
     }
-
     const timeout = setTimeout(() => {
-      // setLoading(false);
+      setLoading(false);
     }, 1000);
-
     return () => clearTimeout(timeout);
   }, [location.state]);
 
-  const [faq, setFag] = useState([
-    {
-      title: "",
-      description: "",
-      image: null,
-    },
-  ]);
+
+function getChangedFields(original, updated) {
+  const changes = {};
+
+  for (let key in updated) {
+    if (typeof updated[key] === "object" && updated[key] !== null && original[key]) {
+      // لو كائن متداخل (nested) نعمل مقارنة داخلية
+      const nestedChanges = getChangedFields(original[key], updated[key]);
+      if (Object.keys(nestedChanges).length > 0) {
+        changes[key] = nestedChanges;
+      }
+    } else if (updated[key] !== original[key]) {
+      changes[key] = updated[key];
+    }
+  }
+
+  return changes;
+}
+
+  
   const handlefaqChange = (index, key, value) => {
     setFag((prevFaq) => {
       const updated = [...prevFaq];
@@ -216,26 +304,21 @@ const AddToursManagement = () => {
     }
   };
   const handleIamgesChange = (newFiles) => {
-    if (edit) {
-      const oldImagesWithId = originalImages;
+    setArrayImage(newFiles)
+    // if (edit) {
 
-      const keptOldImages = oldImagesWithId.filter((oldImg) =>
-        newFiles.some((newImg) => newImg.id === oldImg.id)
-      );
+    //   const keptOldImages = newFiles.filter((oldImg) =>
+    //     newFiles.some((newImg) => newImg.id === oldImg.id)
+    //   );
 
-      const removedImages = oldImagesWithId.filter(
-        (oldImg) => !newFiles.some((newImg) => newImg.id === oldImg.id)
-      );
+  
 
-      const newAddedImages = newFiles.filter((img) => !img.id);
+    //   const newAddedImages = newFiles.filter((img) => !img.id);
 
-      setArrayImage([...keptOldImages, ...newAddedImages]);
-      setArrayImagedelete(removedImages);
-      setArrayImagechange(true);
-    } else {
-      setArrayImage(newFiles);
-      setArrayImagechange(true);
-    }
+    //   setArrayImage([...keptOldImages, ...newAddedImages]);
+    // } else {
+    //   setArrayImage(newFiles);
+    // }
   };
 
   //highlights
@@ -243,7 +326,7 @@ const AddToursManagement = () => {
   const handleChangeInput = (index, value) => {
     const newFields = [...fields];
     newFields[index] = value;
-    setFields(newFields); 
+    setFields(newFields);
   };
   const handleAddField = () => {
     setFields([...fields, ""]);
@@ -281,17 +364,6 @@ const AddToursManagement = () => {
     const newFields = fieldsthree.filter((_, i) => i !== index);
     setFieldsthree(newFields);
   };
-  const [extras, setExtras] = useState([
-    {
-      extraId: "",
-      price: {
-        adult: "",
-        child: "",
-        infant: "",
-        currencyId: "",
-      },
-    },
-  ]);
 
   const handleExtrasChange = (index, field, value) => {
     const newExtras = [...extras];
@@ -325,9 +397,6 @@ const AddToursManagement = () => {
     setExtras(updated);
   };
 
-  const [prices, setPrices] = useState([
-    { adult: "", child: "", infant: "", currencyId: "" },
-  ]);
   const addPrice = () => {
     setPrices([
       ...prices,
@@ -342,7 +411,6 @@ const AddToursManagement = () => {
     updated[index][key] = value;
     setPrices(updated);
   };
-  const [titles, setTitles] = useState([{ title: "", description: "" }]);
 
   // functions
   const handleTitleChange = (index, field, value) => {
@@ -360,15 +428,6 @@ const AddToursManagement = () => {
     setTitles(updated);
   };
 
-  const [discounts, setDiscounts] = useState([
-    {
-      targetGroup: "",
-      type: "",
-      value: "",
-      minPeople: "",
-      maxPeople: "",
-    },
-  ]);
   const handleDiscountChange = (index, key, value) => {
     const updated = [...discounts];
     updated[index][key] = value;
@@ -378,7 +437,14 @@ const AddToursManagement = () => {
   const addDiscount = () => {
     setDiscounts([
       ...discounts,
-      { targetGroup: "", type: "", value: "", minPeople: "", maxPeople: "" },
+      {
+        kindBy: "",
+        targetGroup: "",
+        type: "",
+        value: "",
+        minPeople: "",
+        maxPeople: "",
+      },
     ]);
   };
 
@@ -446,6 +512,7 @@ const AddToursManagement = () => {
       discounts.length === 0 ||
       discounts.some(
         (item) =>
+          !item.kindBy.toString().trim() ||
           !item.targetGroup.toString().trim() ||
           !item.type.toString().trim() ||
           !item.value.toString().trim() ||
@@ -470,18 +537,6 @@ const AddToursManagement = () => {
     ) {
       formErrors.extras = "All extras fields are required for each entry";
     }
-    // if (
-    //   !Array.isArray(faq) ||
-    //   faq.length === 0 ||
-    //   faq.some(
-    //     (item) =>
-    //       !item.title.toString().trim() ||
-    //       !item.description.toString().trim() ||
-    //       !item.image // null أو undefined
-    //   )
-    // ) {
-    //   formErrors.faq = "Each Itinerary must include a title, description, and image";
-    // }
 
     if (
       !Array.isArray(titles) ||
@@ -546,6 +601,7 @@ const AddToursManagement = () => {
         },
       })),
       discounts: discounts.map((item) => ({
+        kindBy: item.kindBy,
         targetGroup: item.targetGroup,
         type: item.type,
         value: parseFloat(item.value),
@@ -561,19 +617,27 @@ const AddToursManagement = () => {
         description: item.description,
         imagePath: item.image,
       })),
-      daysOfWeek: selectedDays.map(p=>p.value),
+      daysOfWeek: selectedDays.map((p) => p.value),
       status,
       featured,
     };
-    console.log("Payload to send:", payload);
-    axios
-      .post("https://bcknd.tickethub-tours.com/api/admin/tours", payload, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
-      })
+    const changedFields = getChangedFields(originalData, payload);
+
+    setCheckLoading(true);
+
+    const request = edit
+      ? axios.put(
+          `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`,
+          changedFields
+        )
+      : axios.post(
+          "https://bcknd.tickethub-tours.com/api/admin/tours",
+          payload
+        );
+
+    request
       .then(() => {
-        toast.success(`Tours ${edit ? "updated" : "added"} successfully`);
+        toast.success(`Tour ${edit ? "updated" : "added"} successfully`);
         setTimeout(() => {
           navigate("/admin/toursmanagement");
         }, 1000);
@@ -590,12 +654,16 @@ const AddToursManagement = () => {
         } else {
           toast.error("Something went wrong.");
         }
+      })
+      .finally(() => {
         setCheckLoading(false);
       });
   };
 
   const tabs = ["Info", "Images", "Options", "Pricing", "Faq"];
-
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div>
       <Head kind={edit ? "Edit" : "Add"} name="Tours Management" />
@@ -797,34 +865,34 @@ const AddToursManagement = () => {
           <div className="flex gap-7 flex-wrap w-full">
             {/* highlights */}
 
-              <div className="space-y-4 p-4 w-f">
-                <h2 className="text-xl font-bold">highlights</h2>
+            <div className="space-y-4 p-4 w-f">
+              <h2 className="text-xl font-bold">highlights</h2>
 
-                {fields.map((value, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <input
-                      type="text"
-                      value={value}
-                      onChange={(e) => handleChangeInput(index, e.target.value)}
-                      placeholder={`Value ${index + 1}`}
-                      className="p-2 border border-gray-300 rounded-md w-64"
-                    />
-                    <button
-                      onClick={() => handleRemoveField(index)}
-                      className="text-red-600 font-semibold"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ))}
+              {fields.map((value, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={value}
+                    onChange={(e) => handleChangeInput(index, e.target.value)}
+                    placeholder={`Value ${index + 1}`}
+                    className="p-2 border border-gray-300 rounded-md w-64"
+                  />
+                  <button
+                    onClick={() => handleRemoveField(index)}
+                    className="text-red-600 font-semibold"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
 
-                <button
-                  onClick={handleAddField}
-                  className="px-4 py-2 bg-one text-white rounded-md"
-                >
-                  + New
-                </button>
-              </div>
+              <button
+                onClick={handleAddField}
+                className="px-4 py-2 bg-one text-white rounded-md"
+              >
+                + New
+              </button>
+            </div>
             {/* includes */}
             <div className="space-y-4 p-4">
               <h2 className="text-xl font-bold">Includes </h2>
@@ -1098,7 +1166,7 @@ const AddToursManagement = () => {
                     <option value="infant">Infant</option>
                   </select>
                   <label className="block text-sm py-2 font-medium text-gray-700 mb-1">
-                    Target Group
+                    discounts type
                   </label>
                   <select
                     value={item.type}
@@ -1110,6 +1178,20 @@ const AddToursManagement = () => {
                     <option value="">Select Discount Type</option>
                     <option value="fixed">Fixed</option>
                     <option value="percent">Percent</option>
+                  </select>
+                  <label className="block text-sm py-2 font-medium text-gray-700 mb-1">
+                    Kind by
+                  </label>
+                  <select
+                    value={item.kindBy}
+                    onChange={(e) =>
+                      handleDiscountChange(index, "kindBy", e.target.value)
+                    }
+                    className="w-full p-3 rounded border border-gray-300"
+                  >
+                    <option value="">Select kind </option>
+                    <option value="person">Person</option>
+                    <option value="total">Total</option>
                   </select>
 
                   <div className="flex gap-2">

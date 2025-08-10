@@ -1,33 +1,37 @@
 import React, { useEffect, useState } from "react";
-import DynamicTable from '../../component/DynamicTable';
-import { useNavigate } from "react-router-dom";import NavAndSearch from '../../component/NavAndSearch'
+import DynamicTable from "../../component/DynamicTable";
+import { useNavigate } from "react-router-dom";
+import NavAndSearch from "../../component/NavAndSearch";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import Loading from '../../../ui/Loading'
+import Loading from "../../../ui/Loading";
 import Swal from "sweetalert2";
 import { CiSearch, CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const ToursManagement = () => {
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["User"]?.map((p) => p.action) || [];
 
   const [data, setData] = useState([]);
 
-         const columns = [
-  { key: "title", label: "Title" },
-  { key: "startDate", label: "Start Date" },
-  { key: "endDate", label: "End Date" },
-  { key: "mainImage", label: "Image" },
-  { key: "durationDays", label: "Duration Days" },
-  { key: "status", label: "Status" },
-  { key: "maxUsers", label: "Max Users" },
-]; 
-      const [loading, setLoading] = useState(false);
-        const [searchQuery, setSearchQuery] = useState("");
+  const columns = [
+    { key: "title", label: "Title" },
+    { key: "startDate", label: "Start Date" },
+    { key: "endDate", label: "End Date" },
+    { key: "mainImage", label: "Image" },
+    { key: "durationDays", label: "Duration Days" },
+    { key: "status", label: "Status" },
+    { key: "maxUsers", label: "Max Users" },
+  ];
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-    const [selectedFilter, setSelectedFilter] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/tours`, {
         // headers: {
@@ -35,21 +39,20 @@ const ToursManagement = () => {
         // },
       })
       .then((response) => {
-      setData(
-  response.data.data.tours.map((item) => ({
-    id: item.tours.id,
-    title: item.tours.title,
-    startDate: item.tours.startDate,
-    endDate: item.tours.endDate,
-    mainImage: item.tours.mainImage,
-    durationDays: item.tours.durationDays,
-    status: item.tours.status,
-    maxUsers: item.tours.maxUsers,
-    description: item.tours.describtion, // لاحظ الكتابة
-    cityName: item.cityName,
-    countryName: item.countryName,
-  }))
-
+        setData(
+          response.data.data.tours.map((item) => ({
+            id: item.tours.id,
+            title: item.tours.title,
+            startDate: item.tours.startDate,
+            endDate: item.tours.endDate,
+            mainImage: item.tours.mainImage,
+            durationDays: item.tours.durationDays,
+            status: item.tours.status,
+            maxUsers: item.tours.maxUsers,
+            description: item.tours.describtion, // لاحظ الكتابة
+            cityName: item.cityName,
+            countryName: item.countryName,
+          }))
         );
         setLoading(false);
       })
@@ -59,12 +62,11 @@ const ToursManagement = () => {
       });
   }, [update]);
 
-
-    const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addtoursmanagement", { state: { sendData: id } });
   };
 
-   const handleDelete = (userId, userName) => {
+  const handleDelete = (userId, userName) => {
     const token = localStorage.getItem("token");
 
     Swal.fire({
@@ -103,89 +105,99 @@ const ToursManagement = () => {
         Swal.fire("Cancelled", `${userName} was not deleted.`, "info");
       }
     });
-  }; 
+  };
 
- 
-const filteredData = data.filter((item) => {
-  const query = searchQuery.toLowerCase();
+  const filteredData = data.filter((item) => {
+    const query = searchQuery.toLowerCase();
 
-  const matchesSearch =
-    selectedFilter === ""
-      ? Object.values(item || {}).some((value) =>
-          typeof value === "object" && value !== null
-            ? Object.values(value || {}).some((sub) =>
-                sub?.toString().toLowerCase().includes(query)
-              )
-            : value?.toString().toLowerCase().includes(query)
-        )
-      : (() => {
-          const keys = selectedFilter.split(".");
-          let value = item;
-          for (let key of keys) value = value?.[key];
-          return value?.toString().toLowerCase().includes(query);
-        })();
+    const matchesSearch =
+      selectedFilter === ""
+        ? Object.values(item || {}).some((value) =>
+            typeof value === "object" && value !== null
+              ? Object.values(value || {}).some((sub) =>
+                  sub?.toString().toLowerCase().includes(query)
+                )
+              : value?.toString().toLowerCase().includes(query)
+          )
+        : (() => {
+            const keys = selectedFilter.split(".");
+            let value = item;
+            for (let key of keys) value = value?.[key];
+            return value?.toString().toLowerCase().includes(query);
+          })();
 
+    return matchesSearch;
+  });
 
-  return matchesSearch ;
-});
-
-
-   if (loading) {
-      return (
-
-          <Loading/>
-      );}
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div>
-      <NavAndSearch nav="/admin/addtoursmanagement" searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
-  <DynamicTable
-  data={data}
-  columns={columns}
-    filteredData={filteredData} 
-
-  actions={(row) => (
-    <div className="flex gap-1">
-      <CiEdit
-        className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-        onClick={() => handleEdit(row.id)}
+{Privileges.includes("Add") ||Privileges.includes("Edit")?( 
+      <NavAndSearch
+        nav="/admin/addtoursmanagement"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
-      <RiDeleteBin6Line
-        className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-        onClick={() => handleDelete(row.id, row.title)}
+):(
+      <NavAndSearch like
+        nav="/admin/addtoursmanagement"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
+)}
+      <DynamicTable
+        data={data}
+        columns={columns}
+        filteredData={filteredData}
+        actions={(row) => (
+            <div className="flex gap-1">
+                    {Privileges.includes("Edit") && (
+                      <CiEdit
+                        className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                        onClick={() => handleEdit(row.id)}
+                      />
+                    )}
+        
+                    {Privileges.includes("Delete") && (
+                      <RiDeleteBin6Line
+                        className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                        onClick={() => handleDelete(row.id, row.title
+)}
+                      />
+                    )}
+                  </div>
+        )}
+        customRender={(key, value) => {
+          if (key === "mainImage") {
+            return (
+              <img
+                src={value}
+                alt="mainImage"
+                className="w-20 h-12 object-cover rounded"
+              />
+            );
+          }
+          if (key === "status") {
+            return (
+              <span
+                className={`px-2 py-1 rounded text-sm font-medium ${
+                  value
+                    ? "bg-three/10 text-green-700 font-light"
+                    : "bg-three/50 text-one/90"
+                }`}
+              >
+                {value ? "Active" : "Disabled"}
+              </span>
+            );
+          }
+
+          return null;
+        }}
       />
     </div>
-  )}
-   customRender={(key, value) => {
-    if (key === "mainImage") {
-      return (
-        <img
-          src={value}
-          alt="mainImage"
-          className="w-20 h-12 object-cover rounded"
-        />
-      );
-    }
-
-    if (key === "status") {
-      return (
-        <span
-          className={`px-2 py-1 rounded text-sm font-medium ${
-            value === 0
-              ? "bg-three/10 text-green-700 font-light"
-              : "bg-three/50 text-one/90"
-          }`}
-        >
-          {value === 0 ? "Active" : "Disabled"}
-        </span>
-      );
-    }
-
-    return null;
-  }}
-  />
-      </div>
-
-    )
-}
+  );
+};
 
 export default ToursManagement;

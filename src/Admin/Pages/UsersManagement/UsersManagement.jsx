@@ -17,9 +17,9 @@ const UsersManagement = () => {
   const navigate = useNavigate();
   const [update, setUpdate] = useState(false);
 
-  const groupedPrivileges = JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
-  const Privileges = groupedPrivileges["User"]?.map((p) => p.action) || [];
-
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Tour"]?.map((p) => p.action) || [];
 
   useEffect(() => {
     axios
@@ -57,17 +57,28 @@ const UsersManagement = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://bcknd.tickethub-tours.com/api/admin/users/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          .delete(
+            `https://bcknd.tickethub-tours.com/api/admin/users/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             setUpdate(!update);
-            Swal.fire("Deleted!", `${userName} has been deleted successfully.`, "success");
+            Swal.fire(
+              "Deleted!",
+              `${userName} has been deleted successfully.`,
+              "success"
+            );
           })
           .catch(() => {
-            Swal.fire("Error!", `There was an error while deleting ${userName}.`, "error");
+            Swal.fire(
+              "Error!",
+              `There was an error while deleting ${userName}.`,
+              "error"
+            );
           });
       }
     });
@@ -90,16 +101,21 @@ const UsersManagement = () => {
 
   return (
     <div>
-{Privileges.includes("Add") ||Privileges.includes("Edit")?( <NavAndSearch
-        nav={"/admin/addusersmanagement"}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />):( <NavAndSearch like
-        nav={"/admin/addusersmanagement"}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />)}   
-  
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav={"/admin/addusersmanagement"}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          like
+          nav={"/admin/addusersmanagement"}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+
       <ToastContainer />
 
       <DynamicTable
@@ -107,20 +123,20 @@ const UsersManagement = () => {
         columns={columns}
         filteredData={filteredData}
         actions={(row) => (
-          <div className="flex gap-1">
-            {Privileges.includes("Edit") && (
-              <CiEdit
-                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-                onClick={() => handleEdit(row.id)}
-              />
-            )}
+            <div className="flex gap-1">
+              {Privileges.includes("Edit") && (
+                <CiEdit
+                  className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                  onClick={() => handleEdit(row.id)}
+                />
+              )}
 
-            {Privileges.includes("Delete") && (
-              <RiDeleteBin6Line
-                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-                onClick={() => handleDelete(row.id, row.name)}
-              />
-            )}
+              {Privileges.includes("Delete") && (
+                <RiDeleteBin6Line
+                  className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                  onClick={() => handleDelete(row.id, row.name)}
+                />
+              )}
           </div>
         )}
       />

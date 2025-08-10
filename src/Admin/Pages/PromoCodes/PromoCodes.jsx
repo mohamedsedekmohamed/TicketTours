@@ -10,13 +10,19 @@ import Swal from "sweetalert2";
 import { CiSearch, CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const PromoCodes = () => {
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const navigate = useNavigate();
-    const [selectedFilter, setSelectedFilter] = useState("");
-    const [update, setUpdate] = useState(false);
-    useEffect(() => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges =
+    groupedPrivileges["Promo Code"]?.map((p) => p.action) || [];
+
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/promocodes`, {
         // headers: {
@@ -43,7 +49,7 @@ const PromoCodes = () => {
         setLoading(false);
       });
   }, [update]);
-   const columns = [
+  const columns = [
     { key: "code", label: "Code" },
     { key: "usageLimit", label: "usage Limit" },
     { key: "discountType", label: "Discount Type" },
@@ -52,7 +58,7 @@ const PromoCodes = () => {
     { key: "endDate", label: "End Date" },
     { key: "status", label: "Status" },
   ];
-const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addpromocodes", { state: { sendData: id } });
   };
 
@@ -68,11 +74,14 @@ const handleEdit = (id) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://bcknd.tickethub-tours.com/api/admin/promocodes/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          .delete(
+            `https://bcknd.tickethub-tours.com/api/admin/promocodes/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             setUpdate(!update);
             Swal.fire(
@@ -93,7 +102,7 @@ const handleEdit = (id) => {
       }
     });
   };
-    const filteredData = data.filter((item) => {
+  const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
     const matchesSearch =
@@ -115,49 +124,65 @@ const handleEdit = (id) => {
     return matchesSearch;
   });
 
-   if (loading) {
-      return (
-          <Loading/>
-      );}
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div>
-      <NavAndSearch nav="/admin/addpromocodes" searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
-          <DynamicTable
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addpromocodes"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          like
+          nav="/admin/addpromocodes"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+      <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} // 👈 هذا مهم جداً
+        filteredData={filteredData} 
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.code)}
-            />
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+
+            {Privileges.includes("Delete") && (
+              <RiDeleteBin6Line
+                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                onClick={() => handleDelete(row.id, row.code)}
+              />
+            )}
           </div>
         )}
-         customRender={(key, value) => {
-   
-    if (key === "status") {
-      return (
-        <span
-          className={`px-2 py-1 rounded text-sm font-medium ${
-            value
-              ? "bg-three/10 text-green-700 font-light"
-              : "bg-three/50 text-one/90"
-          }`}
-        >
-          {value ? "Active" : "Disabled"}
-        </span>
-      );
-    }
+        customRender={(key, value) => {
+          if (key === "status") {
+            return (
+              <span
+                className={`px-2 py-1 rounded text-sm font-medium ${
+                  value
+                    ? "bg-three/10 text-green-700 font-light"
+                    : "bg-three/50 text-one/90"
+                }`}
+              >
+                {value ? "Active" : "Disabled"}
+              </span>
+            );
+          }
 
-    return null;
-  }}
+          return null;
+        }}
       />
     </div>
-  )
-}
-export default PromoCodes
+  );
+};
+export default PromoCodes;

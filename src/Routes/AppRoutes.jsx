@@ -243,8 +243,6 @@ const AppRoutes = ({ setIsLoggedIn }) => {
           }
         />
 
-        <Route path="addhomecover" element={<AddHomeCover />} />
-        <Route path="addfaq" element={<AddFaq />} />
 
 
         <Route path="admins" element={<Admins />} />
@@ -258,10 +256,7 @@ const AppRoutes = ({ setIsLoggedIn }) => {
           path="frontwebsitemanagement"
           element={<FrontWebsiteManagement />}
         />
-        {/* <Route
-          path="addfrontWebsitemanagement"
-          element={<AddFrontWebsiteManagement />}
-        /> */}
+     
         
         <Route path="information" element={<Information />} />
 

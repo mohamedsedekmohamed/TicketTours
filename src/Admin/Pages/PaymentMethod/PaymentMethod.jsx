@@ -10,14 +10,18 @@ import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const PaymentMethod = () => {
-    
-         const [data, setData] = useState([]);
-          const [loading, setLoading] = useState(true);
-          const [searchQuery, setSearchQuery] = useState("");
-          const navigate = useNavigate();
-          const [selectedFilter, setSelectedFilter] = useState("");
-          const [update, setUpdate] = useState(false);
-                useEffect(() => {
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges =
+    groupedPrivileges["Payment Methods"]?.map((p) => p.action) || [];
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/paymentmethod`, {
         // headers: {
@@ -30,9 +34,9 @@ const PaymentMethod = () => {
             id: item.id,
             name: item.name,
             describtion: item.describtion,
-            status: item.status  ,
-            logoPath: item.logoPath  ,
-                }))
+            status: item.status,
+            logoPath: item.logoPath,
+          }))
         );
         setLoading(false);
       })
@@ -41,12 +45,12 @@ const PaymentMethod = () => {
         setLoading(false);
       });
   }, [update]);
-   const columns = [
+  const columns = [
     { key: "name", label: "Name" },
     { key: "describtion", label: "Describtion " },
     { key: "logoPath", label: "Image " },
   ];
-     const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addpaymentmethod", { state: { sendData: id } });
   };
   const handleDelete = (userId) => {
@@ -61,11 +65,14 @@ const PaymentMethod = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://bcknd.tickethub-tours.com/api/admin/paymentmethod/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          .delete(
+            `https://bcknd.tickethub-tours.com/api/admin/paymentmethod/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             setUpdate(!update);
             Swal.fire(
@@ -75,19 +82,15 @@ const PaymentMethod = () => {
             );
           })
           .catch(() => {
-            Swal.fire(
-              "Error!",
-              `There was an error while deleting `,
-              "error"
-            );
+            Swal.fire("Error!", `There was an error while deleting `, "error");
           });
       } else {
         Swal.fire("Cancelled", `it was not deleted.`, "info");
       }
     });
   };
-     const handleToggleStatus = (row) => {
-    const newStatus = row.status ?   false : true;
+  const handleToggleStatus = (row) => {
+    const newStatus = row.status ? false : true;
     const token = localStorage.getItem("token");
 
     const updateHome = {
@@ -95,20 +98,24 @@ const PaymentMethod = () => {
     };
 
     axios
-      .put(`https://bcknd.tickethub-tours.com/api/admin/paymentmethod/${row.id}`, updateHome, {
-        // headers: { Authorization: `Bearer ${token}` },
-      })
+      .put(
+        `https://bcknd.tickethub-tours.com/api/admin/paymentmethod/${row.id}`,
+        updateHome,
+        {
+          // headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then(() => {
         toast.success("Status updated successfully");
-  setTimeout(() => {
+        setTimeout(() => {
           setUpdate((prev) => !prev);
-  }, 1000);
+        }, 1000);
       })
       .catch(() => {
         toast.error("Status was not updated successfully");
       });
   };
-   const filteredData = data.filter((item) => {
+  const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
     const matchesSearch =
@@ -129,45 +136,61 @@ const PaymentMethod = () => {
 
     return matchesSearch;
   });
-     if (loading) {
-      return (
-        <div className="">
-          <Loading/>
-        </div>
-      );}
+  if (loading) {
+    return (
+      <div className="">
+        <Loading />
+      </div>
+    );
+  }
   return (
- <div>
-      <NavAndSearch
-        nav="/admin/addpaymentmethod"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <ToastContainer/>
+    <div>
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addpaymentmethod"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          like
+          nav="/admin/addpaymentmethod"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+
+      <ToastContainer />
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
-            />
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+                                  
+            {Privileges.includes("Delete") && (
+              <RiDeleteBin6Line
+                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                onClick={() => handleDelete(row.id, row.name)}
+              />
+            )}
           </div>
         )}
-         customRender={(key, value) =>
+        customRender={(key, value) =>
           key === "logoPath" ? (
-           <div className={`flex justify-start`}>
-             <img
-              src={value}
-              alt="popup"
-              className="w-16 h-16 object-cover rounded"
-            />
-           </div>
+            <div className={`flex justify-start`}>
+              <img
+                src={value}
+                alt="popup"
+                className="w-16 h-16 object-cover rounded"
+              />
+            </div>
           ) : null
         }
         buttonstatus={(row) => (
@@ -184,7 +207,8 @@ const PaymentMethod = () => {
           </td>
         )}
       />
-    </div>   )
-}
+    </div>
+  );
+};
 
-export default PaymentMethod
+export default PaymentMethod;

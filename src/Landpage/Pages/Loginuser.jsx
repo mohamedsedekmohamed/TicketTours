@@ -32,7 +32,7 @@ function Loginuser({ setIsLoggedIn }) {
           toast.success("Welcome ");
 
           setTimeout(() => {
-            navigate("/");
+            navigate(-1);
           }, 1000);
         }
       })

@@ -71,25 +71,36 @@ const BookingsManagement = () => {
       <NavAndSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} like />
       <ToastContainer />
 
-      {/* Table */}
-      <DynamicTable
-        data={data}
-        columns={columns}
-        filteredData={filteredData}
-        buttonstatus={(row) => (
-          <td className="flex gap-1 justify-start">
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={row.status === "confirmed"}
-                onChange={() => console.log("Toggle status for", row)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-300 peer-checked:bg-one rounded-full peer relative after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:left-0.5 after:top-0.5 after:transition-all peer-checked:after:translate-x-full" />
-            </label>
-          </td>
-        )}
-      />
+         {activeTab === "confirmed" || activeTab === "cancelled" ? (
+        <DynamicTable
+          data={data}
+          columns={columns}
+          filteredData={filteredData}
+    
+        />
+      ) : (
+        <DynamicTable
+          data={data}
+          columns={columns}
+          filteredData={filteredData}
+          buttonstatus={(row) =>
+            row.status === "pending" ? (
+              <td className="flex gap-1 justify-start">
+                <select
+                  value={row.status}
+                  onChange={(e) =>
+                    console.log("Change status for", row, "to", e.target.value)
+                  }
+                  className="border border-gray-400 bg-one text-white rounded-3xl px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-one"
+                >
+                  <option value="confirmed">Confirmed</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </td>
+            ) : null
+          }
+        />
+      )}
     </div>
   );
 };

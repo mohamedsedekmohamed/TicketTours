@@ -10,15 +10,18 @@ import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const HomeCover = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  // const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges =
+    groupedPrivileges["Home Page Cover"]?.map((p) => p.action) || [];
 
-     const [data, setData] = useState([]);
-      const [loading, setLoading] = useState(true);
-      const [searchQuery, setSearchQuery] = useState("");
-      const navigate = useNavigate();
-      // const [selectedFilter, setSelectedFilter] = useState("");
-      const [update, setUpdate] = useState(false);
-      
-        useEffect(() => {
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/homepage`, {
         // headers: {
@@ -30,8 +33,8 @@ const HomeCover = () => {
           response.data.data.pages.map((item) => ({
             id: item.id,
             imagePath: item.imagePath,
-            status: item.status  
-                }))
+            status: item.status,
+          }))
         );
         setLoading(false);
       })
@@ -40,7 +43,7 @@ const HomeCover = () => {
         setLoading(false);
       });
   }, [update]);
-   const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addhomecover", { state: { sendData: id } });
   };
   const handleDelete = (userId) => {
@@ -55,11 +58,14 @@ const HomeCover = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://bcknd.tickethub-tours.com/api/admin/homepage/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          .delete(
+            `https://bcknd.tickethub-tours.com/api/admin/homepage/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             setUpdate(!update);
             Swal.fire(
@@ -69,22 +75,16 @@ const HomeCover = () => {
             );
           })
           .catch(() => {
-            Swal.fire(
-              "Error!",
-              `There was an error while deleting `,
-              "error"
-            );
+            Swal.fire("Error!", `There was an error while deleting `, "error");
           });
       } else {
         Swal.fire("Cancelled", `it was not deleted.`, "info");
       }
     });
   };
-   const columns = [
-    { key: "imagePath", label: "Cover Iamge" },
-  ];
-     const handleToggleStatus = (row) => {
-    const newStatus = row.status ?   false : true;
+  const columns = [{ key: "imagePath", label: "Cover Iamge" }];
+  const handleToggleStatus = (row) => {
+    const newStatus = row.status ? false : true;
     const token = localStorage.getItem("token");
 
     const updateHome = {
@@ -92,64 +92,85 @@ const HomeCover = () => {
     };
 
     axios
-      .put(`https://bcknd.tickethub-tours.com/api/admin/homepage/${row.id}`, updateHome, {
-        // headers: { Authorization: `Bearer ${token}` },
-      })
+      .put(
+        `https://bcknd.tickethub-tours.com/api/admin/homepage/${row.id}`,
+        updateHome,
+        {
+          // headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then(() => {
         toast.success("Status updated successfully");
-  setTimeout(() => {
+        setTimeout(() => {
           setUpdate((prev) => !prev);
-  }, 1000);
+        }, 1000);
       })
       .catch(() => {
         toast.error("Status was not updated successfully");
       });
   };
-   if (loading) {
-      return (
-        <div className="mt-20">
-          <Loading/>
-
-        </div>
-      );}
+  if (loading) {
+    return (
+      <div className="mt-20">
+        <Loading />
+      </div>
+    );
+  }
   return (
-  <div>
-      <NavAndSearch stopsearch
-        nav="/admin/addhomecover"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <ToastContainer/>
+    <div>
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          stopsearch
+          nav="/admin/addhomecover"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          stopsearch
+          like
+          nav="/admin/addhomecover"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+
+      <ToastContainer />
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={data} 
+        filteredData={data}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
-            />
+               {Privileges.includes("Edit") && (
+                           <CiEdit
+                             className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                             onClick={() => handleEdit(row.id)}
+                           />
+                         )}
+           
+                         {Privileges.includes("Delete") && (
+                           <RiDeleteBin6Line
+                             className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                             onClick={() => handleDelete(row.id, row.name)}
+                           />
+                         )}
           </div>
         )}
-          customRender={(key, value) => {
-    if (key === "imagePath") {
-      return (
-        <img
-          src={value}
-          alt="imagePath"
-          className="w-20 h-12 object-cover rounded"
-        />
-      );
-    }
+        customRender={(key, value) => {
+          if (key === "imagePath") {
+            return (
+              <img
+                src={value}
+                alt="imagePath"
+                className="w-20 h-12 object-cover rounded"
+              />
+            );
+          }
 
-    return null;
-  }}
-      buttonstatus={(row) => (
+          return null;
+        }}
+        buttonstatus={(row) => (
           <td className={`flex gap-1  justify-start `}>
             <label className="flex items-center cursor-pointer">
               <input
@@ -163,7 +184,8 @@ const HomeCover = () => {
           </td>
         )}
       />
-    </div>  )
-}
+    </div>
+  );
+};
 
-export default HomeCover
+export default HomeCover;

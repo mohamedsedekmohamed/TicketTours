@@ -11,12 +11,17 @@ import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const City = () => {
   const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const navigate = useNavigate();
-    const [selectedFilter, setSelectedFilter] = useState("");
-    const [update, setUpdate] = useState(false);
-      useEffect(() => {
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["City"]?.map((p) => p.action) || [];
+
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/city`, {
         // headers: {
@@ -28,7 +33,7 @@ const City = () => {
           response.data.data.cities.map((item) => ({
             id: item.cityId,
             cityName: item.cityName,
-            countryName:item.countryName,
+            countryName: item.countryName,
           }))
         );
         setLoading(false);
@@ -38,14 +43,14 @@ const City = () => {
         setLoading(false);
       });
   }, [update]);
-    const columns = [
+  const columns = [
     { key: "cityName", label: "City" },
     { key: "countryName", label: "Country" },
   ];
-     const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addcity", { state: { sendData: id } });
   };
-   const handleDelete = (userId, userName) => {
+  const handleDelete = (userId, userName) => {
     const token = localStorage.getItem("token");
 
     Swal.fire({
@@ -57,11 +62,14 @@ const City = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://bcknd.tickethub-tours.com/api/admin/city/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          .delete(
+            `https://bcknd.tickethub-tours.com/api/admin/city/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             setUpdate(!update);
             Swal.fire(
@@ -82,7 +90,7 @@ const City = () => {
       }
     });
   };
-   const filteredData = data.filter((item) => {
+  const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
     const matchesSearch =
@@ -103,38 +111,51 @@ const City = () => {
 
     return matchesSearch;
   });
-   if (loading) {
-      return (
-          <Loading/>
-      );}
+  if (loading) {
+    return <Loading />;
+  }
   return (
- <div>
-      <NavAndSearch
-        nav="/admin/addcity"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <ToastContainer/>
+    <div>
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addcity"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          like
+          nav="/admin/addcity"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+
+      <ToastContainer />
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
-            />
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+
+            {Privileges.includes("Delete") && (
+              <RiDeleteBin6Line
+                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                onClick={() => handleDelete(row.id, row.name)}
+              />
+            )}
           </div>
         )}
-
       />
-    </div>   )
-}
+    </div>
+  );
+};
 
-
-export default City
+export default City;

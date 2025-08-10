@@ -10,13 +10,19 @@ import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const Faq = () => {
-      const [data, setData] = useState([]);
-          const [loading, setLoading] = useState(true);
-          const [searchQuery, setSearchQuery] = useState("");
-          const navigate = useNavigate();
-          const [selectedFilter, setSelectedFilter] = useState("");
-          const [update, setUpdate] = useState(false);
-                  useEffect(() => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges =
+    groupedPrivileges["Home Page Faq"]?.map((p) => p.action) || [];
+
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/faq`, {
         // headers: {
@@ -29,8 +35,8 @@ const Faq = () => {
             id: item.id,
             question: item.question,
             answer: item.answer,
-            status: item.status  
-                }))
+            status: item.status,
+          }))
         );
         setLoading(false);
       })
@@ -38,15 +44,15 @@ const Faq = () => {
         toast.error("Error fetching data");
         setLoading(false);
       });
-  }, [update])
- const columns = [
+  }, [update]);
+  const columns = [
     { key: "question", label: "Question" },
     { key: "answer", label: "Answer" },
   ];
-    const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addfaq", { state: { sendData: id } });
   };
-const handleDelete = (userId, userName) => {
+  const handleDelete = (userId, userName) => {
     const token = localStorage.getItem("token");
 
     Swal.fire({
@@ -83,8 +89,8 @@ const handleDelete = (userId, userName) => {
       }
     });
   };
-   const handleToggleStatus = (row) => {
-    const newStatus = row.status ?   false : true;
+  const handleToggleStatus = (row) => {
+    const newStatus = row.status ? false : true;
     const token = localStorage.getItem("token");
 
     const updateHome = {
@@ -92,20 +98,24 @@ const handleDelete = (userId, userName) => {
     };
 
     axios
-      .put(`https://bcknd.tickethub-tours.com/api/admin/faq/${row.id}`, updateHome, {
-        // headers: { Authorization: `Bearer ${token}` },
-      })
+      .put(
+        `https://bcknd.tickethub-tours.com/api/admin/faq/${row.id}`,
+        updateHome,
+        {
+          // headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then(() => {
         toast.success("Status updated successfully");
-  setTimeout(() => {
+        setTimeout(() => {
           setUpdate((prev) => !prev);
-  }, 1000);
+        }, 1000);
       })
       .catch(() => {
         toast.error("Status was not updated successfully");
       });
   };
-   const filteredData = data.filter((item) => {
+  const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
     const matchesSearch =
@@ -127,38 +137,53 @@ const handleDelete = (userId, userName) => {
     return matchesSearch;
   });
 
-if (loading) {
-      return (
-       <div className="mt-20">
-          <Loading/>
-
-        </div>      );}
+  if (loading) {
+    return (
+      <div className="mt-20">
+        <Loading />
+      </div>
+    );
+  }
   return (
- <div>
-      <NavAndSearch 
-        nav="/admin/addfaq"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <ToastContainer/>
+    <div>
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addfaq"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          nav="/admin/addfaq"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          like
+        />
+      )}
+
+      <ToastContainer />
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.question)}
-            />
+        {Privileges.includes("Edit") && (
+                <CiEdit
+                  className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                  onClick={() => handleEdit(row.id)}
+                />
+              )}
+
+              {Privileges.includes("Delete") && (
+                <RiDeleteBin6Line
+                  className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                  onClick={() => handleDelete(row.id, row.question)}
+                />
+              )}
           </div>
         )}
- 
-      buttonstatus={(row) => (
+        buttonstatus={(row) => (
           <td className={`flex gap-1  justify-start `}>
             <label className="flex items-center cursor-pointer">
               <input
@@ -172,7 +197,8 @@ if (loading) {
           </td>
         )}
       />
-    </div>   )
-}
+    </div>
+  );
+};
 
-export default Faq
+export default Faq;

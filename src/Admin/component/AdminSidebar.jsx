@@ -45,12 +45,13 @@ const links = [
     name: "Promo Codes",
     icon: <IconsPromoCodes />,
     iconActive: <IconsPromoCodes active />
-  }, {
-    to: "financialsection",
-    name: "Financial Section",
-    icon: <IconsFinancialSection />,
-    iconActive: <IconsFinancialSection active />
   },
+  //  {
+  //   to: "financialsection",
+  //   name: "Financial Section",
+  //   icon: <IconsFinancialSection />,
+  //   iconActive: <IconsFinancialSection active />
+  // },
    {
     to: "bookingsmanagement",
     name: "Bookings Management",

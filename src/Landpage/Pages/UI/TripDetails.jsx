@@ -17,7 +17,11 @@ import BulkDiscountTable from "../BulkDiscountTable";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
 import Loading from '../../../ui/Loading'
-
+import { VscActivateBreakpoints } from "react-icons/vsc";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 const TripDetails = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
@@ -27,6 +31,24 @@ const TripDetails = () => {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const navigate = useNavigate();
+ const [showPicker, setShowPicker] = useState(false);
+
+const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  useEffect(() => {
+  const storedBooking = JSON.parse(localStorage.getItem("bookingData"));
+
+  if (storedBooking) {
+    if (storedBooking?.tour?.id !== Number(id)) {
+      localStorage.removeItem("bookingData");
+    } else {
+      setAdults(storedBooking.adults || 0);
+      setChildren(storedBooking.children || 0);
+      setInfants(storedBooking.infants || 0);
+    }
+  }
+}, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +56,12 @@ const TripDetails = () => {
         const res = await axios.get(
           `https://bcknd.tickethub-tours.com/api/user/landpage/category-tours/category/${id}`
         );
-        setData(res.data.data);
+       const tour = res.data.data;
+      setData(tour);
+
+      setStartDate(new Date(tour.startDate));
+      setEndDate(new Date(tour.endDate));
+
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -43,7 +70,6 @@ const TripDetails = () => {
     };
     fetchData();
   }, [id]);
-
 
 
   if (loading) return <div className="h-screen w-screen"><Loading/></div>;
@@ -95,23 +121,36 @@ const discountAmount = adultsDiscount + childrenDiscount + infantsDiscount;
 const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
 
 
-   const bookingDetails = {
-    adultsTotal,
-    childrenTotal,
-    infantsTotal,
-    discountAmount,
-    total,
+  
+ const handleBooking = () => {
+  const bookingData = {
+    tour: data,
     adults,
     children,
     infants,
-    
+    adultsTotal,
+    childrenTotal,
+    infantsTotal,
+    adultsDiscount,
+    childrenDiscount,
+    infantsDiscount,
+    discountAmount,
+    total
   };
-  const handleBooking = () => {
-    navigate(`/completebooking/${data.id}`, { state: bookingDetails });
-  };
+
+  localStorage.setItem("bookingData", JSON.stringify(bookingData));
+ if (adults === 0 && children === 0 && infants === 0) {
+  toast.warn("At least one person must be entered.");
+  return; // stop navigation
+}
+
+navigate(`/completebooking/${data.id}`);  
+};
+
   return (
     <div>
       <Navtwo />
+      <ToastContainer />
 
       <span className="px-3 text-[14px] font-normal text-ten">
      <button onClick={()=>navigate(-1) }>{data.category}</button>    / <span className="text-four">{data.city}</span>
@@ -123,35 +162,38 @@ const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
 
       {/* Images */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-3">
-        <div className="sm:col-span-2">
+  {/* الصورة الرئيسية */}
+  <div className="sm:col-span-2">
+    <img
+      src={data.mainImage}
+      alt="Main"
+      className="w-full h-full object-cover rounded-xl aspect-video"
+    />
+  </div>
+
+  {/* العمود الجانبي */}
+  <div className="flex sm:flex-col gap-3 h-full">
+    {[second, third].map((img, idx) =>
+      img ? (
+        <div key={idx} className="relative flex-1">
           <img
-            src={data.mainImage}
-            alt="Main"
-            className="w-full object-cover rounded-xl aspect-video"
+            src={img}
+            alt={`image-${idx}`}
+            className="w-full h-full object-cover rounded-xl"
           />
-        </div>
-        <div className="flex sm:flex-col gap-3">
-          {[second, third].map((img, idx) =>
-            img ? (
-              <div key={idx} className="relative flex-1">
-                <img
-                  src={img}
-                  alt={`image-${idx}`}
-                  className="w-full object-cover rounded-xl aspect-square"
-                />
-                {idx === 1 && remainingImages.length > 0 && (
-                  <button
-                    onClick={() => setShowAll(true)}
-                    className="absolute inset-0 bg-black/60 text-white text-lg font-semibold flex items-center justify-center rounded-xl"
-                  >
-                    +{remainingImages.length}
-                  </button>
-                )}
-              </div>
-            ) : null
+          {idx === 1 && remainingImages.length > 0 && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="absolute inset-0 bg-black/60 text-white text-lg font-semibold flex items-center justify-center rounded-xl"
+            >
+              +{remainingImages.length}
+            </button>
           )}
         </div>
-      </div>
+      ) : null
+    )}
+  </div>
+</div>
 
       {/* Image Overlay Viewer */}
       {showAll && (
@@ -177,13 +219,15 @@ const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
               { icon: <LuClock />, title: "Duration", value: data.durationHours },
               { icon: <IoFootsteps />, title: "Tour Type", value: "Daily Tour" },
               { icon: <FaUserFriends />, title: "Group Size", value: data.maxUsers },
-              { icon: <MdGTranslate />, title: "Languages", value: "Español, Japanese" },
+              { icon: <VscActivateBreakpoints />, title: "points", value: data.points
+ },
             ].map((item, i) => (
               <div key={i} className="flex w-full items-center gap-4 border border-one p-3 rounded-lg">
                 <div className="text-one text-3xl">{item.icon}</div>
                 <div>
                   <div className="font-semibold text-one">{item.title}</div>
                   <div className="text-one">{item.value}</div>
+                  
                 </div>
               </div>
             ))}
@@ -245,10 +289,38 @@ const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
           </div>
 
                   <div className="mb-4 flex gap-2">
-            <h4 className="font-medium text-gray-800">Date:</h4>
-            <p className="text-one">
-              { new Date(data.startDate).toISOString().split('T')[0] }
-            </p>
+            <div
+        className="flex gap-2 cursor-pointer items-center"
+        onClick={() => setShowPicker(!showPicker)}
+      >
+        <h4 className="font-medium text-white bg-one px-3 py-1 rounded-2xl text-3xl">Date</h4>
+        <p className="text-one">
+          {startDate.toISOString().split("T")[0]} {"->"} {endDate.toISOString().split("T")[0]}
+        </p>
+      </div>
+
+   {showPicker && (
+  <div className="fixed inset-0 bg-black/80  bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-4 rounded-lg shadow-lg relative">
+      <div className="pointer-events-none">
+        <DatePicker
+          selected={startDate}
+          startDate={startDate}
+          endDate={endDate}
+          selectsRange
+          inline
+        />
+      </div>
+      <button
+        className="mt-4 px-4 py-2 bg-one text-white rounded"
+        onClick={() => setShowPicker(false)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
           </div>
 
           {/* People Counters */}
@@ -278,13 +350,26 @@ const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
             )
           )}
 
-          {/* Total */}
-          <div className="mt-6 border-t pt-4">
-            <div className="flex justify-between text-base font-semibold">
-              <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-          </div>
+     {/* Total */}
+<div className="mt-6 border-t pt-4">
+  <div className="flex justify-between text-base">
+    <span>Subtotal:</span>
+    <span>${(adultsTotal + childrenTotal + infantsTotal).toFixed(2)}</span>
+  </div>
+
+  {discountAmount > 0 && (
+    <div className="flex justify-between text-sm text-red-500">
+      <span>Discount:</span>
+      <span>- ${discountAmount.toFixed(2)}</span>
+    </div>
+  )}
+
+  <div className="flex justify-between text-base font-semibold mt-2">
+    <span>Total:</span>
+    <span>${total.toFixed(2)}</span>
+  </div>
+</div>
+
 
            <button
       onClick={handleBooking}

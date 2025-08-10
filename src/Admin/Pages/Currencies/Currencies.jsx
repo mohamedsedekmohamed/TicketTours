@@ -16,6 +16,10 @@ const Currencies = () => {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Currency"]?.map((p) => p.action) || [];
+
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/currencies`, {
@@ -115,25 +119,38 @@ const Currencies = () => {
   return (
     <div>
       {" "}
-      <NavAndSearch
-        nav="/admin/addcurrencies"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-        <DynamicTable
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addcurrencies"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch like
+          nav="/admin/addcurrencies"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+      <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
-            />
+                {Privileges.includes("Edit") && (
+                       <CiEdit
+                         className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                         onClick={() => handleEdit(row.id)}
+                       />
+                     )}
+         
+                     {Privileges.includes("Delete") && (
+                       <RiDeleteBin6Line
+                         className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                         onClick={() => handleDelete(row.id, row.name)}
+                       />
+                     )}
           </div>
         )}
       />

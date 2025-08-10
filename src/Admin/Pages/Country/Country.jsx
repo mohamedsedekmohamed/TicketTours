@@ -11,12 +11,16 @@ import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const Country = () => {
   const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const navigate = useNavigate();
-    const [selectedFilter, setSelectedFilter] = useState("");
-    const [update, setUpdate] = useState(false);
-      useEffect(() => {
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Country"]?.map((p) => p.action) || [];
+
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/country`, {
         // headers: {
@@ -38,14 +42,14 @@ const Country = () => {
         setLoading(false);
       });
   }, [update]);
-    const columns = [
+  const columns = [
     { key: "name", label: "Name" },
     { key: "imagePath", label: "Image" },
   ];
-     const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addcounty", { state: { sendData: id } });
   };
-   const handleDelete = (userId, userName) => {
+  const handleDelete = (userId, userName) => {
     const token = localStorage.getItem("token");
 
     Swal.fire({
@@ -57,11 +61,14 @@ const Country = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://bcknd.tickethub-tours.com/api/admin/country/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          .delete(
+            `https://bcknd.tickethub-tours.com/api/admin/country/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             setUpdate(!update);
             Swal.fire(
@@ -82,7 +89,7 @@ const Country = () => {
       }
     });
   };
-   const filteredData = data.filter((item) => {
+  const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
     const matchesSearch =
@@ -103,50 +110,64 @@ const Country = () => {
 
     return matchesSearch;
   });
-   if (loading) {
-      return (
-          <Loading/>
-      );}
+  if (loading) {
+    return <Loading />;
+  }
   return (
- <div>
-      <NavAndSearch
-        nav="/admin/addcounty"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <ToastContainer/>
+    <div>
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addcounty"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          like
+          nav="/admin/addcounty"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+
+      <ToastContainer />
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
-            />
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+
+            {Privileges.includes("Delete") && (
+              <RiDeleteBin6Line
+                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                onClick={() => handleDelete(row.id, row.name)}
+              />
+            )}
           </div>
         )}
-          customRender={(key, value) => {
-    if (key === "imagePath") {
-      return (
-        <img
-          src={value}
-          alt="imagePath"
-          className="w-20 h-12 object-cover rounded"
-        />
-      );
-    }
+        customRender={(key, value) => {
+          if (key === "imagePath") {
+            return (
+              <img
+                src={value}
+                alt="imagePath"
+                className="w-20 h-12 object-cover rounded"
+              />
+            );
+          }
 
-
-    return null;
-  }}
+          return null;
+        }}
       />
-    </div>   )
-}
+    </div>
+  );
+};
 
-export default Country
+export default Country;

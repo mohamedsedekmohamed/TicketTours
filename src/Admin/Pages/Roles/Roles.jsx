@@ -10,6 +10,10 @@ import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const Roles = () => {
+  const groupedPrivileges = JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Tour"]?.map((p) => p.action) || [];
+
+
    const [data, setData] = useState([]);
       const [loading, setLoading] = useState(true);
       const [searchQuery, setSearchQuery] = useState("");

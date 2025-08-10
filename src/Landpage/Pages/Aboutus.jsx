@@ -11,7 +11,10 @@ const Aboutus = () => {
 
   return (
     <div>
-      <Navtwo />
+     <div className="sticky top-0 z-50">
+  <Navtwo />
+</div>
+
 
       <section>
         <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
