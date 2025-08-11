@@ -1,5 +1,5 @@
 import React from 'react';
-import ErrorPage from '../pages/ErrorPage.jsx';
+import ErrorPage from '../Pages/ErrorPage.jsx';
 import useModuleActions from '../Hooks/useModuleActions.jsx';
 
 const ProtectedRoute = ({ moduleName, requiredAction, children }) => {
