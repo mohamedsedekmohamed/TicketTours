@@ -7,11 +7,13 @@ import { GoArrowDownRight } from "react-icons/go";
 import AOS from "aos";
 import logo from "../../assets/newlogo.png";
 import "aos/dist/aos.css";
+import { TbUserHexagon } from "react-icons/tb";
 
 const Navtwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const token = localStorage.getItem("token");
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -118,43 +120,62 @@ const Navtwo = () => {
             })}
           </div>
 
-          <div className=" hidden md:flex gap-2">
-             <button
-              onClick={() => {
-                navigate("/signup");
-              }}
-              className="w-[110px] h-[40px] bg-one text-white hover:text-one/70  hover:bg-white/10 border border-one rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => {
-                navigate("/login");
-              }}
-              className="w-[110px] h-[40px] text-one hover:text-one/70 border border-one rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
-            >
-              Login{" "}
-            </button>
-          </div>
-          {/*  */}
-          <div className="flex md:hidden gap-2">
-            <button
-              onClick={() => {
-                navigate("/signup");
-              }}
-              className="w-[50px] h-[40px] text-two hover:bg-one/90 hover:text-two/80 bg-one rounded-[24px] text-[10px] font-medium"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => {
-                navigate("/login");
-              }}
-              className="w-[50px] h-[40px] text-one hover:text-one/70 border border-one rounded-[24px] text-[10px] font-medium"
-            >
-              Login
-            </button>
-          </div>
+        <div className="hidden md:flex gap-2">
+                   {token && (
+                     <TbUserHexagon
+                       onClick={() => {
+                         navigate("/profileuser");
+                       }}
+                       className="w-[110px] h-[40px]  text-one hover:text-one/70    rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
+                     >
+                     </TbUserHexagon>
+                   )}
+       
+                   <button
+                     onClick={() => {
+                       navigate("/signup");
+                     }}
+                     className="w-[110px] h-[40px] bg-one text-white hover:text-one/70  hover:bg-white/10 border border-one rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
+                   >
+                     Sign In
+                   </button>
+                   <button
+                     onClick={() => {
+                       navigate("/login");
+                     }}
+                     className="w-[110px] h-[40px] text-one hover:text-one/70 border border-one rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
+                   >
+                     Login
+                   </button>
+                 </div>
+                 <div className="flex md:hidden gap-2">
+                   {token && (
+                     <TbUserHexagon
+                       onClick={() => {
+                         navigate("/profileuser");
+                       }}
+                       className="w-[50px] h-[40px] text-one   rounded-[24px] text-[10px] font-medium"
+                     >
+                     </TbUserHexagon>
+                   )}
+                   <button
+                     onClick={() => {
+                       navigate("/signup");
+                     }}
+                     className="w-[50px] h-[40px] text-two hover:bg-one/90 hover:text-two/80 bg-one rounded-[24px] text-[10px] font-medium"
+                   >
+                     Sign In
+                   </button>
+                   <button
+                     onClick={() => {
+                       navigate("/login");
+                     }}
+                     className="w-[50px] h-[40px] text-one hover:text-one/70 border border-one rounded-[24px] text-[10px] font-medium"
+                   >
+                     Login
+                   </button>
+                 </div>
+       
 
           {/* Mobile menu toggle */}
           <div className="  md:hidden">

@@ -204,18 +204,34 @@ const AddToursManagement = () => {
     return () => clearTimeout(timeout);
   }, [location.state]);
 
-
 function getChangedFields(original, updated) {
   const changes = {};
 
   for (let key in updated) {
-    if (typeof updated[key] === "object" && updated[key] !== null && original[key]) {
-      // لو كائن متداخل (nested) نعمل مقارنة داخلية
-      const nestedChanges = getChangedFields(original[key], updated[key]);
-      if (Object.keys(nestedChanges).length > 0) {
-        changes[key] = nestedChanges;
+    if (key === "daysOfWeek") {
+      // معاملة خاصة لـ daysOfWeek → رجع القيم كـ Array
+      if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
+        changes[key] = Object.values(updated[key]);
       }
-    } else if (updated[key] !== original[key]) {
+    } 
+    else if (
+      typeof updated[key] === "object" &&
+      updated[key] !== null &&
+      original[key]
+    ) {
+      // لو الكائن مفاتيحه كلها أرقام → رجع Array
+      if (Object.keys(updated[key]).every(k => !isNaN(k))) {
+        if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
+          changes[key] = Object.values(updated[key]);
+        }
+      } else {
+        const nestedChanges = getChangedFields(original[key], updated[key]);
+        if (Object.keys(nestedChanges).length > 0) {
+          changes[key] = nestedChanges;
+        }
+      }
+    } 
+    else if (updated[key] !== original[key]) {
       changes[key] = updated[key];
     }
   }
@@ -668,7 +684,7 @@ function getChangedFields(original, updated) {
     <div>
       <Head kind={edit ? "Edit" : "Add"} name="Tours Management" />
       <ToastContainer />
-      <div className="flex justify-around w-full mt-6 bg-gradient-to-r from-white via-gray-50 to-white rounded-xl shadow-inner p-2 gap-2">
+      <div className="flex justify-around w-full flex-wrap mt-6 bg-gradient-to-r from-white via-gray-50 to-white rounded-xl shadow-inner p-2 gap-2">
         {tabs.map((tab, index) => (
           <button
             key={index}
@@ -862,14 +878,14 @@ function getChangedFields(original, updated) {
         )}
 
         {activeTab === 2 && (
-          <div className="flex gap-7 flex-wrap w-full">
+          <div className="flex  gap-7 flex-wrap w-full">
             {/* highlights */}
 
             <div className="space-y-4 p-4 w-f">
               <h2 className="text-xl font-bold">highlights</h2>
 
               {fields.map((value, index) => (
-                <div key={index} className="flex items-center gap-3">
+                <div key={index} className="flex flex-wrap items-center gap-3">
                   <input
                     type="text"
                     value={value}
@@ -897,7 +913,7 @@ function getChangedFields(original, updated) {
             <div className="space-y-4 p-4">
               <h2 className="text-xl font-bold">Includes </h2>
               {fieldstwo.map((value, index) => (
-                <div key={index} className="flex items-center gap-3">
+                <div key={index} className="flex flex-wrap items-center gap-3">
                   <input
                     type="text"
                     value={value}
@@ -927,7 +943,7 @@ function getChangedFields(original, updated) {
             <div className="space-y-4 p-4">
               <h2 className="text-xl font-bold">Excludes </h2>
               {fieldsthree.map((value, index) => (
-                <div key={index} className="flex items-center gap-3">
+                <div key={index} className="flex flex-wrap items-center gap-3">
                   <input
                     type="text"
                     value={value}
@@ -955,14 +971,14 @@ function getChangedFields(original, updated) {
             </div>
 
             {/* extras */}
-            <div className="p-4 space-y-5 w-full">
+            <div className="py-4 space-y-5 w-full">
               <h2 className="text-xl font-bold mb-4">Extras</h2>
               {extras.map((extra, index) => (
                 <div
                   key={index}
-                  className="border border-gray-300 rounded-xl p-4 space-y-3 relative bg-gray-50"
+                  className="border  w-full border-gray-300 rounded-xl p-4 space-y-3 relative bg-gray-50"
                 >
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
                     <InputArrow
                       name="tours/add-data"
                       namedata="extras"
@@ -1024,15 +1040,16 @@ function getChangedFields(original, updated) {
               </button>
               {/*  */}
             </div>
+            
             <div className="p-4 space-y-5 w-full border-1 mt-2">
               <h2 className="text-xl font-bold text-one mb-4">Itinerary</h2>
 
               {faq.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-gray-100 p-4 rounded relative mb-4 space-y-3"
+                  className="bg-gray-100 py-4 px-2   rounded relative mb-4 space-y-3"
                 >
-                  <InputField
+                   <InputField
                     type="text"
                     placeholder="Title"
                     value={item.title}
@@ -1093,7 +1110,7 @@ function getChangedFields(original, updated) {
               {prices.map((price, index) => (
                 <div
                   key={index}
-                  className="flex gap-2 bg-gray-100 items-center mb-4 relative p-4 rounded"
+                  className="flex gap-2 flex-wrap bg-gray-100 items-center mb-4 relative p-4 rounded"
                 >
                   <InputField
                     type="number"
@@ -1194,7 +1211,7 @@ function getChangedFields(original, updated) {
                     <option value="total">Total</option>
                   </select>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <InputField
                       type="number"
                       placeholder="Discount Value"

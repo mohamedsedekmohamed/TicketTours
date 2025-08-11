@@ -15,6 +15,7 @@ import TripDetails from "./Landpage/Pages/UI/TripDetails";
 import Loginuser from "./Landpage/Pages/Loginuser";
 import ForgotPasswordFlow from "./Landpage/Pages/ForgotPasswordFlow";
 import CompleteBooking from '../src/Landpage/Pages/UI/CompleteBooking'
+import ProfileUser from './Landpage/Pages/ProfileUser'
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const stored = sessionStorage.getItem("isLoggedIn");
@@ -47,6 +48,7 @@ function App() {
               <Route path="/tripdetails/:id" element={<TripDetails />} />
               <Route path="/forgotpassword" element={<ForgotPasswordFlow />} />
               <Route path="/completebooking/:id" element={<CompleteBooking />} />
+              <Route path="/profileuser" element={<ProfileUser />} />
             </>
           ) : (
             <>

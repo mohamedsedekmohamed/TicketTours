@@ -20,6 +20,11 @@ const Information = () => {
   const [password, setPassword] = useState("");
   const [imagePath, setimagePath] = useState(null);
   const [imagePathtwo, setimagePathtwo] = useState(null);
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges =
+    groupedPrivileges["Profile"]?.map((p) => p.action) || [];
+
   const [errors, setErrors] = useState({
     name: "",
     phone: "",
@@ -180,7 +185,10 @@ if (edit && password && password.length >= 8) {
       value={password}
       onChange={handleChange}
     />
+    {Privileges.includes("Edit")&&(
      <ButtonDone  checkLoading={checkLoading} handleSave={handleSave}  edit="done"/>
+
+    )}
   </div>
 
   <ToastContainer />

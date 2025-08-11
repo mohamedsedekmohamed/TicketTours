@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Navtwo from "../../component/Navtwo";
 import { LuClock } from "react-icons/lu";
 import { IoFootsteps } from "react-icons/io5";
-import { FaUserFriends, FaMapMarkerAlt, FaCheck } from "react-icons/fa";
+import { FaUserFriends, FaMapMarkerAlt, FaCheck, FaTrashAlt } from "react-icons/fa"; // Added FaTrashAlt icon
 import { MdGTranslate } from "react-icons/md";
 import { VscError } from "react-icons/vsc";
 import axios from "axios";
@@ -16,12 +16,13 @@ import QuestionsWithimage from "../QuestionsWithimage";
 import BulkDiscountTable from "../BulkDiscountTable";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
-import Loading from '../../../ui/Loading'
+import Loading from "../../../ui/Loading";
 import { VscActivateBreakpoints } from "react-icons/vsc";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 const TripDetails = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
@@ -31,24 +32,29 @@ const TripDetails = () => {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const navigate = useNavigate();
- const [showPicker, setShowPicker] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [selectedExtraId, setSelectedExtraId] = useState("");
+  const [selectedExtras, setSelectedExtras] = useState([]); // Array to hold multiple selected extras
 
-const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
-  const storedBooking = JSON.parse(localStorage.getItem("bookingData"));
-
-  if (storedBooking) {
-    if (storedBooking?.tour?.id !== Number(id)) {
-      localStorage.removeItem("bookingData");
-    } else {
-      setAdults(storedBooking.adults || 0);
-      setChildren(storedBooking.children || 0);
-      setInfants(storedBooking.infants || 0);
+    const storedBooking = JSON.parse(localStorage.getItem("bookingData"));
+    if (storedBooking) {
+      if (storedBooking?.tour?.id !== Number(id)) {
+        localStorage.removeItem("bookingData");
+      } else {
+        setAdults(storedBooking.adults || 0);
+        setChildren(storedBooking.children || 0);
+        setInfants(storedBooking.infants || 0);
+        // Load extras from local storage
+        if (storedBooking.selectedExtras) {
+            setSelectedExtras(storedBooking.selectedExtras);
+        }
+      }
     }
-  }
-}, [id]);
+  }, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,12 +62,10 @@ const [startDate, setStartDate] = useState('');
         const res = await axios.get(
           `https://bcknd.tickethub-tours.com/api/user/landpage/category-tours/category/${id}`
         );
-       const tour = res.data.data;
-      setData(tour);
-
-      setStartDate(new Date(tour.startDate));
-      setEndDate(new Date(tour.endDate));
-
+        const tour = res.data.data;
+        setData(tour);
+        setStartDate(new Date(tour.startDate));
+        setEndDate(new Date(tour.endDate));
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -71,179 +75,249 @@ const [startDate, setStartDate] = useState('');
     fetchData();
   }, [id]);
 
-
-  if (loading) return <div className="h-screen w-screen"><Loading/></div>;
-
-  const images = data.images || [];
-  const [second, third] = [images[1], images[2]];
-  const remainingImages = images.slice(3);
-
- const pricePerAdult = data.price?.adult || 0;
-const pricePerChild = data.price?.child || 0;
-const pricePerInfant = data.price?.infant || 0;
-
-// Helper function to calculate discount
-const getDiscount = (group, count) => {
-  const groupDiscount = data.discounts?.find(
-    (d) =>
-      d.targetGroup === group &&
-      count >= d.minPeople &&
-      count <= d.maxPeople
-  );
-
-  if (!groupDiscount) return 0;
-
-  if (groupDiscount.type === "fixed") {
-    return Number(groupDiscount.value) * count;
-  } else if (groupDiscount.type === "percentage") {
-    const price =
-      group === "adult"
-        ? pricePerAdult
-        : group === "child"
-        ? pricePerChild
-        : pricePerInfant;
-    return price * count * (Number(groupDiscount.value) / 100);
-  }
-
-  return 0;
-};
-
-// Calculate totals
-const adultsTotal = adults * pricePerAdult;
-const childrenTotal = children * pricePerChild;
-const infantsTotal = infants * pricePerInfant;
-
-const adultsDiscount = getDiscount("adult", adults);
-const childrenDiscount = getDiscount("child", children);
-const infantsDiscount = getDiscount("infant", infants);
-
-const discountAmount = adultsDiscount + childrenDiscount + infantsDiscount;
-const total = adultsTotal + childrenTotal + infantsTotal - discountAmount;
-
-
-  
- const handleBooking = () => {
-  const bookingData = {
-    tour: data,
-    adults,
-    children,
-    infants,
-    adultsTotal,
-    childrenTotal,
-    infantsTotal,
-    adultsDiscount,
-    childrenDiscount,
-    infantsDiscount,
-    discountAmount,
-    total
+  // **New function to add an extra**
+  const addExtra = () => {
+    if (selectedExtraId && data?.extras) {
+      const extraToAdd = data.extras.find(e => e.id.toString() === selectedExtraId);
+      const isAlreadyAdded = selectedExtras.some(e => e.id.toString() === selectedExtraId);
+      
+      if (extraToAdd && !isAlreadyAdded) {
+        setSelectedExtras(prevExtras => [
+          ...prevExtras,
+          {
+            ...extraToAdd,
+            counts: {
+              adults: 0,
+              children: 0,
+              infants: 0,
+            },
+          },
+        ]);
+        setSelectedExtraId(""); // Reset the select dropdown
+      }
+    }
   };
 
-  localStorage.setItem("bookingData", JSON.stringify(bookingData));
- if (adults === 0 && children === 0 && infants === 0) {
-  toast.warn("At least one person must be entered.");
-  return; // stop navigation
-}
+  // **New function to remove an extra**
+  const removeExtra = (extraId) => {
+    setSelectedExtras(prevExtras => prevExtras.filter(e => e.id !== extraId));
+  };
 
-navigate(`/completebooking/${data.id}`);  
-};
+  // **New function to update extra counts**
+  const updateExtraCount = (extraId, type, newCount) => {
+    setSelectedExtras(prevExtras =>
+      prevExtras.map(extra =>
+        extra.id === extraId
+          ? { ...extra, counts: { ...extra.counts, [type]: newCount } }
+          : extra
+      )
+    );
+  };
+  
+
+  if (loading)
+    return (
+      <div className="h-screen w-screen">
+        <Loading />
+      </div>
+    );
+
+  const images = data.images || [];
+const second = images?.[1] ?? null;
+const third = images?.[2] ?? null;
+  const remainingImages = images.slice(3);
+
+  const pricePerAdult = data.price?.adult || 0;
+  const pricePerChild = data.price?.child || 0;
+  const pricePerInfant = data.price?.infant || 0;
+
+  // Calculate totals for selected extras
+  const extrasTotalPrice = selectedExtras.reduce((total, extra) => {
+    const adultsPrice = (extra.price?.adult || 0) * extra.counts.adults;
+    const childrenPrice = (extra.price?.child || 0) * extra.counts.children;
+    const infantsPrice = (extra.price?.infant || 0) * extra.counts.infants;
+    return total + adultsPrice + childrenPrice + infantsPrice;
+  }, 0);
+
+  const getDiscount = (group, count) => {
+    const groupDiscount = data.discounts?.find(
+      (d) =>
+        d.targetGroup === group && count >= d.minPeople && count <= d.maxPeople
+    );
+
+    if (!groupDiscount) return 0;
+
+    if (groupDiscount.type === "fixed") {
+      if (groupDiscount.kindBy === "person") {
+        return Number(groupDiscount.value) * count;
+      } else if (groupDiscount.kindBy === "total") {
+        return Number(groupDiscount.value);
+      }
+    } else if (groupDiscount.type === "percentage") {
+      const price =
+        group === "adult"
+          ? pricePerAdult
+          : group === "child"
+          ? pricePerChild
+          : pricePerInfant;
+
+      if (groupDiscount.type === "percentage") {
+        if (groupDiscount.kindBy === "person") {
+          return price * (Number(groupDiscount.value) / 100) * count;
+        } else if (groupDiscount.kindBy === "total") {
+          return price * count * (Number(groupDiscount.value) / 100);
+        }
+      }
+    }
+    return 0;
+  };
+
+  // Calculate totals
+  const adultsTotal = adults * pricePerAdult;
+  const childrenTotal = children * pricePerChild;
+  const infantsTotal = infants * pricePerInfant;
+
+  const adultsDiscount = getDiscount("adult", adults);
+  const childrenDiscount = getDiscount("child", children);
+  const infantsDiscount = getDiscount("infant", infants);
+
+  const discountAmount = adultsDiscount + childrenDiscount + infantsDiscount;
+  
+  // Update total calculation to include extras
+  const total = adultsTotal + childrenTotal + infantsTotal - discountAmount + extrasTotalPrice;
+
+  const handleBooking = () => {
+    const bookingData = {
+      tour: data,
+      adults,
+      children,
+      infants,
+      adultsTotal,
+      childrenTotal,
+      infantsTotal,
+      adultsDiscount,
+      childrenDiscount,
+      infantsDiscount,
+      discountAmount,
+      total,
+      // Store the array of selected extras
+      selectedExtras,
+    };
+
+    localStorage.setItem("bookingData", JSON.stringify(bookingData));
+    if (adults === 0 && children === 0 && infants === 0) {
+      toast.warn("At least one person must be entered.");
+      return; // stop navigation
+    }
+
+    navigate(`/completebooking/${data.id}`);
+  };
 
   return (
     <div>
       <Navtwo />
       <ToastContainer />
-
       <span className="px-3 text-[14px] font-normal text-ten">
-     <button onClick={()=>navigate(-1) }>{data.category}</button>    / <span className="text-four">{data.city}</span>
+        <button onClick={() => navigate(-1)}>{data.category}</button> /{" "}
+        <span className="text-four">{data.city}</span>
       </span>
-
       <h4 className="text-2xl sm:text-3xl md:text-4xl text-one font-semibold text-center mb-4 mt-2">
         {data.title}
       </h4>
-
-      {/* Images */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-3">
-  {/* الصورة الرئيسية */}
-  <div className="sm:col-span-2">
-    <img
-      src={data.mainImage}
-      alt="Main"
-      className="w-full h-full object-cover rounded-xl aspect-video"
-    />
-  </div>
-
-  {/* العمود الجانبي */}
-  <div className="flex sm:flex-col gap-3 h-full">
-    {[second, third].map((img, idx) =>
-      img ? (
-        <div key={idx} className="relative flex-1">
+        <div className="sm:col-span-2">
           <img
-            src={img}
-            alt={`image-${idx}`}
-            className="w-full h-full object-cover rounded-xl"
+            src={data.mainImage}
+            alt="Main"
+            className="w-full h-full object-cover rounded-xl aspect-video"
           />
-          {idx === 1 && remainingImages.length > 0 && (
-            <button
-              onClick={() => setShowAll(true)}
-              className="absolute inset-0 bg-black/60 text-white text-lg font-semibold flex items-center justify-center rounded-xl"
-            >
-              +{remainingImages.length}
-            </button>
+        </div>
+        <div className="flex sm:flex-col gap-3 h-full">
+          {[second, third].map((img, idx) =>
+            img ? (
+              <div key={idx} className="relative flex-1">
+                <img
+                  src={img}
+                  alt={`image-${idx}`}
+                  className="w-full h-full object-cover rounded-xl"
+                />
+                {idx === 1 && remainingImages.length > 0 && (
+                  <button
+                    onClick={() => setShowAll(true)}
+                    className="absolute inset-0 bg-black/60 text-white text-lg font-semibold flex items-center justify-center rounded-xl"
+                  >
+                    +{remainingImages.length}
+                  </button>
+                )}
+              </div>
+            ) : null
           )}
         </div>
-      ) : null
-    )}
-  </div>
-</div>
-
-      {/* Image Overlay Viewer */}
+      </div>
       {showAll && (
         <div className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4 overflow-y-auto">
-          <button onClick={() => setShowAll(false)} className="absolute top-4 right-4 text-white text-3xl">
+          <button
+            onClick={() => setShowAll(false)}
+            className="absolute top-4 right-4 text-white text-3xl"
+          >
             &times;
           </button>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10 w-full max-w-6xl">
             {images.map((img, i) => (
-              <img key={i} src={img} alt={`img-${i}`} className="w-full h-48 object-cover rounded-lg" />
+              <img
+                key={i}
+                src={img}
+                alt={`img-${i}`}
+                className="w-full h-48 object-cover rounded-lg"
+              />
             ))}
           </div>
         </div>
       )}
-
-      {/* Main Layout */}
       <div className="flex flex-col lg:flex-row gap-6 mt-10 px-5 lg:px-10 min-h-screen">
-        {/* Left: Tour Details */}
         <div className="w-full lg:w-2/3">
-          {/* Info Boxes */}
-          <div className="flex w-full  gap-6 mb-10">
+          <div className="flex w-full  gap-6 mb-10">
             {[
-              { icon: <LuClock />, title: "Duration", value: data.durationHours },
-              { icon: <IoFootsteps />, title: "Tour Type", value: "Daily Tour" },
-              { icon: <FaUserFriends />, title: "Group Size", value: data.maxUsers },
-              { icon: <VscActivateBreakpoints />, title: "points", value: data.points
- },
+              {
+                icon: <LuClock />,
+                title: "Duration",
+                value: data.durationHours,
+              },
+              { icon: <IoFootsteps />, title: "Tour Type", value: " Tour" },
+              {
+                icon: <FaUserFriends />,
+                title: "Group Size",
+                value: data.maxUsers,
+              },
+              {
+                icon: <VscActivateBreakpoints />,
+                title: "points",
+                value: data.points,
+              },
             ].map((item, i) => (
-              <div key={i} className="flex w-full items-center gap-4 border border-one p-3 rounded-lg">
+              <div
+                key={i}
+                className="flex w-full items-center gap-4 border border-one p-3 rounded-lg"
+              >
                 <div className="text-one text-3xl">{item.icon}</div>
                 <div>
                   <div className="font-semibold text-one">{item.title}</div>
                   <div className="text-one">{item.value}</div>
-                  
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Sections */}
           <div className="space-y-10">
-            {/* About */}
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-one mb-2">About This Tour</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-one mb-2">
+                About This Tour
+              </h2>
               <p className="text-one leading-relaxed">{data.description}</p>
             </div>
-
-            {/* Highlights */}
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-one mb-2">Highlights</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-one mb-2">
+                Highlights
+              </h2>
               <ul className="space-y-2">
                 {data.highlights?.map((h, i) => (
                   <li key={i} className="flex items-center text-one">
@@ -252,22 +326,29 @@ navigate(`/completebooking/${data.id}`);
                 ))}
               </ul>
             </div>
-
-            {/* Included/Excluded */}
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-one mb-4">Included / Excluded</h2>
-              <div className="grid sm:grid-cols-2 gap-6">
-                <ul className="space-y-2">
+            <div className="px-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-one mb-6">
+                Included / Excluded
+              </h2>
+              <div className="flex flex-col sm:flex-row sm:gap-7 flex-wrap">
+                <ul className="flex-1 space-y-3  py-4 w-full  sm:w-[40%]">
                   {data.includes?.map((inc, i) => (
-                    <li key={i} className="flex items-center text-one">
-                      <FaCheck className="text-four mr-2" /> {inc}aa
+                    <li
+                      key={i}
+                      className="flex items-center text-one break-words"
+                    >
+                      <FaCheck className="text-four mr-3 " /> {inc}
                     </li>
                   ))}
                 </ul>
-                <ul className="space-y-2">
+                <ul className="flex-1 space-y-3 px-6 py-4 ">
                   {data.excludes?.map((exc, i) => (
-                    <li key={i} className="flex items-center">
-                      <VscError  className="mr-2  text-red-500" /> <span className="text-one">{exc} </span>
+                    <li
+                      key={i}
+                      className="flex items-center text-one break-words"
+                    >
+                      <VscError className="mr-3 text-red-500 flex-shrink-0" />{" "}
+                      <span>{exc}</span>
                     </li>
                   ))}
                 </ul>
@@ -275,132 +356,212 @@ navigate(`/completebooking/${data.id}`);
             </div>
           </div>
         </div>
-
-        {/* Right: Booking Box */}
         <div className="w-full lg:w-1/3 bg-gray-50 border border-one rounded-3xl p-6 shadow-lg sticky top-6 max-h-[90vh] overflow-y-auto">
-                  <h2 className="text-xl font-bold text-one mb-2">INFO</h2>
-
-          <div className="mb-2 text-sm">
-            {/* <span className="line-through text-gray-400 pl-12">${data?.price?.adult}</span> */}
-            {/* <span className="block text-lg font-semibold text-gray-900">From: $225.00</span> */}
-          </div>
+          <h2 className="text-xl font-bold text-one mb-2">INFO</h2>
+          <div className="mb-2 text-sm"></div>
           <div className="text-sm text-gray-500 mb-4">
-            Destination: <span className="text-one font-medium">{data.country}, {data.city}</span>
+            Destination:{" "}
+            <span className="text-one font-medium">
+              {data.country}, {data.city}
+            </span>
           </div>
-
-                  <div className="mb-4 flex gap-2">
+          <div className="mb-4 flex gap-2">
             <div
-        className="flex gap-2 cursor-pointer items-center"
-        onClick={() => setShowPicker(!showPicker)}
-      >
-        <h4 className="font-medium text-white bg-one px-3 py-1 rounded-2xl text-3xl">Date</h4>
-        <p className="text-one">
-          {startDate.toISOString().split("T")[0]} {"->"} {endDate.toISOString().split("T")[0]}
-        </p>
-      </div>
-
-   {showPicker && (
-  <div className="fixed inset-0 bg-black/80  bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-4 rounded-lg shadow-lg relative">
-      <div className="pointer-events-none">
-        <DatePicker
-          selected={startDate}
-          startDate={startDate}
-          endDate={endDate}
-          selectsRange
-          inline
-        />
-      </div>
-      <button
-        className="mt-4 px-4 py-2 bg-one text-white rounded"
-        onClick={() => setShowPicker(false)}
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
-
-          </div>
-
-          {/* People Counters */}
-          {[["Adults", "Over 18+", adults, setAdults], ["Children", "Under 12", children, setChildren], ["Infant", "Under 3", infants, setInfants]].map(
-            ([label, desc, count, setFn]) => (
-              <div key={label} className="flex justify-between items-center border-t py-3">
-                <div>
-                  <p className="font-medium text-gray-800">{label}</p>
-                  <p className="text-sm text-gray-500">{desc}</p>
-                </div>
-                <div className="flex items-center gap-2">
+              className="flex gap-2 cursor-pointer items-center"
+              onClick={() => setShowPicker(!showPicker)}
+            >
+              <h4 className="font-medium text-white bg-one px-3 py-1 rounded-2xl text-3xl">
+                Date
+              </h4>
+              <p className="text-one">
+                {startDate.toISOString().split("T")[0]} {"->"} {endDate.toISOString().split("T")[0]}
+              </p>
+            </div>
+            {showPicker && (
+              <div className="fixed inset-0 bg-black/80  bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-4 rounded-lg shadow-lg relative">
+                  <div className="pointer-events-none">
+                    <DatePicker
+                      selected={startDate}
+                      startDate={startDate}
+                      endDate={endDate}
+                      selectsRange
+                      inline
+                    />
+                  </div>
                   <button
-                    onClick={() => setFn(count + 1)}
-                    className="w-7 h-7 bg-one text-white rounded-full"
+                    className="mt-4 px-4 py-2 bg-one text-white rounded"
+                    onClick={() => setShowPicker(false)}
                   >
-                    +
-                  </button>
-                  <span className="w-6 text-center">{count}</span>
-                  <button
-                    onClick={() => setFn(count > 0 ? count - 1 : 0)}
-                    className="w-7 h-7 bg-one text-white rounded-full"
-                  >
-                    -
+                    Close
                   </button>
                 </div>
               </div>
-            )
-          )}
+            )}
+          </div>
+          {[
+            ["Adults", "Over 18+", pricePerAdult, adults, setAdults],
+            ["Children", "Under 12", pricePerChild, children, setChildren],
+            ["Infant", "Under 3", pricePerInfant, infants, setInfants],
+          ].map(([label, desc, price, count, setFn]) => (
+            <div
+              key={label}
+              className="flex justify-between items-center border-t py-3"
+            >
+              <div>
+                <p className="font-medium text-gray-800">{label}</p>
+                <p className="font-medium text-gray-800">{price}</p>
+                <p className="text-sm text-gray-500">{desc}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setFn(count > 0 ? count - 1 : 0)}
+                  className="w-7 h-7 bg-one text-white rounded-full"
+                >
+                  -
+                </button>
+                <span className="w-6 text-center">{count}</span>
+                <button
+                  onClick={() => setFn(count + 1)}
+                  className="w-7 h-7 bg-one text-white rounded-full"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
 
-     {/* Total */}
-<div className="mt-6 border-t pt-4">
-  <div className="flex justify-between text-base">
-    <span>Subtotal:</span>
-    <span>${(adultsTotal + childrenTotal + infantsTotal).toFixed(2)}</span>
-  </div>
+          {/* **Multiple extras section** */}
+          <label className="block mt-4 mb-2 font-medium">Extra Add-ons</label>
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedExtraId}
+              onChange={(e) => setSelectedExtraId(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">اختر إضافة (Add-on)</option>
+              {data.extras?.map((extra) => (
+                <option key={extra.id} value={extra.id}>
+                  {extra.name}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={addExtra}
+              disabled={!selectedExtraId}
+              className="w-10 h-10 bg-one text-white rounded-md flex items-center justify-center disabled:opacity-50"
+            >
+              +
+            </button>
+          </div>
+          
+          {selectedExtras.map((extra) => (
+            <div key={extra.id} className="mt-4 border-t pt-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-bold text-lg">{extra.name}</h3>
+                <button onClick={() => removeExtra(extra.id)} className="text-red-500 hover:text-red-700">
+                  <FaTrashAlt />
+                </button>
+              </div>
+              
+              <div className="space-y-2">
+                {[
+                  ["Adults", "Over 18+", extra.price.adult, extra.counts.adults, (newCount) => updateExtraCount(extra.id, 'adults', newCount)],
+                  ["Children", "Under 12", extra.price.child, extra.counts.children, (newCount) => updateExtraCount(extra.id, 'children', newCount)],
+                  ["Infant", "Under 3", extra.price.infant, extra.counts.infants, (newCount) => updateExtraCount(extra.id, 'infants', newCount)],
+                ].map(([label, desc, price, count, setFn]) => (
+                  <div key={label} className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium text-gray-800">{label}</p>
+                      <p className="font-medium text-gray-800">${price}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setFn(count > 0 ? count - 1 : 0)}
+                        className="w-7 h-7 bg-one text-white rounded-full"
+                      >
+                        -
+                      </button>
+                      <span className="w-6 text-center">{count}</span>
+                      <button
+                        onClick={() => setFn(count + 1)}
+                        className="w-7 h-7 bg-one text-white rounded-full"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
 
-  {discountAmount > 0 && (
-    <div className="flex justify-between text-sm text-red-500">
-      <span>Discount:</span>
-      <span>- ${discountAmount.toFixed(2)}</span>
-    </div>
-  )}
 
-  <div className="flex justify-between text-base font-semibold mt-2">
-    <span>Total:</span>
-    <span>${total.toFixed(2)}</span>
-  </div>
-</div>
-
-
-           <button
-      onClick={handleBooking}
-      className="bg-one text-white px-4 py-2 rounded mt-6"
-    >
-      Book Now
-    </button>
+          <div className="mt-6 border-t pt-4">
+            <div className="flex justify-between text-base">
+              <span>Subtotal:</span>
+              <span>
+                $
+                {(
+                  adultsTotal +
+                  childrenTotal +
+                  infantsTotal +
+                  extrasTotalPrice
+                ).toFixed(2)}
+              </span>
+            </div>
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-sm text-red-500">
+                <span>Discount:</span>
+                <span>- ${discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-base font-semibold mt-2">
+              <span>Total:</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+          </div>
+          <button
+            onClick={handleBooking}
+            className="bg-one text-white px-4 py-2 rounded mt-6 w-full"
+          >
+            Book Now
+          </button>
         </div>
       </div>
-
-      {/* Tour Location */}
       <div className="px-5 lg:px-10 my-10">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-one">Tour's Location</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-one">
+            Tour's Location
+          </h2>
           <div className="text-gray-600 flex items-center gap-2 mt-2 sm:mt-0">
-            <FaMapMarkerAlt /> <span>{data.city}, {data.country}</span>
+            <FaMapMarkerAlt />{" "}
+            <span>
+              {data.city}, {data.country}
+            </span>
           </div>
         </div>
         <div className="w-full h-64 sm:h-80 lg:h-[400px]">
           <StaticMap />
         </div>
       </div>
-
-      {/* Itinerary & FAQ */}
       <QuestionsWithimage data={data?.itinerary} />
       <div className="px-4 py-6">
         <p className=" text-one text-[30px] lg:text-[48px] font-normal ">
-Discount      </p>
-        <BulkDiscountTable title=" Discount Adult" data={data?.discounts?.filter(d => d.targetGroup === "adult")} />
-        <BulkDiscountTable title=" Discount Children" data={data?.discounts?.filter(d => d.targetGroup === "child")} />
-        <BulkDiscountTable title=" Discount Infant" data={data?.discounts?.filter(d => d.targetGroup === "infant")} />
+          Discount{" "}
+        </p>
+        <BulkDiscountTable
+          title=" Discount Adult"
+          data={data?.discounts?.filter((d) => d.targetGroup === "adult")}
+        />
+        <BulkDiscountTable
+          title=" Discount Children"
+          data={data?.discounts?.filter((d) => d.targetGroup === "child")}
+        />
+        <BulkDiscountTable
+          title=" Discount Infant"
+          data={data?.discounts?.filter((d) => d.targetGroup === "infant")}
+        />
       </div>
       <Questions data={data?.faq} stopstatus />
       <Footer />

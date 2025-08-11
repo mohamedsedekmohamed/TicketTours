@@ -9,11 +9,12 @@ import axios from "axios";
 import Loading from '../../../ui/Loading';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import FileUploadButtontype from './FileUploadButtontype'
 const CompleteBooking = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [image, setimage] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,6 +29,7 @@ const CompleteBooking = () => {
   const bookingData =
     state || JSON.parse(localStorage.getItem("bookingData")) || {};
 
+  // **(1) Updated to retrieve `selectedExtras` from bookingData**
   const {
     adults = 0,
     children = 0,
@@ -38,7 +40,8 @@ const CompleteBooking = () => {
     infantsTotal = 0,
     adultsDiscount = 0,
     childrenDiscount = 0,
-    infantsDiscount = 0
+    infantsDiscount = 0,
+    selectedExtras = []
   } = bookingData;
 
   // Fetch tour data
@@ -60,94 +63,101 @@ const CompleteBooking = () => {
 
   const [paymentOptions, setPaymentOptions] = useState([]);
 
-useEffect(() => {
-  const fetchPaymentMethods = async () => {
-    try {
-      const res = await axios.get(
-        "https://bcknd.tickethub-tours.com/api/admin/paymentmethod/active"
-      );
-      if (res.data.success && res.data.data?.methods) {
-        const formatted = res.data.data.methods.map((m) => ({
-          id: m.id,
-          label: m.name,
-          description: m.describtion,
-          image: m.logoPath
-        }));
-        setPaymentOptions(formatted);
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      try {
+        const res = await axios.get(
+          "https://bcknd.tickethub-tours.com/api/user/landPage/active"
+        );
+        if (res.data.success && res.data.data?.methods) {
+          const formatted = res.data.data.methods.map((m) => ({
+            id: m.id,
+            label: m.name,
+            description: m.describtion,
+            image: m.logoPath
+          }));
+          setPaymentOptions(formatted);
+        }
+      } catch (err) {
+        console.error("Error fetching payment methods:", err);
       }
-    } catch (err) {
-      console.error("Error fetching payment methods:", err);
-    }
-  };
-  fetchPaymentMethods();
-}, []);
+    };
+    fetchPaymentMethods();
+  }, []);
 
-  if (loading || !data)
-    return (
-      <div className="h-screen w-screen">
-        <Loading />
-      </div>
-    );
+ if (loading) {
+  return (
+    <div className="h-screen w-screen">
+      <Loading />
+    </div>
+  );
+}
 
-  // Payment options
- 
-  // Handle input change
+if (!data) {
+  navigate(-1);
+  return null; 
+}
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  // Submit booking
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast.warn("You need to log in first.");
-      return;
+        toast.warn("You need to log in first.");
+        return;
     }
 
     if (!selectedPayment) {
-      toast.warn("Please select a payment method.");
-      return;
+        toast.warn("Please select a payment method.");
+        return;
     }
 
     try {
-      const payload = {
-        tourId: id,
-        ...formData,
-        paymentMethod: selectedPayment,
-        bookingDetails: {
-          adults,
-          children,
-          infants,
-          adultsTotal,
-          childrenTotal,
-          infantsTotal,
-          adultsDiscount,
-          childrenDiscount,
-          infantsDiscount,
-          total
-        }
-      };
+        const payload = {
+            tourId: Number(data.tourScheduleId), 
+            fullName: formData.name, 
+            email: formData.email,
+            phone: formData.phone,
+            notes: formData.notes,
+            adultsCount: Number(adults), 
+            childrenCount: Number(children),
+            infantsCount: Number(infants),
+            totalAmount: total,
+            paymentMethodId: selectedPayment,
+            proofImage:image,
 
-      const res = await axios.post(
-        "https://bcknd.tickethub-tours.com/api/user/booking", // غير الـ endpoint لو مختلف
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+            extras: selectedExtras.map(extra => ({
+                id: extra.id,
+                count: {
+                    adult: String(extra.counts.adults),
+                    child: String(extra.counts.children), 
+                    infant: String(extra.counts.infants) 
+                }
+            }))
+        };
 
-      toast.success("Booking completed successfully!");
-      navigate("/success"); // صفحة النجاح
+        const res = await axios.post(
+            "https://bcknd.tickethub-tours.com/api/user/landpage/book-tour",
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+localStorage.removeItem("bookingData");
+
+        toast.success("Booking completed successfully!");
+          navigate("/");
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to complete booking.");
+        toast.error("Failed to complete booking.");
     }
-  };
+};
 
   // Prices
   const pricePerAdult = data.price?.adult || 0;
@@ -225,7 +235,12 @@ useEffect(() => {
               </button>
             ))}
           </div>
-
+<FileUploadButtontype 
+          onFileChange={setimage}
+          pic={image}
+          des={`Payment receipt image  `}
+        
+/>
           <button
             type="submit"
             className="mt-4 w-full bg-one hover:bg-one/95 hover:scale-105 text-white py-2 px-4 rounded-xl font-semibold"
@@ -262,11 +277,12 @@ useEffect(() => {
           </div>
 
           <div className="mt-6 border-t pt-4">
-            <h3 className="text-md font-semibold text-one mb-2">Price:</h3>
+            <h3 className="text-md font-semibold text-one mb-2">Pricing Details:</h3>
 
+            {/* Main tour prices */}
             <div className="flex justify-between text-sm py-1">
               <span>Adults ({adults} x ${pricePerAdult}):</span>
-              <span>${adultsTotal}</span>
+              <span>${adultsTotal.toFixed(2)}</span>
             </div>
             {adultsDiscount > 0 && (
               <div className="flex justify-between text-sm py-1 text-red-500">
@@ -277,7 +293,7 @@ useEffect(() => {
 
             <div className="flex justify-between text-sm py-1">
               <span>Children ({children} x ${pricePerChild}):</span>
-              <span>${childrenTotal}</span>
+              <span>${childrenTotal.toFixed(2)}</span>
             </div>
             {childrenDiscount > 0 && (
               <div className="flex justify-between text-sm py-1 text-red-500">
@@ -288,13 +304,43 @@ useEffect(() => {
 
             <div className="flex justify-between text-sm py-1">
               <span>Infants ({infants} x ${pricePerInfant}):</span>
-              <span>${infantsTotal}</span>
+              <span>${infantsTotal.toFixed(2)}</span>
             </div>
             {infantsDiscount > 0 && (
               <div className="flex justify-between text-sm py-1 text-red-500">
                 <span>Infants Discount:</span>
                 <span>-${infantsDiscount.toFixed(2)}</span>
               </div>
+            )}
+
+            {/* **(3) Display selected extras** */}
+            {selectedExtras.length > 0 && (
+              <>
+                <h3 className="text-md font-semibold text-one mt-4 mb-2 border-t pt-4">Extras:</h3>
+                {selectedExtras.map((extra) => (
+                  <div key={extra.id} className="mb-2">
+                    <h4 className="font-medium text-gray-800">{extra.name}</h4>
+                    {extra.counts.adults > 0 && (
+                      <div className="flex justify-between text-sm py-1 pl-4">
+                        <span>Adults ({extra.counts.adults} x ${extra.price.adult}):</span>
+                        <span>${(extra.counts.adults * extra.price.adult).toFixed(2)}</span>
+                      </div>
+                    )}
+                    {extra.counts.children > 0 && (
+                      <div className="flex justify-between text-sm py-1 pl-4">
+                        <span>Children ({extra.counts.children} x ${extra.price.child}):</span>
+                        <span>${(extra.counts.children * extra.price.child).toFixed(2)}</span>
+                      </div>
+                    )}
+                    {extra.counts.infants > 0 && (
+                      <div className="flex justify-between text-sm py-1 pl-4">
+                        <span>Infants ({extra.counts.infants} x ${extra.price.infant}):</span>
+                        <span>${(extra.counts.infants * extra.price.infant).toFixed(2)}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </>
             )}
 
             <div className="flex justify-between text-base font-semibold border-t pt-4 mt-3">

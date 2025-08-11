@@ -5,14 +5,15 @@ import AOS from "aos";
 import logo from "../../assets/newlogo.png";
 import "aos/dist/aos.css";
 import { MdArrowOutward } from "react-icons/md";
+import { TbUserHexagon } from "react-icons/tb";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const location = useLocation();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     AOS.init({
@@ -71,7 +72,7 @@ const Nav = () => {
                         isInServices ? "text-white font-black" : "text-two"
                       }`}
                     >
-                      {isInServices ? currentService.name  : link.name}
+                      {isInServices ? currentService.name : link.name}
                       <span
                         className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-300 ${
                           isInServices ? "w-full" : "w-0 group-hover:w-full"
@@ -88,7 +89,7 @@ const Nav = () => {
                             onClick={() => setDropdownOpen(false)}
                             className="flex items-center justify-between px-3 py-2 text-three/80 text-[20px] hover:text-three transition w-full text-left"
                           >
-                            {service.name} <MdArrowOutward/>
+                            {service.name} <MdArrowOutward />
                           </Link>
                         ))}
                       </div>
@@ -106,13 +107,13 @@ const Nav = () => {
                     isActive(link.path) ? "text-white font-black" : "text-two"
                   }`}
                 >
-{link.name === "Trips" ? (
-  <>
-    {link.name} <MdArrowOutward />
-  </>
-) : (
-  <>{link.name}</>
-)}
+                  {link.name === "Trips" ? (
+                    <>
+                      {link.name} <MdArrowOutward />
+                    </>
+                  ) : (
+                    <>{link.name}</>
+                  )}
                   <span
                     className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-300 ${
                       isActive(link.path) ? "w-full" : "w-0 group-hover:w-full"
@@ -125,6 +126,16 @@ const Nav = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex gap-2">
+            {token && (
+              <TbUserHexagon
+                onClick={() => {
+                  navigate("/profileuser");
+                }}
+                className="w-[110px] h-[40px]  text-one hover:text-one/70    rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
+              >
+              </TbUserHexagon>
+            )}
+
             <button
               onClick={() => {
                 navigate("/signup");
@@ -143,6 +154,15 @@ const Nav = () => {
             </button>
           </div>
           <div className="flex md:hidden gap-2">
+            {token && (
+              <TbUserHexagon
+                onClick={() => {
+                  navigate("/profileuser");
+                }}
+                className="w-[50px] h-[40px] text-one   rounded-[24px] text-[10px] font-medium"
+              >
+              </TbUserHexagon>
+            )}
             <button
               onClick={() => {
                 navigate("/signup");

@@ -23,6 +23,8 @@ const BookingsManagement = () => {
             id: item.id,
             tourName: item.tourName,
             userName: item.userName,
+            tourStartDate: item.tourStartDate,
+            tourEndDate: item.tourEndDate,
             status: item.status,
           }))
         );
@@ -37,6 +39,8 @@ const BookingsManagement = () => {
   const columns = [
     { key: "tourName", label: "Tour Name" },
     { key: "userName", label: "User Name" },
+    { key: "tourStartDate", label: "Start Date" },
+    { key: "tourEndDate", label: "End Date" },
   ];
 
   const filteredData = data
@@ -63,7 +67,9 @@ const BookingsManagement = () => {
             }`}
             onClick={() => setActiveTab(status)}
           >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {status==="pending"&& "Upcaoming"}
+            {status==="confirmed"&& "Current"}
+            {status==="cancelled"&& "Histroy"}
           </button>
         ))}
       </div>
@@ -71,36 +77,13 @@ const BookingsManagement = () => {
       <NavAndSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} like />
       <ToastContainer />
 
-         {activeTab === "confirmed" || activeTab === "cancelled" ? (
         <DynamicTable
           data={data}
           columns={columns}
           filteredData={filteredData}
     
         />
-      ) : (
-        <DynamicTable
-          data={data}
-          columns={columns}
-          filteredData={filteredData}
-          buttonstatus={(row) =>
-            row.status === "pending" ? (
-              <td className="flex gap-1 justify-start">
-                <select
-                  value={row.status}
-                  onChange={(e) =>
-                    console.log("Change status for", row, "to", e.target.value)
-                  }
-                  className="border border-gray-400 bg-one text-white rounded-3xl px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-one"
-                >
-                  <option value="confirmed">Confirmed</option>
-                  <option value="rejected">Rejected</option>
-                </select>
-              </td>
-            ) : null
-          }
-        />
-      )}
+     
     </div>
   );
 };

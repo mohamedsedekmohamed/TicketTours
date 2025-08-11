@@ -24,7 +24,7 @@ const InputField = ({
         onChange={onChange}
         maxLength={maxLength}
         placeholder={placeholder}
-        className={`w-full rounded-2xl border px-4 py-3 sm:text-sm transition-all
+        className={` w-full rounded-2xl border px-4 py-3 sm:text-sm transition-all
           ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
           ${hasValue ? 'border-one/50 bg-green-50' : 'border-gray-300 '}
           focus:outline-none focus:ring-2 focus:ring-one focus:border-one
