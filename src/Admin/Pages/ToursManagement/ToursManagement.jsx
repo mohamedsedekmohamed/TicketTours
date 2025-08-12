@@ -39,19 +39,20 @@ const ToursManagement = () => {
         // },
       })
       .then((response) => {
+        console.log(response.data.data.tours)
         setData(
           response.data.data.tours.map((item) => ({
-            id: item.tours.id,
-            title: item.tours.title,
-            startDate: item.tours.startDate,
-            endDate: item.tours.endDate,
-            mainImage: item.tours.mainImage,
-            durationDays: item.tours.durationDays,
-            status: item.tours.status,
-            maxUsers: item.tours.maxUsers,
-            description: item.tours.describtion, // لاحظ الكتابة
-            cityName: item.cityName,
-            countryName: item.countryName,
+            id: item.id,
+            title: item.title,
+            startDate: item.startDate,
+            endDate: item.endDate,
+            mainImage: item.mainImage,
+            durationDays: item.durationDays,
+            status: item.status,
+            maxUsers: item.maxUsers,
+            description: item.describtion, 
+            cityName: item.country,
+            countryName: item.city,
           }))
         );
         setLoading(false);

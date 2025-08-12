@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from "react";
 import DynamicTable from "../../component/DynamicTable";
-import { useNavigate } from "react-router-dom";
-import NavAndSearch from "../../component/NavAndSearch";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../../../ui/Loading";
+import NavAndSearch from "../../component/NavAndSearch";
+import { set } from "date-fns";
 
 const Payment = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [update, setUpdate] = useState(false);
-  const [activeTab, setActiveTab] = useState("pending"); // التاب الافتراضي
+  const [activeTab, setActiveTab] = useState("pending");
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
+  // جلب البيانات
   useEffect(() => {
+    setLoading(true);
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/payments/allPayment`)
       .then((response) => {
-        setData(
-          response.data.data.payments.map((item) => ({
-            id: item.id,
-            method: item.method,
-            amount: item.amount,
-            status: item.status,
-          }))
-        );
+        const payments = response.data.data.payments.map((item) => ({
+          method: item.payment.method,
+          amount: item.payment.amount,
+          status: item.payment.status,
+          fullName: item.bookingDetails?.fullName || "",
+          phone: item.bookingDetails?.phone || "",
+          ids: item.payment.id,
+        }));
+        setData(payments);
         setLoading(false);
       })
       .catch(() => {
@@ -34,9 +39,12 @@ const Payment = () => {
       });
   }, [update]);
 
+  // أعمدة الجدول
   const columns = [
     { key: "method", label: "Method" },
-    { key: "amount", label: "Amount " },
+    { key: "amount", label: "Amount" },
+    { key: "fullName", label: "Name" },
+    { key: "phone", label: "Phone" },
   ];
 
   const filteredData = data
@@ -46,46 +54,78 @@ const Payment = () => {
         value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
-const handleStatusChange = async (row, newStatus) => {
-  let reason = "";
 
-  if (newStatus === "rejected") {
-    reason = prompt("Enter the reason for rejection");
-    if (!reason) {
-      toast.warn("The reason for the rejection must be stated.");
+  // تحديث حالة الدفع
+  const handleStatusChange = async (row, newStatus) => {
+    if (newStatus === "cancelled") {
+      setSelectedRow(row);
+      setRejectionReason("");
       return;
     }
-  }
 
-  try {
-    const res = await fetch(
-      `https://bcknd.tickethub-tours.com/api/admin/payments/pending-payments/${row.id}`,
-      {
-        method: "PATCH", 
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-          ...(reason && {rejectionReason: reason }), 
-        }),
+    try {
+      const res = await fetch(
+        `https://bcknd.tickethub-tours.com/api/admin/payments/pending-payments/${row.ids}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (res.ok) {
+        toast.success("Status updated successfully.");
+        setUpdate((p) => !p);
+      } else {
+        throw new Error("Status update failed");
       }
-    );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    if (!res.ok) throw new Error("فشل تحديث الحالة");
+  const submitRejection = async () => {
+    if (!rejectionReason.trim()) {
+      toast.warn("Please provide a reason for rejection.");
+      return;
+    }
 
-    console.log("تم التحديث بنجاح");
-  } catch (error) {
-    console.error(error);
-  }
-};
+    try {
+      const res = await fetch(
+        `https://bcknd.tickethub-tours.com/api/admin/payments/pending-payments/${selectedRow.ids}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: "cancelled",
+            rejectionReason,
+          }),
+        }
+      );
+
+      if (res.ok) {
+        toast.success("Rejection sent successfully.");
+        setSelectedRow(null);
+        setRejectionReason("");
+      setTimeout(() => {
+         setUpdate((p) => !p);
+      }, 1000); 
+      } else {
+        throw new Error("Rejection failed");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (loading) return <Loading />;
 
   return (
     <div className="w-full">
       {/* Tabs */}
-      <div className="flex gap-4 justify-around mb-4 border-b ">
+            <ToastContainer />
+
+      <div className="flex gap-4 justify-around mb-4 border-b">
         {["pending", "confirmed", "cancelled"].map((status) => (
           <button
             key={status}
@@ -101,43 +141,67 @@ const handleStatusChange = async (row, newStatus) => {
         ))}
       </div>
 
-      <NavAndSearch
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        like
-      />
-      <ToastContainer />
+      <NavAndSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} like />
 
-      {/* Table */}
-      {activeTab === "confirmed" || activeTab === "cancelled" ? (
-        <DynamicTable
-          data={data}
-          columns={columns}
-          filteredData={filteredData}
-    
-        />
-      ) : (
-        <DynamicTable
-          data={data}
-          columns={columns}
-          filteredData={filteredData}
-          buttonstatus={(row) =>
-            row.status === "pending" ? (
-              <td className="flex gap-1 justify-start">
-               <select
-  value={row.status}
-  onChange={(e) => handleStatusChange(row, e.target.value)}
-  className="border border-gray-400 bg-one text-white rounded-3xl px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-one"
->
-  <option value="confirmed">Confirmed</option>
-  <option value="rejected">Rejected</option>
-</select>
-
-              </td>
-            ) : null
-          }
-        />
+      {/* إدخال سبب الرفض */}
+      {selectedRow && (
+        <div className="bg-gray-100 border p-4 mb-4 rounded shadow">
+          <h2 className="text-lg font-semibold mb-2">
+            Reason for rejecting payment #{selectedRow.ids}
+          </h2>
+          <textarea
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
+            placeholder="Write the rejection reason here..."
+            className="w-full border rounded p-2 mb-3"
+            rows="3"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={submitRejection}
+              className="bg-one text-white px-4 py-1 rounded"
+            >
+              Send Rejection
+            </button>
+            <button
+              onClick={() => setSelectedRow(null)}
+              className="bg-gray-300 px-4 py-1 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
+
+      {/* الجدول */}
+      <DynamicTable
+        data={data}
+        columns={columns}
+        filteredData={filteredData}
+        view={(row) => {
+          
+        }}
+        buttonstatus={
+          activeTab === "pending"
+            ? (row) =>
+                row.status === "pending" && (
+                  <td>
+                    <select
+                      defaultValue=""
+                      onChange={(e) => handleStatusChange(row, e.target.value)}
+                      className="border border-gray-400 bg-one text-white rounded-3xl px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-one"
+                    >
+                      <option disabled value="">
+                        Select
+                      </option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="cancelled">Rejected</option>
+                    </select>
+                  </td>
+                )
+            : undefined
+        }
+      />
     </div>
   );
 };

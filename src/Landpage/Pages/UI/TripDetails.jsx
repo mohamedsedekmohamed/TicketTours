@@ -276,7 +276,7 @@ const third = images?.[2] ?? null;
       )}
       <div className="flex flex-col lg:flex-row gap-6 mt-10 px-5 lg:px-10 min-h-screen">
         <div className="w-full lg:w-2/3">
-          <div className="flex w-full  gap-6 mb-10">
+          <div className="flex w-full flex-wrap  gap-6 mb-10">
             {[
               {
                 icon: <LuClock />,
@@ -297,7 +297,7 @@ const third = images?.[2] ?? null;
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex w-full items-center gap-4 border border-one p-3 rounded-lg"
+                className="flex w-full items-center gap-2 border border-one p-3 rounded-lg"
               >
                 <div className="text-one text-3xl">{item.icon}</div>
                 <div>
@@ -312,48 +312,64 @@ const third = images?.[2] ?? null;
               <h2 className="text-xl sm:text-2xl font-bold text-one mb-2">
                 About This Tour
               </h2>
-              <p className="text-one leading-relaxed">{data.description}</p>
+              <p className="text-one leading-relaxed px-3">{data.description}</p>
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-one mb-2">
                 Highlights
               </h2>
-              <ul className="space-y-2">
-                {data.highlights?.map((h, i) => (
-                  <li key={i} className="flex items-center text-one">
-                    <FaCheck className="text-four mr-2" /> {h}
-                  </li>
-                ))}
-              </ul>
+
+            <ul className="space-y-3 mx-2 w-full">
+  {data.highlights?.map((h, i) => (
+    <li
+      key={i}
+      className="flex items-start text-one leading-relaxed"
+    >
+      <FaCheck className="text-four mt-1 flex-shrink-0" />
+      <span className="ml-3 break-words w-full  sm:w-[90%]">{h}</span>
+    </li>
+  ))}
+</ul>
             </div>
-            <div className="px-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-one mb-6">
-                Included / Excluded
-              </h2>
-              <div className="flex flex-col sm:flex-row sm:gap-7 flex-wrap">
-                <ul className="flex-1 space-y-3  py-4 w-full  sm:w-[40%]">
-                  {data.includes?.map((inc, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center text-one break-words"
-                    >
-                      <FaCheck className="text-four mr-3 " /> {inc}
-                    </li>
-                  ))}
-                </ul>
-                <ul className="flex-1 space-y-3 px-6 py-4 ">
-                  {data.excludes?.map((exc, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center text-one break-words"
-                    >
-                      <VscError className="mr-3 text-red-500 flex-shrink-0" />{" "}
-                      <span>{exc}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+
+         <div className="px-2">
+  <h2 className="text-xl sm:text-2xl font-bold text-one mb-6">
+    Included / Excluded
+  </h2>
+  <div className="flex flex-col sm:flex-row sm:gap-7 flex-wrap">
+    {/* Included Items List */}
+    <ul className="flex-1 space-y-3 py-4">
+      {data.includes?.map((inc, i) => (
+        <li
+          key={i}
+          className="flex text-one  leading-relaxed"
+        >
+          <FaCheck className="text-four mt-1 flex-shrink-0" />
+          <span className="mx-3 break-words w-full sm:w-full">
+            {inc}
+          </span>
+        </li>
+      ))}
+    </ul>
+    {/* Excluded Items List */}
+    <ul className="flex-1 space-y-3 py-4">
+      {data.excludes?.map((exc, i) => (
+        <li
+          key={i}
+          className="flex items-center text-one break-words"
+        >
+          <VscError className="text-red-500 flex-shrink-0" />
+          <span className="mx-3 break-words w-full sm:w-full">
+            {exc}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+
+
           </div>
         </div>
         <div className="w-full lg:w-1/3 bg-gray-50 border border-one rounded-3xl p-6 shadow-lg sticky top-6 max-h-[90vh] overflow-y-auto">
@@ -439,7 +455,7 @@ const third = images?.[2] ?? null;
               onChange={(e) => setSelectedExtraId(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
-              <option value="">اختر إضافة (Add-on)</option>
+              <option value="">  (Add-on)</option>
               {data.extras?.map((extra) => (
                 <option key={extra.id} value={extra.id}>
                   {extra.name}
@@ -473,6 +489,7 @@ const third = images?.[2] ?? null;
                   <div key={label} className="flex justify-between items-center">
                     <div>
                       <p className="font-medium text-gray-800">{label}</p>
+                      <p className="font-medium text-gray-800">{desc}</p>
                       <p className="font-medium text-gray-800">${price}</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -529,23 +546,47 @@ const third = images?.[2] ?? null;
           </button>
         </div>
       </div>
-      <div className="px-5 lg:px-10 my-10">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-one">
-            Tour's Location
-          </h2>
-          <div className="text-gray-600 flex items-center gap-2 mt-2 sm:mt-0">
-            <FaMapMarkerAlt />{" "}
-            <span>
-              {data.city}, {data.country}
-            </span>
-          </div>
-        </div>
-        <div className="w-full h-64 sm:h-80 lg:h-[400px]">
-          <StaticMap />
-        </div>
+      {data?.meetingPointLocation && data?.meetingPointAddress && (
+  <div className="px-5 lg:px-10 my-15">
+    {/* العنوان والمكان */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+      <h2 className="text-xl sm:text-4xl font-bold text-one">
+        Tour's Location
+      </h2>
+      <div className="text-gray-600 flex items-center gap-2 mt-2 sm:mt-0">
+        <FaMapMarkerAlt />{" "}
+        <span>
+          {data.city}, {data.country}
+        </span>
       </div>
-      <QuestionsWithimage data={data?.itinerary} />
+    </div>
+
+    {/* عنوان الاجتماع */}
+    <div className="py-3">
+      <span className="text-2xl font-semibold block mb-2">
+        Meeting Address:
+      </span>
+      <span className="block text-lg text-gray-700">
+        {data?.meetingPointAddress}
+      </span>
+    </div>
+
+    {/* الخريطة */}
+    <div className="w-full h-64 sm:h-80 lg:h-[400px] mt-4">
+      <StaticMap
+        lat={parseFloat(data.meetingPointLocation.split("q=")[1].split(",")[0])}
+        lng={parseFloat(data.meetingPointLocation.split("q=")[1].split(",")[1])}
+      />
+    </div>
+  </div>
+)}
+
+{/* باقي المحتوى */}
+<div className="my-5">
+  <QuestionsWithimage data={data?.itinerary} />
+</div>
+
+
       <div className="px-4 py-6">
         <p className=" text-one text-[30px] lg:text-[48px] font-normal ">
           Discount{" "}
@@ -563,7 +604,9 @@ const third = images?.[2] ?? null;
           data={data?.discounts?.filter((d) => d.targetGroup === "infant")}
         />
       </div>
+      {data?.faq&&(
       <Questions data={data?.faq} stopstatus />
+      )}
       <Footer />
     </div>
   );

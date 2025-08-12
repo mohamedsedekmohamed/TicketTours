@@ -204,40 +204,38 @@ const AddToursManagement = () => {
     return () => clearTimeout(timeout);
   }, [location.state]);
 
-function getChangedFields(original, updated) {
-  const changes = {};
+// function getChangedFields(original, updated) {
+//   const changes = {};
 
-  for (let key in updated) {
-    if (key === "daysOfWeek") {
-      // معاملة خاصة لـ daysOfWeek → رجع القيم كـ Array
-      if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
-        changes[key] = Object.values(updated[key]);
-      }
-    } 
-    else if (
-      typeof updated[key] === "object" &&
-      updated[key] !== null &&
-      original[key]
-    ) {
-      // لو الكائن مفاتيحه كلها أرقام → رجع Array
-      if (Object.keys(updated[key]).every(k => !isNaN(k))) {
-        if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
-          changes[key] = Object.values(updated[key]);
-        }
-      } else {
-        const nestedChanges = getChangedFields(original[key], updated[key]);
-        if (Object.keys(nestedChanges).length > 0) {
-          changes[key] = nestedChanges;
-        }
-      }
-    } 
-    else if (updated[key] !== original[key]) {
-      changes[key] = updated[key];
-    }
-  }
+//   for (let key in updated) {
+//     if (key === "daysOfWeek") {
+//       if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
+//         changes[key] = Object.values(updated[key]);
+//       }
+//     } 
+//     else if (
+//       typeof updated[key] === "object" &&
+//       updated[key] !== null &&
+//       original[key]
+//     ) {
+//       if (Object.keys(updated[key]).every(k => !isNaN(k))) {
+//         if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
+//           changes[key] = Object.values(updated[key]);
+//         }
+//       } else {
+//         const nestedChanges = getChangedFields(original[key], updated[key]);
+//         if (Object.keys(nestedChanges).length > 0) {
+//           changes[key] = nestedChanges;
+//         }
+//       }
+//     } 
+//     else if (updated[key] !== original[key]) {
+//       changes[key] = updated[key];
+//     }
+//   }
 
-  return changes;
-}
+//   return changes;
+// }
 
   
   const handlefaqChange = (index, key, value) => {
@@ -413,15 +411,15 @@ function getChangedFields(original, updated) {
     setExtras(updated);
   };
 
-  const addPrice = () => {
-    setPrices([
-      ...prices,
-      { adult: "", child: "", infant: "", currencyId: "" },
-    ]);
-  };
-  const removePrice = (index) => {
-    setPrices(prices.filter((_, i) => i !== index));
-  };
+  // const addPrice = () => {
+  //   setPrices([
+  //     ...prices,
+  //     { adult: "", child: "", infant: "", currencyId: "" },
+  //   ]);
+  // };
+  // const removePrice = (index) => {
+  //   setPrices(prices.filter((_, i) => i !== index));
+  // };
   const handlePriceChangeTOO = (index, key, value) => {
     const updated = [...prices];
     updated[index][key] = value;
@@ -554,16 +552,26 @@ function getChangedFields(original, updated) {
       formErrors.extras = "All extras fields are required for each entry";
     }
 
-    if (
-      !Array.isArray(titles) ||
-      titles.length === 0 ||
-      titles.some(
-        (item) =>
-          !item.title.toString().trim() || !item.description.toString().trim()
-      )
-    ) {
-      formErrors.titles = "FAQ  (title and description) is required";
-    }
+ if (
+  !Array.isArray(titles) ||
+  titles.length === 0 ||
+  titles.some(
+    (item) =>
+      !item.title?.toString().trim() || !item.description?.toString().trim()
+  )
+) {
+  formErrors.titles = "FAQ (title and description) is required";
+}
+
+//  if (
+//   faq.length === 0 ||
+//   faq.some(
+//     (item) =>
+//       !item.question?.toString().trim() || !item.answer?.toString().trim()
+//   )) {
+//   formErrors.faq = "FAQ (question and answer) is required";
+// }
+
 
     if (meetingPoint) {
       if (!meetingPointLocation)
@@ -579,6 +587,8 @@ function getChangedFields(original, updated) {
     return Object.keys(formErrors).length === 0;
   };
   const handleSave = async () => {
+    
+
     if (!validateForm()) return;
 
     const payload = {
@@ -591,7 +601,7 @@ function getChangedFields(original, updated) {
       points: parseInt(points),
       meetingPoint,
       meetingPointAddress: meetingPoint ? meetingPointAddress : null,
-      meetingPointLocation: meetingPoint ? meetingPointLocation : null,
+      meetingPointLocation: meetingPoint ? `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}` : null,
       maxUsers: parseInt(maxUsers),
       categoryId: parseInt(category),
       country,
@@ -637,14 +647,14 @@ function getChangedFields(original, updated) {
       status,
       featured,
     };
-    const changedFields = getChangedFields(originalData, payload);
+    // const changedFields = getChangedFields(originalData, payload);
 
     setCheckLoading(true);
 
     const request = edit
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`,
-          changedFields
+          // changedFields
         )
       : axios.post(
           "https://bcknd.tickethub-tours.com/api/admin/tours",
