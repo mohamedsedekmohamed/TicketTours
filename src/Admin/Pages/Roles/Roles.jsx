@@ -10,17 +10,18 @@ import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const Roles = () => {
-  const groupedPrivileges = JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
-  const Privileges = groupedPrivileges["Tour"]?.map((p) => p.action) || [];
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Roles"]?.map((p) => p.action) || [];
 
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
 
-   const [data, setData] = useState([]);
-      const [loading, setLoading] = useState(true);
-      const [searchQuery, setSearchQuery] = useState("");
-      const navigate = useNavigate();
-      const [selectedFilter, setSelectedFilter] = useState("");
-      const [update, setUpdate] = useState(false);
-        useEffect(() => {
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/admins`, {
         // headers: {
@@ -45,16 +46,15 @@ const Roles = () => {
         setLoading(false);
       });
   }, [update]);
-   const columns = [
+  const columns = [
     { key: "name", label: "Name" },
     { key: "phoneNumber", label: "Phone" },
     { key: "email", label: "Email" },
   ];
-   const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addroles", { state: { sendData: id } });
   };
 
- 
   const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
@@ -77,38 +77,35 @@ const Roles = () => {
     return matchesSearch;
   });
 
- if (loading) {
-      return (
-          <Loading/>
-      );}
+  if (loading) {
+    return <Loading />;
+  }
   return (
- <div>
-      <NavAndSearch like
+    <div>
+      <NavAndSearch
+        like
         nav="/admin/addroles"
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
-      <ToastContainer/>
+      <ToastContainer />
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-10">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <button  className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleRoles(row.id)}>
-              
-              </button>
-              </div>
-             
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+          </div>
         )}
-        />
-     
-    </div>  )
-}
+      />
+    </div>
+  );
+};
 
-export default Roles
+export default Roles;

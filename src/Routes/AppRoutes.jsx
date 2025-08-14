@@ -35,6 +35,10 @@ import AddRoles from "../Admin/Pages/Roles/AddRoles.jsx";
 import Payment from "../Admin/Pages/Payment/Payment.jsx";
 
 import ProtectedRoute from "../Admin/ProtectedRoute/ProtectedRoute.jsx";
+
+import Medical from "../Admin/Pages/Medical/Medical.jsx";
+import AddMedical from "../Admin/Pages/Medical/AddMedical.jsx";
+import MedicalReqest from "../Admin/Pages/MedicalReqest/MedicalReqest.jsx";
 // import ErrorPage from "../Admi/ErrorPage.jsx";
 const AppRoutes = ({ setIsLoggedIn }) => {
   return (
@@ -263,22 +267,45 @@ const AppRoutes = ({ setIsLoggedIn }) => {
         <Route
           path="bookingsmanagement"
           element={
-            <ProtectedRoute
-              moduleName="Bookings"
-              requiredAction={["View"]}
-            >
+            <ProtectedRoute moduleName="Bookings" requiredAction={["View"]}>
               <BookingsManagement />
             </ProtectedRoute>
           }
         />
+        <Route
+          path="admins"
+          element={
+            <ProtectedRoute moduleName="Admin" requiredAction={["View"]}>
+              <Admins />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admins"
+          element={
+            <ProtectedRoute moduleName="Admin" requiredAction={["Add", "Edit"]}>
+              <AddAdmins />
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="roles"
+          element={
+            <ProtectedRoute moduleName="Roles" requiredAction={["View"]}>
+              <Roles />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="addroles"
+          element={
+            <ProtectedRoute moduleName="Roles" requiredAction={["Add", "Edit"]}>
+              <AddRoles />
+            </ProtectedRoute>
+          }
+        />
 
-
-        <Route path="admins" element={<Admins />} />
-        <Route path="addadmins" element={<AddAdmins />} />
-
-        <Route path="roles" element={<Roles />} />
-        <Route path="addroles" element={<AddRoles />} />
 
         <Route
           path="frontwebsitemanagement"
@@ -287,6 +314,9 @@ const AppRoutes = ({ setIsLoggedIn }) => {
 
         <Route path="payment" element={<Payment />} />
 
+        <Route path="medical" element={<Medical />} />
+        <Route path="addmedical" element={<AddMedical />} />
+        <Route path="medicalreqest" element={<MedicalReqest />} />
       </Route>
     </Routes>
   );

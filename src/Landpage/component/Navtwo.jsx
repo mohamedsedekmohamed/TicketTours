@@ -127,17 +127,19 @@ const Navtwo = () => {
                          navigate("/profileuser");
                        }}
                        className="w-[110px] h-[40px]  text-one hover:text-one/70    rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
-                     >
+                   
+                   >
                      </TbUserHexagon>
                    )}
-       
+                          {!token && (
+<>
                    <button
                      onClick={() => {
                        navigate("/signup");
                      }}
                      className="w-[110px] h-[40px] bg-one text-white hover:text-one/70  hover:bg-white/10 border border-one rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
                    >
-                     Sign In
+              Sign Up
                    </button>
                    <button
                      onClick={() => {
@@ -147,6 +149,8 @@ const Navtwo = () => {
                    >
                      Login
                    </button>
+</>
+                          )}
                  </div>
                  <div className="flex md:hidden gap-2">
                    {token && (
@@ -154,17 +158,19 @@ const Navtwo = () => {
                        onClick={() => {
                          navigate("/profileuser");
                        }}
-                       className="w-[50px] h-[40px] text-one   rounded-[24px] text-[10px] font-medium"
+  className="w-[50px] h-[50px] text-one cursor-pointer animate-pulse-scale"
                      >
                      </TbUserHexagon>
                    )}
+                                             {!token && (
+<>
                    <button
                      onClick={() => {
                        navigate("/signup");
                      }}
                      className="w-[50px] h-[40px] text-two hover:bg-one/90 hover:text-two/80 bg-one rounded-[24px] text-[10px] font-medium"
                    >
-                     Sign In
+              Sign Up
                    </button>
                    <button
                      onClick={() => {
@@ -174,6 +180,8 @@ const Navtwo = () => {
                    >
                      Login
                    </button>
+                   </>
+                                             )}
                  </div>
        
 

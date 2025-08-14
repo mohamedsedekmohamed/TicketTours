@@ -8,3 +8,15 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.pulse-scale {
+  animation: pulse-scale 1.5s ease-in-out infinite;
+}

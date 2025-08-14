@@ -10,13 +10,17 @@ import Swal from "sweetalert2";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const Admins = () => {
-      const [data, setData] = useState([]);
-      const [loading, setLoading] = useState(true);
-      const [searchQuery, setSearchQuery] = useState("");
-      const navigate = useNavigate();
-      const [selectedFilter, setSelectedFilter] = useState("");
-      const [update, setUpdate] = useState(false);
-        useEffect(() => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Admin"]?.map((p) => p.action) || [];
+
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/admins`, {
         // headers: {
@@ -41,13 +45,13 @@ const Admins = () => {
         setLoading(false);
       });
   }, [update]);
-   const columns = [
+  const columns = [
     { key: "name", label: "Name" },
     { key: "phoneNumber", label: "Phone" },
     { key: "email", label: "Email" },
     { key: "imagePath", label: "Image" },
   ];
-   const handleEdit = (id) => {
+  const handleEdit = (id) => {
     navigate("/admin/addadmins", { state: { sendData: id } });
   };
 
@@ -63,11 +67,14 @@ const Admins = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://bcknd.tickethub-tours.com/api/admin/admins/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
+          .delete(
+            `https://bcknd.tickethub-tours.com/api/admin/admins/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
           .then(() => {
             setUpdate(!update);
             Swal.fire(
@@ -109,68 +116,79 @@ const Admins = () => {
 
     return matchesSearch;
   });
-    const handleToggleStatus = (row) => {
-//     const newStatus = row.status === "active" ? "disabled" : "active";
-//     const token = localStorage.getItem("token");
-
-//     const updatedPopup = {
-//       title: row.title,
-//       startDate: row.startDate,
-//       endDate: row.endDate,
-//       status: newStatus,
-//     };
-
-//     axios
-//       .put(`https://app.15may.club/api/admin/popups/${row.id}`, updatedPopup, {
-//         headers: { Authorization: `Bearer ${token}` },
-//       })
-//       .then(() => {
-//         toast.success(t("Statusupdatedsuccessfully"));
-//   setTimeout(() => {
-//           setUpdate((prev) => !prev);
-//   }, 1000);
-//       })
-//       .catch(() => {
-//         toast.error(t("Statuswasnotupdatedsuccessfully"));
-//       });
+  const handleToggleStatus = (row) => {
+    //     const newStatus = row.status === "active" ? "disabled" : "active";
+    //     const token = localStorage.getItem("token");
+    //     const updatedPopup = {
+    //       title: row.title,
+    //       startDate: row.startDate,
+    //       endDate: row.endDate,
+    //       status: newStatus,
+    //     };
+    //     axios
+    //       .put(`https://app.15may.club/api/admin/popups/${row.id}`, updatedPopup, {
+    //         headers: { Authorization: `Bearer ${token}` },
+    //       })
+    //       .then(() => {
+    //         toast.success(t("Statusupdatedsuccessfully"));
+    //   setTimeout(() => {
+    //           setUpdate((prev) => !prev);
+    //   }, 1000);
+    //       })
+    //       .catch(() => {
+    //         toast.error(t("Statuswasnotupdatedsuccessfully"));
+    //       });
   };
- if (loading) {
-      return (
-          <Loading/>
-      );}
+  if (loading) {
+    return <Loading />;
+  }
   return (
- <div>
-      <NavAndSearch
-        nav="/admin/addadmins"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      <ToastContainer/>
+    <div>
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addadmins"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          like
+          nav="/admin/addadmins"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+
+      <ToastContainer />
       <DynamicTable
         data={data}
         columns={columns}
-        filteredData={filteredData} 
+        filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-            <CiEdit
-              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-              onClick={() => handleEdit(row.id)}
-            />
-            <RiDeleteBin6Line
-              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-              onClick={() => handleDelete(row.id, row.name)}
-            />
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+            {Privileges.includes("Delete") && (
+              <RiDeleteBin6Line
+                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                onClick={() => handleDelete(row.id, row.name)}
+              />
+            )}
           </div>
         )}
-         customRender={(key, value) =>
+        customRender={(key, value) =>
           key === "imagePath" ? (
-           <div className={`flex justify-start`}>
-             <img
-              src={value}
-              alt="popup"
-              className="w-16 h-16 object-cover rounded"
-            />
-           </div>
+            <div className={`flex justify-start`}>
+              <img
+                src={value}
+                alt="popup"
+                className="w-16 h-16 object-cover rounded"
+              />
+            </div>
           ) : null
         }
         buttonstatus={(row) => (
@@ -187,7 +205,8 @@ const Admins = () => {
           </td>
         )}
       />
-    </div>  )
-}
+    </div>
+  );
+};
 
-export default Admins
+export default Admins;

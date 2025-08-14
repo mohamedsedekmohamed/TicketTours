@@ -19,10 +19,13 @@ const InputArrow = ({
       .then(response => {
         const list = response.data.data[namedata]; 
         if (Array.isArray(list)) {
-          setOptions(list.map(item => ({
-            id: item.id,
-            name: item.name
-          })));
+         setOptions(
+  list.slice(0, -1).map(item => ({
+    id: item.id,
+    name: item.name
+  }))
+);
+
         }
       })
       .catch(error => console.log(error));

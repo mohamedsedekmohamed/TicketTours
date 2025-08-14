@@ -66,8 +66,12 @@ const Trips = () => {
                   alt={item.title}
                   className="h-56 w-full object-cover rounded-t-xl"
                 />
-                <div className="p-4 pb-10">
-                  <h3 className="text-lg font-bold text-one">{item.title}</h3>
+                <div className="p-2 pb-10">
+                  <h3 className="text-lg font-bold text-one">
+                     {item.title.length > 16
+                      ? item.title.slice(0, 16) + "..."
+                      : item.title}
+                  </h3>
 
                   <p className="mt-2 text-sm text-three">
                     {item.discribtion.length > 50

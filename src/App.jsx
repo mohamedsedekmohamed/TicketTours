@@ -11,10 +11,10 @@ import Local from "./Landpage/Pages/Trips/Local";
 import International from "./Landpage/Pages/Trips/International";
 import Religious from "./Landpage/Pages/Trips/Religious";
 import Medical from "./Landpage/Pages/Trips/Medical";
-import TripDetails from "./Landpage/Pages/UI/TripDetails";
+import TripDetails from "./Landpage/Pages/Booking/TripDetails";
 import Loginuser from "./Landpage/Pages/Loginuser";
 import ForgotPasswordFlow from "./Landpage/Pages/ForgotPasswordFlow";
-import CompleteBooking from '../src/Landpage/Pages/UI/CompleteBooking'
+import CompleteBooking from '../src/Landpage/Pages/Booking/CompleteBooking'
 import ProfileUser from './Landpage/Pages/ProfileUser'
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {

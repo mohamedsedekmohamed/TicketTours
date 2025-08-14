@@ -97,6 +97,7 @@ const Signup = () => {
           setStep(2)
           setUserId(response.data.data.userId)
           localStorage.setItem("token", response.data.data.token);
+localStorage.setItem("user", JSON.stringify(response.data.data.user));
           toast.success(`Welcome ${name} `);
          
         }

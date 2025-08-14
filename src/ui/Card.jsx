@@ -11,7 +11,12 @@ const Card = ({ id,image, title, description, duration, price, discount }) => {
           className="h-56 w-full rounded-md object-cover"
         />
         <div className="mt-2">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+             {" "}
+            {title.length > 20
+              ? title.slice(0, 20) + "..."
+              : title}
+          </h3>
           <p className="text-sm text-gray-500 mt-1">
             {" "}
             {description.length > 40

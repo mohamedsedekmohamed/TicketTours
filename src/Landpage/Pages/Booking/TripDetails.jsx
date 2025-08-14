@@ -221,9 +221,20 @@ const third = images?.[2] ?? null;
         <button onClick={() => navigate(-1)}>{data.category}</button> /{" "}
         <span className="text-four">{data.city}</span>
       </span>
-      <h4 className="text-2xl sm:text-3xl md:text-4xl text-one font-semibold text-center mb-4 mt-2">
-        {data.title}
-      </h4>
+      <h4
+  className="font-semibold text-center mb-4 mt-2 text-one"
+  style={{
+    fontSize:
+      data.title.length > 40
+        ? "1.25rem" // صغير
+        : data.title.length > 25
+        ? "1.5rem" // متوسط
+        : "2rem",  // كبير
+  }}
+>
+  {data.title}
+</h4>
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-3">
         <div className="sm:col-span-2">
           <img
@@ -276,7 +287,7 @@ const third = images?.[2] ?? null;
       )}
       <div className="flex flex-col lg:flex-row gap-6 mt-10 px-5 lg:px-10 min-h-screen">
         <div className="w-full lg:w-2/3">
-          <div className="flex w-full flex-wrap  gap-6 mb-10">
+          <div className="flex w-full flex-wrap justify-around  gap-6 mb-10">
             {[
               {
                 icon: <LuClock />,
@@ -297,7 +308,7 @@ const third = images?.[2] ?? null;
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex w-full items-center gap-2 border border-one p-3 rounded-lg"
+                className="flex flex-1 items-center gap-2 border border-one p-3 rounded-lg"
               >
                 <div className="text-one text-3xl">{item.icon}</div>
                 <div>
@@ -351,7 +362,6 @@ const third = images?.[2] ?? null;
         </li>
       ))}
     </ul>
-    {/* Excluded Items List */}
     <ul className="flex-1 space-y-3 py-4">
       {data.excludes?.map((exc, i) => (
         <li
@@ -426,7 +436,7 @@ const third = images?.[2] ?? null;
             >
               <div>
                 <p className="font-medium text-gray-800">{label}</p>
-                <p className="font-medium text-gray-800">{price}</p>
+                <p className="font-medium text-gray-800">{price}$</p>
                 <p className="text-sm text-gray-500">{desc}</p>
               </div>
               <div className="flex items-center gap-2">
@@ -490,7 +500,7 @@ const third = images?.[2] ?? null;
                     <div>
                       <p className="font-medium text-gray-800">{label}</p>
                       <p className="font-medium text-gray-800">{desc}</p>
-                      <p className="font-medium text-gray-800">${price}</p>
+                      <p className="font-medium text-gray-800">{price}$</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -561,7 +571,6 @@ const third = images?.[2] ?? null;
       </div>
     </div>
 
-    {/* عنوان الاجتماع */}
     <div className="py-3">
       <span className="text-2xl font-semibold block mb-2">
         Meeting Address:
@@ -581,7 +590,6 @@ const third = images?.[2] ?? null;
   </div>
 )}
 
-{/* باقي المحتوى */}
 <div className="my-5">
   <QuestionsWithimage data={data?.itinerary} />
 </div>

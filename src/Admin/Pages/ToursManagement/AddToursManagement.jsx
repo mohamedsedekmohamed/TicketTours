@@ -27,7 +27,6 @@ const AddToursManagement = () => {
   const [edit, setEdit] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [originalData, setOriginalData] = useState(null);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -71,22 +70,41 @@ const AddToursManagement = () => {
       image: null,
     },
   ]);
+  const [faqor, setFagor] = useState([
+    {
+      title: "",
+      description: "",
+      image: null,
+    },
+  ]);
   const [titles, setTitles] = useState([{ title: "", description: "" }]);
 
   const [mainImage, setMainImage] = useState("");
-  // const [mainImagecheck, setMainImagecheck] = useState("");
+  const [mainImagecheck, setMainImagecheck] = useState("");
 
   const [arrayimage, setArrayImage] = useState([]);
-  // const [arrayimagechange, setArrayImagechange] = useState([]);
-  // const [arrayimagedelete, setArrayImagedelete] = useState([]);
-  // const [originalImages, setOriginalImages] = useState([]);
+ 
+
+  const [originalImages, setOriginalImages] = useState([]);
+ const compareImages = (originalImages, currentImages) => {
+  const added = currentImages
+    .filter(img => !img.id)
+    .map(img => img.imagePath); 
+
+  const deleted = originalImages
+    .filter(orig => !currentImages.some(curr => curr.id === orig.id))
+    .map(img => img.id);
+
+  return { added, deleted };
+};
+  const { added, deleted } = compareImages(originalImages, arrayimage);
 
   const [status, setStatus] = useState(false);
   const [featured, setFeatured] = useState(false);
   //
   const [meetingPoint, setMeetingPoint] = useState(false);
   const [meetingPointLocation, SetMeetingPointLocation] = useState({
-    lat: 31.200092, // الإسكندرية
+    lat: 31.200092,
     lng: 29.918739,
   });
   const [meetingPointAddress, setMeetingPointAddress] = useState("");
@@ -114,7 +132,6 @@ const AddToursManagement = () => {
         })
         .then((response) => {
           const user = response.data.data;
-          setOriginalData(user);
           if (user) {
             setTitle(user.title || "");
             setDescribtion(user.description || "");
@@ -123,6 +140,7 @@ const AddToursManagement = () => {
             setCity(user.city || "");
             setMaxUsers(String(user.maxUsers) || 0);
             setMainImage(user.mainImage || "");
+            setMainImagecheck(user.mainImage || "");
             setStartDate(user.startDate || "");
             SetEndDate(user.endDate || "");
             setStatus(user.status || false);
@@ -131,12 +149,38 @@ const AddToursManagement = () => {
             SetDurationHours(String(user.durationHours) || "");
             setArrayImage(
               (user.images || []).map((img) => ({
-                imagePath: img,
+                imagePath: img.url,
+              }))
+            );
+            setOriginalImages(
+              (user.images || []).map((img) => ({
+                id: img.id,
+                imagePath: img.url,
               }))
             );
             setPoints(String(user.points));
             setMeetingPointAddress(user.meetingPointAddress);
-            SetMeetingPointLocation(user.meetingPointLocation);
+            if (user?.meetingPointLocation) {
+              const coords = user.meetingPointLocation
+                .split("q=")[1]
+                ?.split(",");
+              if (coords?.length === 2) {
+                SetMeetingPointLocation({
+                  lat: parseFloat(coords[0]),
+                  lng: parseFloat(coords[1]),
+                });
+              } else {
+                SetMeetingPointLocation({
+                  lat: 31.200092,
+                  lng: 29.918739,
+                });
+              }
+            } else {
+              SetMeetingPointLocation({
+                lat: 31.200092,
+                lng: 29.918739,
+              });
+            }
             const formattedDays = user.daysOfWeek
               .map((day) => {
                 const capitalized =
@@ -185,6 +229,13 @@ const AddToursManagement = () => {
                 image: it.imagePath,
               }))
             );
+            setFagor(
+              user?.itinerary?.map((it) => ({
+                title: it.title,
+                description: it.description,
+                image: it.imagePath,
+              }))
+            );
 
             setTitles(
               user?.faq?.map((tit) => ({
@@ -204,40 +255,39 @@ const AddToursManagement = () => {
     return () => clearTimeout(timeout);
   }, [location.state]);
 
-// function getChangedFields(original, updated) {
-//   const changes = {};
+  // function getChangedFields(original, updated) {
+  //   const changes = {};
 
-//   for (let key in updated) {
-//     if (key === "daysOfWeek") {
-//       if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
-//         changes[key] = Object.values(updated[key]);
-//       }
-//     } 
-//     else if (
-//       typeof updated[key] === "object" &&
-//       updated[key] !== null &&
-//       original[key]
-//     ) {
-//       if (Object.keys(updated[key]).every(k => !isNaN(k))) {
-//         if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
-//           changes[key] = Object.values(updated[key]);
-//         }
-//       } else {
-//         const nestedChanges = getChangedFields(original[key], updated[key]);
-//         if (Object.keys(nestedChanges).length > 0) {
-//           changes[key] = nestedChanges;
-//         }
-//       }
-//     } 
-//     else if (updated[key] !== original[key]) {
-//       changes[key] = updated[key];
-//     }
-//   }
+  //   for (let key in updated) {
+  //     if (key === "daysOfWeek") {
+  //       if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
+  //         changes[key] = Object.values(updated[key]);
+  //       }
+  //     }
+  //     else if (
+  //       typeof updated[key] === "object" &&
+  //       updated[key] !== null &&
+  //       original[key]
+  //     ) {
+  //       if (Object.keys(updated[key]).every(k => !isNaN(k))) {
+  //         if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
+  //           changes[key] = Object.values(updated[key]);
+  //         }
+  //       } else {
+  //         const nestedChanges = getChangedFields(original[key], updated[key]);
+  //         if (Object.keys(nestedChanges).length > 0) {
+  //           changes[key] = nestedChanges;
+  //         }
+  //       }
+  //     }
+  //     else if (updated[key] !== original[key]) {
+  //       changes[key] = updated[key];
+  //     }
+  //   }
 
-//   return changes;
-// }
+  //   return changes;
+  // }
 
-  
   const handlefaqChange = (index, key, value) => {
     setFag((prevFaq) => {
       const updated = [...prevFaq];
@@ -318,14 +368,12 @@ const AddToursManagement = () => {
     }
   };
   const handleIamgesChange = (newFiles) => {
-    setArrayImage(newFiles)
+    setArrayImage(newFiles);
     // if (edit) {
 
     //   const keptOldImages = newFiles.filter((oldImg) =>
     //     newFiles.some((newImg) => newImg.id === oldImg.id)
     //   );
-
-  
 
     //   const newAddedImages = newFiles.filter((img) => !img.id);
 
@@ -411,15 +459,6 @@ const AddToursManagement = () => {
     setExtras(updated);
   };
 
-  // const addPrice = () => {
-  //   setPrices([
-  //     ...prices,
-  //     { adult: "", child: "", infant: "", currencyId: "" },
-  //   ]);
-  // };
-  // const removePrice = (index) => {
-  //   setPrices(prices.filter((_, i) => i !== index));
-  // };
   const handlePriceChangeTOO = (index, key, value) => {
     const updated = [...prices];
     updated[index][key] = value;
@@ -552,26 +591,25 @@ const AddToursManagement = () => {
       formErrors.extras = "All extras fields are required for each entry";
     }
 
- if (
-  !Array.isArray(titles) ||
-  titles.length === 0 ||
-  titles.some(
-    (item) =>
-      !item.title?.toString().trim() || !item.description?.toString().trim()
-  )
-) {
-  formErrors.titles = "FAQ (title and description) is required";
-}
+    if (
+      !Array.isArray(titles) ||
+      titles.length === 0 ||
+      titles.some(
+        (item) =>
+          !item.title?.toString().trim() || !item.description?.toString().trim()
+      )
+    ) {
+      formErrors.titles = "FAQ (title and description) is required";
+    }
 
-//  if (
-//   faq.length === 0 ||
-//   faq.some(
-//     (item) =>
-//       !item.question?.toString().trim() || !item.answer?.toString().trim()
-//   )) {
-//   formErrors.faq = "FAQ (question and answer) is required";
-// }
-
+    //  if (
+    //   faq.length === 0 ||
+    //   faq.some(
+    //     (item) =>
+    //       !item.question?.toString().trim() || !item.answer?.toString().trim()
+    //   )) {
+    //   formErrors.faq = "FAQ (question and answer) is required";
+    // }
 
     if (meetingPoint) {
       if (!meetingPointLocation)
@@ -587,8 +625,6 @@ const AddToursManagement = () => {
     return Object.keys(formErrors).length === 0;
   };
   const handleSave = async () => {
-    
-
     if (!validateForm()) return;
 
     const payload = {
@@ -601,7 +637,9 @@ const AddToursManagement = () => {
       points: parseInt(points),
       meetingPoint,
       meetingPointAddress: meetingPoint ? meetingPointAddress : null,
-      meetingPointLocation: meetingPoint ? `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}` : null,
+      meetingPointLocation: meetingPoint
+        ? `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`
+        : null,
       maxUsers: parseInt(maxUsers),
       categoryId: parseInt(category),
       country,
@@ -647,14 +685,77 @@ const AddToursManagement = () => {
       status,
       featured,
     };
+
+    // const payloadtwo = {
+    //   title,
+    //   description: describtion,
+    //   startDate: String(startDate),
+    //   endDate: String(endDate),
+    //   durationDays: parseInt(durationDays),
+    //   durationHours: parseInt(durationHours),
+    //   points: parseInt(points),
+    //   meetingPoint,
+    //   meetingPointAddress: meetingPoint ? meetingPointAddress : null,
+    //   meetingPointLocation: meetingPoint
+    //     ? `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`
+    //     : null,
+    //   maxUsers: parseInt(maxUsers),
+    //   categoryId: parseInt(category),
+    //   country,
+    //   city,
+    //   mainImage,
+    //   images:{added,deleted},
+    //   highlights: fields.filter((val) => val),
+    //   includes: fieldstwo.filter((val) => val),
+    //   excludes: fieldsthree.filter((val) => val),
+    //   prices: prices.map((p) => ({
+    //     adult: parseFloat(p.adult),
+    //     child: parseFloat(p.child),
+    //     infant: parseFloat(p.infant),
+    //     currencyId: parseInt(p.currencyId),
+    //   })),
+    //   extras: extras.map((extra) => ({
+    //     extraId: parseInt(extra.extraId),
+    //     price: {
+    //       adult: parseFloat(extra.price.adult),
+    //       child: parseFloat(extra.price.child),
+    //       infant: parseFloat(extra.price.infant),
+    //       currencyId: parseInt(extra.price.currencyId),
+    //     },
+    //   })),
+    //   discounts: discounts.map((item) => ({
+    //     kindBy: item.kindBy,
+    //     targetGroup: item.targetGroup,
+    //     type: item.type,
+    //     value: parseFloat(item.value),
+    //     minPeople: parseInt(item.minPeople),
+    //     maxPeople: parseInt(item.maxPeople),
+    //   })),
+    //   faq: titles.map((item) => ({
+    //     question: item.title,
+    //     answer: item.description,
+    //   })),
+    //   itinerary: faq.map((item) => ({
+    //     title: item.title,
+    //     description: item.description,
+    //     imagePath: item.image,
+    //   })),
+    //   daysOfWeek: selectedDays.map((p) => p.value),
+    //   status,
+    //   featured,
+    // };
+    // if (mainImage !== mainImagecheck) {
+    //   payloadtwo.mainImage = mainImage;
+    // }
+    
     // const changedFields = getChangedFields(originalData, payload);
 
     setCheckLoading(true);
 
     const request = edit
       ? axios.put(
-          `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`,
-          // changedFields
+          `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`
+          // payloadtwo
         )
       : axios.post(
           "https://bcknd.tickethub-tours.com/api/admin/tours",
@@ -1050,7 +1151,7 @@ const AddToursManagement = () => {
               </button>
               {/*  */}
             </div>
-            
+
             <div className="p-4 space-y-5 w-full border-1 mt-2">
               <h2 className="text-xl font-bold text-one mb-4">Itinerary</h2>
 
@@ -1059,7 +1160,7 @@ const AddToursManagement = () => {
                   key={index}
                   className="bg-gray-100 py-4 px-2   rounded relative mb-4 space-y-3"
                 >
-                   <InputField
+                  <InputField
                     type="text"
                     placeholder="Title"
                     value={item.title}
@@ -1155,18 +1256,8 @@ const AddToursManagement = () => {
                       handlePriceChangeTOO(index, "currencyId", val)
                     }
                   />
-
-                  {/* <button
-      onClick={() => removePrice(index)}
-      className="text-one font-bold text-lg ml-2 my-auto mt-11"
-    >
-      ✕
-    </button> */}
                 </div>
               ))}
-              {/* <button onClick={addPrice} className="bg-one text-white p-3 mt-2">
-            Add Price
-          </button> */}
             </div>
             {/*  */}
             <div className="p-4 space-y-5 border-1 mt-2">

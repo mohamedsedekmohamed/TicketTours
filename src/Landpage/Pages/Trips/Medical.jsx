@@ -1,195 +1,151 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 import Navtwo from "../../component/Navtwo";
-import Card from '../../../ui/Card';
-import Loading from '../../../ui/Loading';
-import Footer from '../Footer'
-import Medicall from '../../../assets/Medical.png'
- const Medical = () => {
-  const [data, setData] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
-    const [loading, setLoading] = useState(true);
-  
-    const [minPrice, setMinPrice] = useState('');
-    const [maxPrice, setMaxPrice] = useState('');
-    const [selectedDurations, setSelectedDurations] = useState([]);
-    const [selectedCities, setSelectedCities] = useState([]);
-  
-    const [uniqueCities, setUniqueCities] = useState([]);
-    const [uniqueDurations, setUniqueDurations] = useState([]);
-    
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('https://bcknd.tickethub-tours.com/api/user/landpage/category-tours/Medical%20Tourism');
+import Footer from "../Footer";
+import Medicall from "../../../assets/Medical.png";
+import InputField from "../../../ui/InputField";
+import FileUploadButtonArroy from "../../../ui/FileUploadButtonArroy";
 
-      const toursData = response.data.data.tours.map((item) => ({
-        id: item.id,
-        title: item.title,
-        country: item.country,
-        city: item.city,
-        image: item.imagePath,
-        price: parseFloat(item.price),
-        discount: parseFloat(item.discount),
-        description: item.discribtion,
-        duration: parseInt(item.duration),
-      }));
-
-const uniqueTours = Array.from(
-  new Map(
-    toursData.map(tour => [tour.id, tour])
-  ).values()
-);
-
-
-      setData(uniqueTours);
-      setFilteredData(uniqueTours);
-
-    
-
-    } catch (err) {
-      console.error('Error fetching data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, []);
+const Medical = () => {
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [categoryIds, setCategoryIds] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [describtion, setDescribtion] = useState("");
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
-    const filtered = data.filter((tour) => {
-      const price = tour.price;
-      const duration = tour.duration;
-      const city = tour.city;
-      
-      const min = parseFloat(minPrice);
-      const max = parseFloat(maxPrice);
-      const priceMatch = (
-        (isNaN(min) || price >= min) &&
-        (isNaN(max) || price <= max)
-      );
-      
-      const durationMatch =
-        selectedDurations.length === 0 || selectedDurations.includes(duration);
-      
-      const cityMatch =
-        selectedCities.length === 0 || selectedCities.includes(city);
-      
-      return priceMatch && durationMatch && cityMatch;
-    });
+    axios
+      .get(`https://bcknd.tickethub-tours.com/api/user/landpage/medicals-categories`)
+      .then((response) => {
+        setOptions(
+          response.data.data.categoriesMedical.map((item) => ({
+            id: item.id,
+            title: item.title,
+          }))
+        );
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
-    setFilteredData(filtered);
-
-    const citiesSet = new Set(filtered.map((item) => item.city));
-    setUniqueCities([...citiesSet]);
-
-    const durationsSet = new Set(filtered.map((item) => item.duration));
-    setUniqueDurations([...durationsSet].sort((a, b) => a - b));
-    
-  }, [data, minPrice, maxPrice, selectedDurations, selectedCities]);
-  
-  const handleDurationChange = (value) => {
-    setSelectedDurations((prev) =>
-      prev.includes(value) ? prev.filter((d) => d !== value) : [...prev, value]
+  const handleSelect = (id) => {
+    setCategoryIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id]
     );
   };
-  
-  const handleCityChange = (city) => {
-    setSelectedCities((prev) =>
-      prev.includes(city) ? prev.filter((c) => c !== city) : [...prev, city]
-    );
+
+  const handleSubmit = () => {
+    if (!fullName.trim()) return toast.warn("Full name is required");
+    if (!describtion.trim()) return toast.warn("Description is required");
+    if (!phoneNumber.trim()) return toast.warn("Phone number is required");
+    if (!email.trim()) return toast.warn("Email is required");
+    if (categoryIds.length === 0) return toast.warn("Please select at least one option");
+    if (images.length === 0) return toast.warn("Please upload at least one image");
+
+   const formData = {
+  fullName,
+  phoneNumber,
+  email,
+  describtion,
+  categoryIds,
+  images: images.map(img => img.imagePath) // يحولهم لستينج بس
+};
+
+    axios
+      .post(
+        `https://bcknd.tickethub-tours.com/api/user/landpage/create-medical`,
+        formData
+      )
+      .then(() => {
+        toast.success("Medical successfully!");
+        setFullName("");
+        setPhoneNumber("");
+        setEmail("");
+        setDescribtion("");
+        setCategoryIds([]);
+        setImages([]);
+      })
+      .catch(() => toast.error("Something went wrong, please try again"));
   };
-  
-  if (loading) {
-    return (
-      <div className="w-screen h-screen">
-        <Loading />
-      </div>
-    );
-  }
 
   return (
-   <div className="">
+    <div>
       <Navtwo />
-     <div className="bg-nine w-[95%] py-4 mx-auto flex justify-between items-center">
-            <span className="text-3xl font-semibold px-5 text-one">Medical Tourism</span>
-            <img src={Medicall} alt="Medicall" className="w-1/2 max-w-xs" />
-          </div>
-          
-        <span className='p-10 font-semibold text-2xl text-one '>Found {data.length} results</span>
-      <div className="flex flex-col md:flex-row gap-8 p-4">
-        {/* Filters Section */}
-        <div className="w-full md:w-1/4 bg-white border-r shadow-md rounded-lg p-4 sticky top-24 h-fit max-h-[80vh] overflow-y-auto">
-          <h2 className="font-semibold mb-2">Price, $</h2>
-          <div className="flex gap-2 mb-4">
-            <input
-              type="number"
-              placeholder="Min"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="w-1/2 border p-2 rounded"
-            />
-            <input
-              type="number"
-              placeholder="Max"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="w-1/2 border p-2 rounded"
-            />
-          </div>
-
-          <h2 className="font-semibold mb-2">Duration</h2>
-          <div className="flex flex-col gap-2 mb-4">
-            {uniqueDurations.map((d) => (
-              <label key={d} className="flex gap-2 items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedDurations.includes(d)}
-                  onChange={() => handleDurationChange(d)}
-                />
-                {`${d} day${d > 1 ? 's' : ''}`}
-              </label>
-            ))}
-          </div>
-
-          <h2 className="font-semibold mb-2">Governorate / Location</h2>
-          <div className="flex flex-col gap-2">
-            {uniqueCities.map((city) => (
-              <label key={city} className="flex gap-2 items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedCities.includes(city)}
-                  onChange={() => handleCityChange(city)}
-                />
-                {city}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Cards Section */}
-        <div className="w-full flex flex-wrap justify-center gap-4">
-          {filteredData.length > 0 ? (
-            filteredData.map((tour) => (
-              <Card
-                key={`${tour.id}-${tour.title}`}
-                image={tour.image}
-                title={tour.title}
-                description={tour.description}
-                duration={tour.duration}
-                price={tour.price}
-                discount={tour.discount}
-                                id={tour.id}
-
-              />
-            ))
-          ) : (
-            <p className="text-gray-500 col-span-full">No tours found matching filters.</p>
-          )}
-        </div>
+      <div className="bg-nine w-[95%] py-4 mx-auto flex justify-between items-center">
+        <span className="text-3xl font-semibold px-5 text-one">
+          Medical Tourism
+        </span>
+        <img src={Medicall} alt="Medicall" className="w-1/2 max-w-xs" />
       </div>
-      <Footer/>
-    </div>  )
-}
-export default Medical
+
+      <div className="flex items-center py-3 font-medium justify-center">
+        <span className="text-center text-one text-2xl">
+          Add your Tour Medical
+        </span>
+      </div>
+
+      <div className="p-5 gap-4 flex flex-col">
+        <InputField
+          placeholder="Enter your Full Name"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+        />
+        <InputField
+          placeholder="Enter Description"
+          value={describtion}
+          onChange={(e) => setDescribtion(e.target.value)}
+        />
+        <InputField
+          placeholder="Enter Your Phone Number"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
+        <InputField
+          placeholder="Enter Your Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <div className="bg-white shadow-lg rounded-lg p-6 max-w-sm">
+          <h1 className="text-xl font-bold mb-4 text-one text-center">Choose Options</h1>
+          {options.map((opt) => (
+            <label
+              key={opt.id}
+              className="flex items-center space-x-2 mb-2 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={categoryIds.includes(opt.id)}
+                onChange={() => handleSelect(opt.id)}
+                className="form-checkbox text-blue-500"
+              />
+              <span>{opt.title}</span>
+            </label>
+          ))}
+        </div>
+
+        <FileUploadButtonArroy
+          des="Images the patient's photos"
+          kind="Images"
+          flag={images}
+          onFileChange={setImages}
+        />
+
+        <button
+          onClick={handleSubmit}
+          className="bg-one hover:bg-one/30 text-white py-2 px-4 rounded-lg mt-4"
+        >
+          Submit
+        </button>
+      </div>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Medical;

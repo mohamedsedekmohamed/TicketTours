@@ -29,6 +29,8 @@ function Loginuser({ setIsLoggedIn }) {
       .then((response) => {
         if (response.data.data.message === "login Successful") {
           localStorage.setItem("token", response.data.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.data.user));
+
           toast.success("Welcome ");
 
           setTimeout(() => {

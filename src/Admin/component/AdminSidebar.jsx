@@ -18,6 +18,8 @@ import IconCity from '../../Icons/IconCity'
 import IconFrontWebsiteManagement from '../../Icons/IconFrontWebsiteManagement'
 import IconPaymentMethod from '../../Icons/IconPaymentMethod'
 import IconsPayment from '../../Icons/IconsPayment'
+import IconMedicalReqest from '../../Icons/IconMedicalReqest'
+import IconMedical from '../../Icons/IconMedical'
 const links = [
   {
     to: "home",
@@ -112,6 +114,18 @@ const links = [
     icon: <IconPaymentMethod />,
     iconActive: <IconPaymentMethod active />
   },
+   {
+    to: "medicalreqest",
+    name: "Medical Reqest",
+    icon: <IconMedical />,
+    iconActive: <IconMedical active />
+  },
+   {
+    to: "medical",
+    name: "Medical",
+    icon: <IconMedicalReqest />,
+    iconActive: <IconMedicalReqest active />
+  },
 
  
   
@@ -136,6 +150,7 @@ const AdminSidebar = ({ setIsOpen, isOpen }) => {
       '/admin/addcity': '/admin/city',
       '/admin/addhomecover': '/admin/frontwebsitemanagement',
       '/admin/addfaq': '/admin/frontwebsitemanagement',
+      '/admin/addmedical': '/admin/medical',
     };
 
     const newPath = customPaths[location.pathname] || location.pathname;
