@@ -58,7 +58,6 @@ const CompleteBooking = () => {
         );
         const tourData = res.data.data;
         setData(tourData);
-console.log(tourData)
 
         if (tourData?.meetingPointAddress && tourData?.meetingPointLocation) {
           setDescription(tourData.meetingPointAddress);
@@ -175,9 +174,9 @@ console.log(tourData)
   extras: selectedExtras.map((extra) => ({
     id: extra.id,
     count: {
-      adult: Number(extra.counts.adults),
-      child: Number(extra.counts.children),
-      infant: Number(extra.counts.infants),
+      adult: String(extra.counts.adults),
+      child: String(extra.counts.children),
+      infant: String(extra.counts.infants),
     },
   })),
 };
@@ -195,7 +194,6 @@ console.log(payload)
       localStorage.removeItem("bookingData");
 
       toast.success("Booking completed successfully!");
-      navigate("/");
     } catch (err) {
       toast.error("Failed to complete booking.");
     }
@@ -313,7 +311,7 @@ console.log(payload)
         </form>
 
         {/* Summary */}
-        <div className="w-full lg:w-1/2 bg-gray-200 rounded-3xl p-6 shadow-lg">
+        <div className="w-full lg:w-1/2 bg-gray-200 h-fit py-10 rounded-3xl p-6 shadow-lg">
           <h2 className="text-xl font-bold text-one mb-2">Complete Your Booking</h2>
 
           <div className="text-sm text-gray-500 mb-4">

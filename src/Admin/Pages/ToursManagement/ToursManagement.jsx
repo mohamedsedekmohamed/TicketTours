@@ -39,7 +39,6 @@ const ToursManagement = () => {
         // },
       })
       .then((response) => {
-        console.log(response.data.data.tours)
         setData(
           response.data.data.tours.map((item) => ({
             id: item.id,
@@ -58,8 +57,7 @@ const ToursManagement = () => {
         setLoading(false);
       })
       .catch(() => {
-        toast.error("Error fetching data");
-        setLoading(false);
+         setLoading(false);
       });
   }, [update]);
 

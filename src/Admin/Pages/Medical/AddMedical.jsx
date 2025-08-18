@@ -63,7 +63,7 @@ const AddMedical = () => {
       return;
     }
    const newUser = {
-  name,
+ title:name,
 };
 
     const request = edit
@@ -90,8 +90,6 @@ const AddMedical = () => {
         }, 1000);
 
         setName("");
-        setimagePath(null)
-        setimagePathtwo(null)
         setEdit(false);
       })
       .catch((error) => {

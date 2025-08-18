@@ -18,7 +18,8 @@ const InputArrow = ({
     axios.get(`https://bcknd.tickethub-tours.com/api/admin/${name}`)
       .then(response => {
         const list = response.data.data[namedata]; 
-        if (Array.isArray(list)) {
+        if(namedata==="categories"){
+            if (Array.isArray(list)) {
          setOptions(
   list.slice(0, -1).map(item => ({
     id: item.id,
@@ -27,6 +28,13 @@ const InputArrow = ({
 );
 
         }
+        }else{
+          setOptions(list.map(item=>({
+               id: item.id,
+    name: item.name
+          })))
+        }
+      
       })
       .catch(error => console.log(error));
   }, [name]);

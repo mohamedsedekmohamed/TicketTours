@@ -63,12 +63,11 @@ const Main = ({ data }) => {
           </p>
 
           {/* Search Box */}
-          <div
+          {/* <div
             data-aos="zoom-in"
             data-aos-delay="400"
             className="flex flex-col sm:flex-row gap-3 backdrop-blur-2xl bg-white/30 rounded-xl p-4 shadow-md items-stretch sm:items-end w-full max-w-md sm:max-w-2xl md:max-w-3xl lg:max-w-4xl"
           >
-            {/* Location */}
             <div className="flex flex-col w-full">
               <div className="flex items-center gap-2 border-b border-white pb-1">
                 <FaLocationDot className="text-md text-white" />
@@ -80,7 +79,6 @@ const Main = ({ data }) => {
               </div>
             </div>
 
-            {/* Date */}
             <div className="flex flex-col w-full">
               <div className="flex items-center gap-2 border-b border-white pb-1">
                 <MdOutlineDateRange className="text-md text-white" />
@@ -92,7 +90,6 @@ const Main = ({ data }) => {
               </div>
             </div>
 
-            {/* Search Button */}
             <button
               data-aos="flip-left"
               data-aos-delay="600"
@@ -101,7 +98,8 @@ const Main = ({ data }) => {
               <IoMdSearch className="text-lg" />
               Search
             </button>
-          </div>
+            
+          </div> */}
         </div>
       </div>
     </div>

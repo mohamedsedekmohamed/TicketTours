@@ -266,10 +266,10 @@ localStorage.setItem("user", JSON.stringify(response.data.data.user));
             <span className="text-sm font-medium">Continue with Google</span>
           </button>
 
-          <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition">
+          {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition">
             <FaFacebookF size={18} />
             <span className="text-sm font-medium">Continue with Facebook</span>
-          </button>
+          </button> */}
         </div>
 
         <span className="text-sm text-three font-medium">

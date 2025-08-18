@@ -15,10 +15,7 @@ function Loginuser({ setIsLoggedIn }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  // const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  // useEffect(() => {
-  //   localStorage.removeItem("token");
-  // }, []);
+ 
   const handleLogin = () => {
 
     axios
@@ -147,10 +144,10 @@ function Loginuser({ setIsLoggedIn }) {
             <span className="text-sm font-medium">Continue with Google</span>
           </button>
 
-          <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition">
+          {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition">
             <FaFacebookF size={18} />
             <span className="text-sm font-medium">Continue with Facebook</span>
-          </button>
+          </button> */}
         </div>
       </div>
       <ToastContainer />

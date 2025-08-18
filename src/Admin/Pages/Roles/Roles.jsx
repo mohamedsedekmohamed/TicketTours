@@ -42,8 +42,7 @@ const Roles = () => {
         setLoading(false);
       })
       .catch(() => {
-        toast.error("Error fetching data");
-        setLoading(false);
+         setLoading(false);
       });
   }, [update]);
   const columns = [

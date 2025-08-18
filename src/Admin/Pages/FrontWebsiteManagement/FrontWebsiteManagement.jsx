@@ -13,9 +13,10 @@ const FrontWebsiteManagement = () => {
       setActiveTab("tab2");
     } else if (location?.state?.kind === "cover") {
       setActiveTab("tab1");
-    } else if (location?.state?.kind === "other") {
-      setActiveTab("tab3");
-    }
+    } 
+    // else if (location?.state?.kind === "other") {
+    //   setActiveTab("tab3");
+    // }
   }, [location?.state?.kind]);
 
   return (
@@ -37,14 +38,14 @@ const FrontWebsiteManagement = () => {
         >
           FAQ
         </button>
-        <button
+        {/* <button
           className={`flex-1 py-2 text-center ${
             activeTab === "tab3" ? "bg-eight rounded-2xl text-2xl font-normal" : ""
           }`}
           onClick={() => setActiveTab("tab3")}
         >
           Contact us
-        </button>
+        </button> */}
       </div>
 
       <div>
@@ -58,11 +59,11 @@ const FrontWebsiteManagement = () => {
             <Faq />
           </ProtectedRoute>
         )}
-        {activeTab === "tab3" && (
+        {/* {activeTab === "tab3" && (
           <ProtectedRoute moduleName="Contact" requiredAction={["View"]}>
             <p>محتوى التاب الثالث</p>
           </ProtectedRoute>
-        )}
+        )} */}
       </div>
     </div>
   );

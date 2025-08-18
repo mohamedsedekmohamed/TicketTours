@@ -41,7 +41,6 @@ const PaymentMethod = () => {
         setLoading(false);
       })
       .catch(() => {
-        toast.error("Error fetching data");
         setLoading(false);
       });
   }, [update]);

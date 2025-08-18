@@ -72,6 +72,7 @@ const AddToursManagement = () => {
   ]);
   const [faqor, setFagor] = useState([
     {
+      id:"",
       title: "",
       description: "",
       image: null,
@@ -83,20 +84,24 @@ const AddToursManagement = () => {
   const [mainImagecheck, setMainImagecheck] = useState("");
 
   const [arrayimage, setArrayImage] = useState([]);
- 
-
   const [originalImages, setOriginalImages] = useState([]);
- const compareImages = (originalImages, currentImages) => {
+const compareImages = (originalImages, currentImages) => {
   const added = currentImages
-    .filter(img => !img.id)
-    .map(img => img.imagePath); 
+    .filter(
+      curr =>
+        !curr.id && 
+        !originalImages.some(orig => orig.imagePath === curr.imagePath)
+    )
+    .map(curr => curr.imagePath);
 
   const deleted = originalImages
-    .filter(orig => !currentImages.some(curr => curr.id === orig.id))
+    .filter(orig => !currentImages.some(curr => curr.imagePath === orig.imagePath))
     .map(img => img.id);
 
   return { added, deleted };
 };
+
+
   const { added, deleted } = compareImages(originalImages, arrayimage);
 
   const [status, setStatus] = useState(false);
@@ -222,20 +227,25 @@ const AddToursManagement = () => {
               })) || []
             );
 
-            setFag(
-              user?.itinerary?.map((it) => ({
-                title: it.title,
-                description: it.description,
-                image: it.imagePath,
-              }))
-            );
-            setFagor(
-              user?.itinerary?.map((it) => ({
-                title: it.title,
-                description: it.description,
-                image: it.imagePath,
-              }))
-            );
+      setFag(
+  user?.itinerary?.map((it) => ({
+    originalId: it.id, 
+    title: it.title,
+    description: it.description,
+    image: it.imagePath,
+  }))
+);
+
+setFagor(
+  user?.itinerary?.map((it) => ({
+    id: it.id,                  
+    title: it.title,
+    description: it.description,
+    image: it.imagePath,
+  }))
+);
+
+
 
             setTitles(
               user?.faq?.map((tit) => ({
@@ -472,6 +482,48 @@ const AddToursManagement = () => {
     setTitles(updated);
   };
 
+const buildItineraryPayload = (faq, faqor) => {
+  const added = [];
+  const updated = [];
+  const deleted = [];
+
+  // خريطة سريعة للقديم
+  const originalMap = new Map(faqor.map(o => [o.id, o]));
+  const seen = new Set();
+
+  // added + updated
+  faq.forEach(item => {
+    if (!item.originalId) {
+      // جديد
+      added.push({
+        title: item.title,
+        description: item.description,
+        imagePath: item.image,   // backend expects imagePath
+      });
+    } else {
+      // قديم → قارن الفروق
+      const orig = originalMap.get(item.originalId);
+      if (orig) {
+        seen.add(item.originalId);
+        const changes = { id: item.originalId };
+        if (item.title !== orig.title) changes.title = item.title;
+        if (item.description !== orig.description) changes.description = item.description;
+        if (item.image !== orig.image) changes.imagePath = item.image;
+
+        // لو فيه مفاتيح غير id بالفعل
+        if (Object.keys(changes).length > 1) {
+          updated.push(changes);
+        }
+      }
+    }
+  });
+
+  faqor.forEach(o => {
+    if (!seen.has(o.id)) deleted.push(o.id);
+  });
+
+return { added, updated, deleted };};
+
   const addTitle = () => {
     setTitles([...titles, { title: "", description: "" }]);
   };
@@ -626,6 +678,7 @@ const AddToursManagement = () => {
   };
   const handleSave = async () => {
     if (!validateForm()) return;
+    setCheckLoading(true);
 
     const payload = {
       title,
@@ -686,76 +739,70 @@ const AddToursManagement = () => {
       featured,
     };
 
-    // const payloadtwo = {
-    //   title,
-    //   description: describtion,
-    //   startDate: String(startDate),
-    //   endDate: String(endDate),
-    //   durationDays: parseInt(durationDays),
-    //   durationHours: parseInt(durationHours),
-    //   points: parseInt(points),
-    //   meetingPoint,
-    //   meetingPointAddress: meetingPoint ? meetingPointAddress : null,
-    //   meetingPointLocation: meetingPoint
-    //     ? `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`
-    //     : null,
-    //   maxUsers: parseInt(maxUsers),
-    //   categoryId: parseInt(category),
-    //   country,
-    //   city,
-    //   mainImage,
-    //   images:{added,deleted},
-    //   highlights: fields.filter((val) => val),
-    //   includes: fieldstwo.filter((val) => val),
-    //   excludes: fieldsthree.filter((val) => val),
-    //   prices: prices.map((p) => ({
-    //     adult: parseFloat(p.adult),
-    //     child: parseFloat(p.child),
-    //     infant: parseFloat(p.infant),
-    //     currencyId: parseInt(p.currencyId),
-    //   })),
-    //   extras: extras.map((extra) => ({
-    //     extraId: parseInt(extra.extraId),
-    //     price: {
-    //       adult: parseFloat(extra.price.adult),
-    //       child: parseFloat(extra.price.child),
-    //       infant: parseFloat(extra.price.infant),
-    //       currencyId: parseInt(extra.price.currencyId),
-    //     },
-    //   })),
-    //   discounts: discounts.map((item) => ({
-    //     kindBy: item.kindBy,
-    //     targetGroup: item.targetGroup,
-    //     type: item.type,
-    //     value: parseFloat(item.value),
-    //     minPeople: parseInt(item.minPeople),
-    //     maxPeople: parseInt(item.maxPeople),
-    //   })),
-    //   faq: titles.map((item) => ({
-    //     question: item.title,
-    //     answer: item.description,
-    //   })),
-    //   itinerary: faq.map((item) => ({
-    //     title: item.title,
-    //     description: item.description,
-    //     imagePath: item.image,
-    //   })),
-    //   daysOfWeek: selectedDays.map((p) => p.value),
-    //   status,
-    //   featured,
-    // };
-    // if (mainImage !== mainImagecheck) {
-    //   payloadtwo.mainImage = mainImage;
-    // }
+const itineraryupdata=buildItineraryPayload(faq,faqor)
+    const payloadtwo = {
+      title,
+      description: describtion,
+      startDate: String(startDate),
+      endDate: String(endDate),
+      durationDays: parseInt(durationDays),
+      durationHours: parseInt(durationHours),
+      points: parseInt(points),
+      meetingPoint,
+      meetingPointAddress: meetingPoint ? meetingPointAddress : "",
+      meetingPointLocation: meetingPoint
+        ? `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`
+        : "",
+      maxUsers: parseInt(maxUsers),
+      categoryId: parseInt(category),
+      country,
+      city,
+      images:{added,deleted},
+      highlights: fields.filter((val) => val),
+      includes: fieldstwo.filter((val) => val),
+      excludes: fieldsthree.filter((val) => val),
+      prices: prices.map((p) => ({
+        adult: parseFloat(p.adult),
+        child: parseFloat(p.child),
+        infant: parseFloat(p.infant),
+        currencyId: parseInt(p.currencyId),
+      })),
+      extras: extras.map((extra) => ({
+        extraId: parseInt(extra.extraId),
+        price: {
+          adult: Number(extra.price.adult),
+          child: Number(extra.price.child),
+          infant: Number(extra.price.infant),
+          currencyId: Number(extra.price.currencyId),
+        },
+      })),
+      discounts: discounts.map((item) => ({
+        kindBy: item.kindBy,
+        targetGroup: item.targetGroup,
+        type: item.type,
+        value: parseFloat(item.value),
+        minPeople: parseInt(item.minPeople),
+        maxPeople: parseInt(item.maxPeople),
+      })),
+      faq: titles.map((item) => ({
+        question: item.title,
+        answer: item.description,
+      })),
+      itinerary:itineraryupdata,
+      daysOfWeek: selectedDays.map((p) => p.value),
+      status,
+      featured,
+    };
+    if (mainImage !== mainImagecheck) {
+      payloadtwo.mainImage = mainImage;
+    }
     
-    // const changedFields = getChangedFields(originalData, payload);
 
-    setCheckLoading(true);
-
+console.log(itineraryupdata)
     const request = edit
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`
-          // payloadtwo
+          ,payloadtwo
         )
       : axios.post(
           "https://bcknd.tickethub-tours.com/api/admin/tours",
@@ -1082,12 +1129,12 @@ const AddToursManagement = () => {
             </div>
 
             {/* extras */}
-            <div className="py-4 space-y-5 w-full">
+            <div className="py-2 space-y-5 w-full">
               <h2 className="text-xl font-bold mb-4">Extras</h2>
               {extras.map((extra, index) => (
                 <div
                   key={index}
-                  className="border  w-full border-gray-300 rounded-xl p-4 space-y-3 relative bg-gray-50"
+                  className="border  w-full border-gray-300 rounded-xl p-1 space-y-3 relative bg-gray-50"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
                     <InputArrow
@@ -1102,7 +1149,7 @@ const AddToursManagement = () => {
                     <InputArrow
                       name="tours/add-data"
                       namedata="currencies"
-                      placeholder="Select currencies"
+                      placeholder="Select currency"
                       value={extra.price.currencyId}
                       onChange={(val) =>
                         handlePriceChange(index, "currencyId", val)
@@ -1152,15 +1199,15 @@ const AddToursManagement = () => {
               {/*  */}
             </div>
 
-            <div className="p-4 space-y-5 w-full border-1 mt-2">
+            <div className="p-2 space-y-5 w-full border-1 mt-2">
               <h2 className="text-xl font-bold text-one mb-4">Itinerary</h2>
 
               {faq.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-gray-100 py-4 px-2   rounded relative mb-4 space-y-3"
+                  className="bg-gray-100 py-4   rounded relative mb-4 space-y-3"
                 >
-                  <InputField
+   <InputField
                     type="text"
                     placeholder="Title"
                     value={item.title}
@@ -1168,6 +1215,7 @@ const AddToursManagement = () => {
                       handlefaqChange(index, "title", e.target.value)
                     }
                   />
+               
                   <label className="py-2 text-one mb-4">Description </label>
                   <textarea
                     placeholder="Description"

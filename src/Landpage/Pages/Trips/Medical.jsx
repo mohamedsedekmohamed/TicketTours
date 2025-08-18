@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navtwo from "../../component/Navtwo";
 import Footer from "../Footer";
 import Medicall from "../../../assets/Medical.png";
@@ -15,6 +16,20 @@ const Medical = () => {
   const [options, setOptions] = useState([]);
   const [describtion, setDescribtion] = useState("");
   const [images, setImages] = useState([]);
+
+  useEffect(() => {
+  const savedData = localStorage.getItem("savedFormData");
+  if (savedData) {
+    const parsed = JSON.parse(savedData);
+    setFullName(parsed.fullName || "");
+    setDescribtion(parsed.describtion || "");
+    setPhoneNumber(parsed.phoneNumber || "");
+    setEmail(parsed.email || "");
+    setCategoryIds(parsed.categoryIds || []);
+    setImages(parsed.images || []);
+  }
+}, []);
+
 
   useEffect(() => {
     axios
@@ -38,7 +53,10 @@ const Medical = () => {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit =(e) => {
+  e.preventDefault();
+        const token = localStorage.getItem("token");
+
     if (!fullName.trim()) return toast.warn("Full name is required");
     if (!describtion.trim()) return toast.warn("Description is required");
     if (!phoneNumber.trim()) return toast.warn("Phone number is required");
@@ -46,13 +64,27 @@ const Medical = () => {
     if (categoryIds.length === 0) return toast.warn("Please select at least one option");
     if (images.length === 0) return toast.warn("Please upload at least one image");
 
+       if (!token) {
+    const formDatas = {
+      fullName,
+      describtion,
+      phoneNumber,
+      email,
+      categoryIds,
+      images,
+    };
+    localStorage.setItem("savedFormData", JSON.stringify(formDatas));
+
+    toast.warn("You need to login in first. ");
+    return;
+  }
    const formData = {
   fullName,
   phoneNumber,
   email,
   describtion,
   categoryIds,
-  images: images.map(img => img.imagePath) // يحولهم لستينج بس
+  images: images.map(img => img.imagePath) 
 };
 
     axios
@@ -68,6 +100,8 @@ const Medical = () => {
         setDescribtion("");
         setCategoryIds([]);
         setImages([]);
+            localStorage.removeItem("savedFormData"); 
+
       })
       .catch(() => toast.error("Something went wrong, please try again"));
   };
@@ -82,67 +116,104 @@ const Medical = () => {
         <img src={Medicall} alt="Medicall" className="w-1/2 max-w-xs" />
       </div>
 
-      <div className="flex items-center py-3 font-medium justify-center">
-        <span className="text-center text-one text-2xl">
-          Add your Tour Medical
-        </span>
+   <div className="min-h-screen flex items-center justify-center p-6">
+  <form
+    onSubmit={handleSubmit}
+    className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-8 space-y-6"
+  >
+    {/* Title */}
+    <div className="text-center">
+      <h1 className="text-3xl font-bold text-one">Add Your Tour Medical</h1>
+      <p className="text-gray-500 mt-2 text-sm">
+        Fill in the details below to register your medical tour
+      </p>
+    </div>
+
+    {/* Full Name */}
+    <div>
+     
+      <InputField
+        placeholder="Enter your Full Name"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+      />
+    </div>
+
+    {/* Description */}
+    <div>
+   
+      <InputField
+        placeholder="Enter Description"
+        value={describtion}
+        onChange={(e) => setDescribtion(e.target.value)}
+      />
+    </div>
+
+    {/* Phone Number */}
+    <div>
+    
+      <InputField
+        placeholder="Enter Your Phone Number"
+        value={phoneNumber}
+        onChange={(e) => setPhoneNumber(e.target.value)}
+      />
+    </div>
+
+    {/* Email */}
+    <div>
+  
+      <InputField
+        placeholder="Enter Your Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+    </div>
+
+    {/* Options */}
+    <div className="bg-gray-50 border rounded-xl p-6">
+      <h2 className="text-lg font-semibold text-one mb-4 text-center">
+        Choose Options
+      </h2>
+      <div className="grid grid-cols-2 gap-3">
+        {options.map((opt) => (
+          <label
+            key={opt.id}
+            className="flex items-center gap-2 cursor-pointer bg-white border rounded-lg px-3 py-2 shadow-sm hover:shadow-md transition"
+          >
+            <input
+              type="checkbox"
+              checked={categoryIds.includes(opt.id)}
+              onChange={() => handleSelect(opt.id)}
+              className="form-checkbox text-one"
+            />
+            <span className="text-gray-700">{opt.title}</span>
+          </label>
+        ))}
       </div>
+    </div>
 
-      <div className="p-5 gap-4 flex flex-col">
-        <InputField
-          placeholder="Enter your Full Name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
-        <InputField
-          placeholder="Enter Description"
-          value={describtion}
-          onChange={(e) => setDescribtion(e.target.value)}
-        />
-        <InputField
-          placeholder="Enter Your Phone Number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-        />
-        <InputField
-          placeholder="Enter Your Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+    {/* File Upload */}
+    <div>
+     
+      <FileUploadButtonArroy
+        des="Images the patient's photos"
+        kind="Images"
+        flag={images}
+        onFileChange={setImages}
+      />
+    </div>
 
-        <div className="bg-white shadow-lg rounded-lg p-6 max-w-sm">
-          <h1 className="text-xl font-bold mb-4 text-one text-center">Choose Options</h1>
-          {options.map((opt) => (
-            <label
-              key={opt.id}
-              className="flex items-center space-x-2 mb-2 cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={categoryIds.includes(opt.id)}
-                onChange={() => handleSelect(opt.id)}
-                className="form-checkbox text-blue-500"
-              />
-              <span>{opt.title}</span>
-            </label>
-          ))}
-        </div>
+    {/* Submit Button */}
+    <button
+      type="submit"
+      className="w-full bg-one hover:bg-one/90 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300"
+    >
+      Submit
+    </button>
+  </form>
+</div>
 
-        <FileUploadButtonArroy
-          des="Images the patient's photos"
-          kind="Images"
-          flag={images}
-          onFileChange={setImages}
-        />
-
-        <button
-          onClick={handleSubmit}
-          className="bg-one hover:bg-one/30 text-white py-2 px-4 rounded-lg mt-4"
-        >
-          Submit
-        </button>
-      </div>
-
+<ToastContainer/>
       <Footer />
     </div>
   );
