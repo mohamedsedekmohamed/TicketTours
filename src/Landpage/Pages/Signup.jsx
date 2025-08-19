@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import content from "../../assets/content.png";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { BsArrowRightCircleFill } from "react-icons/bs";
-import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Signup = () => {
   const [phone, setPhone] = useState("");

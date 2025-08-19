@@ -72,7 +72,7 @@ const AddToursManagement = () => {
   ]);
   const [faqor, setFagor] = useState([
     {
-      id:"",
+      id: "",
       title: "",
       description: "",
       image: null,
@@ -85,22 +85,24 @@ const AddToursManagement = () => {
 
   const [arrayimage, setArrayImage] = useState([]);
   const [originalImages, setOriginalImages] = useState([]);
-const compareImages = (originalImages, currentImages) => {
-  const added = currentImages
-    .filter(
-      curr =>
-        !curr.id && 
-        !originalImages.some(orig => orig.imagePath === curr.imagePath)
-    )
-    .map(curr => curr.imagePath);
+  const compareImages = (originalImages, currentImages) => {
+    const added = currentImages
+      .filter(
+        (curr) =>
+          !curr.id &&
+          !originalImages.some((orig) => orig.imagePath === curr.imagePath)
+      )
+      .map((curr) => curr.imagePath);
 
-  const deleted = originalImages
-    .filter(orig => !currentImages.some(curr => curr.imagePath === orig.imagePath))
-    .map(img => img.id);
+    const deleted = originalImages
+      .filter(
+        (orig) =>
+          !currentImages.some((curr) => curr.imagePath === orig.imagePath)
+      )
+      .map((img) => img.id);
 
-  return { added, deleted };
-};
-
+    return { added, deleted };
+  };
 
   const { added, deleted } = compareImages(originalImages, arrayimage);
 
@@ -227,25 +229,23 @@ const compareImages = (originalImages, currentImages) => {
               })) || []
             );
 
-      setFag(
-  user?.itinerary?.map((it) => ({
-    originalId: it.id, 
-    title: it.title,
-    description: it.description,
-    image: it.imagePath,
-  }))
-);
+            setFag(
+              user?.itinerary?.map((it) => ({
+                originalId: it.id,
+                title: it.title,
+                description: it.description,
+                image: it.imagePath,
+              }))
+            );
 
-setFagor(
-  user?.itinerary?.map((it) => ({
-    id: it.id,                  
-    title: it.title,
-    description: it.description,
-    image: it.imagePath,
-  }))
-);
-
-
+            setFagor(
+              user?.itinerary?.map((it) => ({
+                id: it.id,
+                title: it.title,
+                description: it.description,
+                image: it.imagePath,
+              }))
+            );
 
             setTitles(
               user?.faq?.map((tit) => ({
@@ -482,47 +482,49 @@ setFagor(
     setTitles(updated);
   };
 
-const buildItineraryPayload = (faq, faqor) => {
-  const added = [];
-  const updated = [];
-  const deleted = [];
+  const buildItineraryPayload = (faq, faqor) => {
+    const added = [];
+    const updated = [];
+    const deleted = [];
 
-  // خريطة سريعة للقديم
-  const originalMap = new Map(faqor.map(o => [o.id, o]));
-  const seen = new Set();
+    // خريطة سريعة للقديم
+    const originalMap = new Map(faqor.map((o) => [o.id, o]));
+    const seen = new Set();
 
-  // added + updated
-  faq.forEach(item => {
-    if (!item.originalId) {
-      // جديد
-      added.push({
-        title: item.title,
-        description: item.description,
-        imagePath: item.image,   // backend expects imagePath
-      });
-    } else {
-      // قديم → قارن الفروق
-      const orig = originalMap.get(item.originalId);
-      if (orig) {
-        seen.add(item.originalId);
-        const changes = { id: item.originalId };
-        if (item.title !== orig.title) changes.title = item.title;
-        if (item.description !== orig.description) changes.description = item.description;
-        if (item.image !== orig.image) changes.imagePath = item.image;
+    // added + updated
+    faq.forEach((item) => {
+      if (!item.originalId) {
+        // جديد
+        added.push({
+          title: item.title,
+          description: item.description,
+          imagePath: item.image, // backend expects imagePath
+        });
+      } else {
+        // قديم → قارن الفروق
+        const orig = originalMap.get(item.originalId);
+        if (orig) {
+          seen.add(item.originalId);
+          const changes = { id: item.originalId };
+          if (item.title !== orig.title) changes.title = item.title;
+          if (item.description !== orig.description)
+            changes.description = item.description;
+          if (item.image !== orig.image) changes.imagePath = item.image;
 
-        // لو فيه مفاتيح غير id بالفعل
-        if (Object.keys(changes).length > 1) {
-          updated.push(changes);
+          // لو فيه مفاتيح غير id بالفعل
+          if (Object.keys(changes).length > 1) {
+            updated.push(changes);
+          }
         }
       }
-    }
-  });
+    });
 
-  faqor.forEach(o => {
-    if (!seen.has(o.id)) deleted.push(o.id);
-  });
+    faqor.forEach((o) => {
+      if (!seen.has(o.id)) deleted.push(o.id);
+    });
 
-return { added, updated, deleted };};
+    return { added, updated, deleted };
+  };
 
   const addTitle = () => {
     setTitles([...titles, { title: "", description: "" }]);
@@ -636,8 +638,7 @@ return { added, updated, deleted };};
           !item.price ||
           !item.price.adult.toString().trim() ||
           !item.price.child.toString().trim() ||
-          !item.price.infant.toString().trim() ||
-          !item.price.currencyId.toString().trim()
+          !item.price.infant.toString().trim() 
       )
     ) {
       formErrors.extras = "All extras fields are required for each entry";
@@ -714,7 +715,8 @@ return { added, updated, deleted };};
           adult: parseFloat(extra.price.adult),
           child: parseFloat(extra.price.child),
           infant: parseFloat(extra.price.infant),
-          currencyId: parseInt(extra.price.currencyId),
+currencyId: parseInt(prices[0].currencyId)
+
         },
       })),
       discounts: discounts.map((item) => ({
@@ -739,7 +741,7 @@ return { added, updated, deleted };};
       featured,
     };
 
-const itineraryupdata=buildItineraryPayload(faq,faqor)
+    const itineraryupdata = buildItineraryPayload(faq, faqor);
     const payloadtwo = {
       title,
       description: describtion,
@@ -757,7 +759,7 @@ const itineraryupdata=buildItineraryPayload(faq,faqor)
       categoryId: parseInt(category),
       country,
       city,
-      images:{added,deleted},
+      images: { added, deleted },
       highlights: fields.filter((val) => val),
       includes: fieldstwo.filter((val) => val),
       excludes: fieldsthree.filter((val) => val),
@@ -773,7 +775,7 @@ const itineraryupdata=buildItineraryPayload(faq,faqor)
           adult: Number(extra.price.adult),
           child: Number(extra.price.child),
           infant: Number(extra.price.infant),
-          currencyId: Number(extra.price.currencyId),
+currencyId: parseInt(prices[0].currencyId)
         },
       })),
       discounts: discounts.map((item) => ({
@@ -788,7 +790,7 @@ const itineraryupdata=buildItineraryPayload(faq,faqor)
         question: item.title,
         answer: item.description,
       })),
-      itinerary:itineraryupdata,
+      itinerary: itineraryupdata,
       daysOfWeek: selectedDays.map((p) => p.value),
       status,
       featured,
@@ -796,13 +798,12 @@ const itineraryupdata=buildItineraryPayload(faq,faqor)
     if (mainImage !== mainImagecheck) {
       payloadtwo.mainImage = mainImage;
     }
-    
 
-console.log(itineraryupdata)
+    console.log(itineraryupdata);
     const request = edit
       ? axios.put(
-          `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`
-          ,payloadtwo
+          `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`,
+          payloadtwo
         )
       : axios.post(
           "https://bcknd.tickethub-tours.com/api/admin/tours",
@@ -1134,7 +1135,7 @@ console.log(itineraryupdata)
               {extras.map((extra, index) => (
                 <div
                   key={index}
-                  className="border  w-full border-gray-300 rounded-xl p-1 space-y-3 relative bg-gray-50"
+                  className="border   w-full border-gray-300 rounded-xl  px-1 md:p-3 space-y-3 relative bg-gray-50"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
                     <InputArrow
@@ -1146,7 +1147,7 @@ console.log(itineraryupdata)
                         handleExtrasChange(index, "extraId", val)
                       }
                     />
-                    <InputArrow
+                    {/* <InputArrow
                       name="tours/add-data"
                       namedata="currencies"
                       placeholder="Select currency"
@@ -1154,7 +1155,7 @@ console.log(itineraryupdata)
                       onChange={(val) =>
                         handlePriceChange(index, "currencyId", val)
                       }
-                    />
+                    /> */}
                     <InputField
                       type="number"
                       placeholder="Adult Price"
@@ -1207,7 +1208,7 @@ console.log(itineraryupdata)
                   key={index}
                   className="bg-gray-100 py-4   rounded relative mb-4 space-y-3"
                 >
-   <InputField
+                  <InputField
                     type="text"
                     placeholder="Title"
                     value={item.title}
@@ -1215,7 +1216,7 @@ console.log(itineraryupdata)
                       handlefaqChange(index, "title", e.target.value)
                     }
                   />
-               
+
                   <label className="py-2 text-one mb-4">Description </label>
                   <textarea
                     placeholder="Description"

@@ -4,6 +4,7 @@ import { MdEmail, MdPhone, MdAttachMoney, MdDateRange, MdWarning, MdNotes } from
 import { BiIdCard } from "react-icons/bi";
 import axios from "axios";
 import { MdOutlineNearbyError } from "react-icons/md";
+import { MdLocalHospital } from "react-icons/md";
 
 import { useNavigate } from "react-router-dom";
 const ProfileUser = () => {
@@ -516,7 +517,7 @@ const handleLogout = () => {
                 }`}
                 onClick={() => setMainTab("medical")}
               >
-                <FaCreditCard className="w-5 h-5 inline mr-2" />
+                <MdLocalHospital className="w-5 h-5 inline mr-2" />
                 Medical
               </button>
             </div>
@@ -589,7 +590,12 @@ const handleLogout = () => {
               >
                 <h3 className="font-semibold text-lg md:text-xl text-green-700 flex items-center gap-2">
                   <FaFileAlt className="text-green-600" />
-                  {item.title}
+   {item.titles?.map((it, index) => (
+  <span key={index}>
+    {it}{index !== item.titles.length - 1 && " - "}
+  </span>
+))}
+
                 </h3>
 
                 <p className="text-gray-600 mt-2 text-sm md:text-base">

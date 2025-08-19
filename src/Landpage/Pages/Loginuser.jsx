@@ -10,7 +10,7 @@ import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import content from "../../assets/content.png";
 import { BsArrowRightCircleFill } from "react-icons/bs";
 
-function Loginuser({ setIsLoggedIn }) {
+function Loginuser() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

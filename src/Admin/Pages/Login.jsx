@@ -85,7 +85,7 @@ useEffect(()=>{
       onClick={() => setShowPassword(!showPassword)}
       className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600"
     >
-      {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+      {/* {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />} */}
     </button>
   </div>
 
