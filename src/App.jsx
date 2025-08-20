@@ -40,7 +40,7 @@ function App() {
                 path="/loginadmin"
                 element={<Login setIsLoggedIn={setIsLoggedIn} />}
               />
-              <Route path="/google-auth/:id" element={<GoogleAuthHandler />} />
+              <Route path="/auth/google/:id" element={<GoogleAuthHandler />} />
               <Route path="/login" element={<Loginuser />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/localtourism" element={<Local />} />
