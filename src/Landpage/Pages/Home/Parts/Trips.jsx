@@ -98,7 +98,7 @@ const Trips = () => {
           </div>
         </div>
 
-        <div
+        {/* <div
           className="flex gap-3 items-center rounded-3xl bg-one py-2 px-5 hover:bg-one/80"
           data-aos="zoom-in"
         >
@@ -119,7 +119,7 @@ const Trips = () => {
               fill="white"
             />
           </svg>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -113,18 +113,26 @@ if (
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
-  const handstartDate = (newData) => {
+const handstartDate = (newData) => {
     if (newData) {
-      const formatted = newData.toISOString().split("T")[0];
-      setStartDate(formatted);
+      const localDate = new Date(
+        newData.getTime() - newData.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .split("T")[0];
+      setStartDate(localDate);
     } else {
       setStartDate("");
     }
   };
-  const handEndtDate = (newData) => {
+ const handEndtDate = (newData) => {
     if (newData) {
-      const formatted = newData.toISOString().split("T")[0];
-      setEndDate(formatted);
+      const localDate = new Date(
+        newData.getTime() - newData.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .split("T")[0];
+      setEndDate(localDate);
     } else {
       setEndDate("");
     }

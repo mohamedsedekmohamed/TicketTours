@@ -191,14 +191,12 @@ const Payment = () => {
     }
   };
 
-  // Handle view row click - reset states when opening
   const handleViewRow = (row) => {
     setViewRow(row);
-    setActiveTabcard("booking"); // Reset to booking tab
-    setTourData(null); // Clear previous tour data
+    setActiveTabcard("booking"); 
+    setTourData(null); 
   };
 
-  // Handle close modal
   const handleCloseModal = () => {
     setViewRow(null);
     setActiveTabcard("booking");

@@ -28,7 +28,12 @@ const InputArrow = ({
 );
 
         }
-        }else{
+        }else if(namedata==="PromoCode"){
+ setOptions(list.map(item=>({
+               id: item.id,
+    name: item.code
+          })))
+        } else{
           setOptions(list.map(item=>({
                id: item.id,
     name: item.name

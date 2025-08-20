@@ -9,6 +9,25 @@ import Loading from "../../../ui/Loading";
 import Swal from "sweetalert2";
 import { CiSearch, CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import {
+  FaCalendarAlt,
+  FaUsers,
+  FaMapMarkerAlt,
+  FaDollarSign,
+  FaListUl,
+  FaInfoCircle,
+  FaImages,
+} from "react-icons/fa";
+import {
+  MdOutlineAccessTime,
+  MdHighlight,
+  MdQuestionAnswer,
+} from "react-icons/md";
+import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
+import {} from "react-icons/fa";
+import { FaUtensils, FaRegListAlt } from "react-icons/fa";
+import { MdDiscount } from "react-icons/md";
+
 const ToursManagement = () => {
   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
@@ -30,7 +49,7 @@ const ToursManagement = () => {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
-
+  const [tourData, setTourData] = useState("");
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/tours`, {
@@ -49,7 +68,7 @@ const ToursManagement = () => {
             durationDays: item.durationDays,
             status: item.status,
             maxUsers: item.maxUsers,
-            description: item.describtion, 
+            description: item.describtion,
             cityName: item.country,
             countryName: item.city,
           }))
@@ -57,7 +76,7 @@ const ToursManagement = () => {
         setLoading(false);
       })
       .catch(() => {
-         setLoading(false);
+        setLoading(false);
       });
   }, [update]);
 
@@ -127,46 +146,54 @@ const ToursManagement = () => {
 
     return matchesSearch;
   });
-
+  const openHnadle = (id) => {
+    axios
+      .get(`https://bcknd.tickethub-tours.com/api/admin/tours/${id}`)
+      .then((res) => {
+        const tour = res.data.data;
+        setTourData(tour);
+      });
+  };
   if (loading) {
     return <Loading />;
   }
   return (
     <div>
-{Privileges.includes("Add") ||Privileges.includes("Edit")?( 
-      <NavAndSearch
-        nav="/admin/addtoursmanagement"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-):(
-      <NavAndSearch like
-        nav="/admin/addtoursmanagement"
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-)}
+      <ToastContainer/>
+      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+        <NavAndSearch
+          nav="/admin/addtoursmanagement"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      ) : (
+        <NavAndSearch
+          like
+          nav="/admin/addtoursmanagement"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
       <DynamicTable
         data={data}
         columns={columns}
         filteredData={filteredData}
         actions={(row) => (
-            <div className="flex gap-1">
-                    {Privileges.includes("Edit") && (
-                      <CiEdit
-                        className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-                        onClick={() => handleEdit(row.id)}
-                      />
-                    )}
-        
-                    {Privileges.includes("Delete") && (
-                      <RiDeleteBin6Line
-                        className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-                        onClick={() => handleDelete(row.id, row.title
-)}
-                      />
-                    )}
-                  </div>
+          <div className="flex gap-1">
+            {Privileges.includes("Edit") && (
+              <CiEdit
+                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+                onClick={() => handleEdit(row.id)}
+              />
+            )}
+
+            {Privileges.includes("Delete") && (
+              <RiDeleteBin6Line
+                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+                onClick={() => handleDelete(row.id, row.title)}
+              />
+            )}
+          </div>
         )}
         customRender={(key, value) => {
           if (key === "mainImage") {
@@ -194,7 +221,217 @@ const ToursManagement = () => {
 
           return null;
         }}
+        view={(row) => (
+          <button
+            onClick={() => openHnadle(row.id)}
+            className="bg-one rounded-[6px] text-white px-3 py-1"
+          >
+            View
+          </button>
+        )}
       />
+   {tourData && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="bg-white max-h-[90vh] overflow-y-auto w-[95%] md:w-[75%] lg:w-[65%] xl:w-[50%] p-6 rounded-2xl shadow-2xl relative space-y-4">
+      
+      {/* زرار إغلاق */}
+      <button
+        onClick={() => setTourData("")}
+        className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 transition"
+      >
+        ✕
+      </button>
+
+      {/* Title */}
+      <div className="flex items-center gap-2 text-2xl font-bold text-one border-b pb-2">
+        <FaInfoCircle className="text-one" /> 
+        <span>{tourData.title || "N/A"}</span>
+      </div>
+
+      {/* Dates + Duration + Users */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <p className="flex items-center gap-2 text-gray-700">
+          <FaCalendarAlt className="text-orange-500" />
+          {tourData.startDate} → {tourData.endDate}
+        </p>
+        <p className="flex items-center gap-2 text-gray-700">
+          <MdOutlineAccessTime className="text-purple-500" />
+          {tourData.durationDays} days / {tourData.durationHours} hours
+        </p>
+        <p className="flex items-center gap-2 text-gray-700">
+          <FaUsers className="text-green-600" /> Max Users: {tourData.maxUsers}
+        </p>
+      </div>
+
+      {/* Meeting Point */}
+      <div className="p-3 rounded-lg bg-gray-50">
+        <p className="flex items-center gap-2 text-gray-700">
+          <FaMapMarkerAlt className="text-red-500" />
+          {tourData.meetingPointAddress}
+          {tourData.meetingPointLocation && (
+            <a
+              href={tourData.meetingPointLocation}
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-500 underline ml-2"
+            >
+              View Map
+            </a>
+          )}
+        </p>
+      </div>
+
+      {/* Pricing */}
+      {tourData.price && (
+        <div className="bg-blue-50 p-3 rounded-lg shadow-sm">
+          <p className="font-semibold flex items-center gap-2 text-blue-600">
+            <FaDollarSign /> Pricing
+          </p>
+          <ul className="ml-6 mt-1 list-disc text-gray-700">
+            <li>Adult: {tourData.price.adult}</li>
+            <li>Child: {tourData.price.child}</li>
+            <li>Infant: {tourData.price.infant}</li>
+          </ul>
+        </div>
+      )}
+
+      {/* Highlights */}
+      {tourData.highlights?.length > 0 && (
+        <div className="bg-yellow-50 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-yellow-700">
+            <MdHighlight /> Highlights
+          </p>
+          <ul className="ml-6 list-disc text-gray-700">
+            {tourData.highlights.map((h, i) => (
+              <li key={i}>{h}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Includes */}
+      {tourData.includes?.length > 0 && (
+        <div className="bg-green-50 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-green-700">
+            <AiOutlineCheckCircle /> Includes
+          </p>
+          <ul className="ml-6 list-disc text-gray-700">
+            {tourData.includes.map((inc, i) => (
+              <li key={i}>{inc}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Excludes */}
+      {tourData.excludes?.length > 0 && (
+        <div className="bg-red-50 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-red-700">
+            <AiOutlineCloseCircle /> Excludes
+          </p>
+          <ul className="ml-6 list-disc text-gray-700">
+            {tourData.excludes.map((exc, i) => (
+              <li key={i}>{exc}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Itinerary */}
+      {tourData.itinerary?.length > 0 && (
+        <div className="bg-indigo-50 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-indigo-700">
+            <FaRegListAlt /> Itinerary
+          </p>
+          {tourData.itinerary.map((it) => (
+            <div key={it.id} className="border rounded p-3 mt-2 bg-white shadow-sm">
+              <p className="font-semibold">{it.title}</p>
+              <p className="text-gray-700">{it.description}</p>
+              {it.imagePath && (
+                <img
+                  src={it.imagePath}
+                  alt={it.title}
+                  className="w-full max-h-[200px] object-cover mt-2 rounded"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* FAQ */}
+      {tourData.faq?.length > 0 && (
+        <div className="bg-indigo-100 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-indigo-700">
+            <MdQuestionAnswer /> FAQ
+          </p>
+          {tourData.faq.map((f, i) => (
+            <div key={i} className="border p-2 rounded bg-white mt-1 shadow-sm">
+              <p className="font-semibold">Q: {f.question}</p>
+              <p className="text-gray-700">A: {f.answer}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Discounts */}
+      {tourData.discounts?.length > 0 && (
+        <div className="bg-pink-50 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-pink-700">
+            <MdDiscount /> Discounts
+          </p>
+          {tourData.discounts.map((d) => (
+            <div key={d.id} className="border p-2 rounded bg-white mt-1 shadow-sm">
+              <p>Target: {d.targetGroup}</p>
+              <p>Type: {d.type}</p>
+              <p>Value: {d.value}</p>
+              <p>
+                People: {d.minPeople} - {d.maxPeople}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Extras */}
+      {tourData.extras?.length > 0 && (
+        <div className="bg-teal-50 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-teal-700">
+            <FaUtensils /> Extras
+          </p>
+          {tourData.extras.map((ex) => (
+            <div key={ex.id} className="border p-2 rounded bg-white mt-1 shadow-sm">
+              <p className="font-semibold">{ex.name}</p>
+              <ul className="ml-6 list-disc text-gray-700">
+                <li>Adult: {ex.price.adult}</li>
+                <li>Child: {ex.price.child}</li>
+                <li>Infant: {ex.price.infant}</li>
+              </ul>
+              <p className="text-sm text-gray-500">
+                Currency: {ex.price.currencyName}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Main Image */}
+      {tourData.mainImage && (
+        <div className="bg-gray-50 p-3 rounded-lg">
+          <p className="flex items-center gap-2 font-semibold text-gray-700">
+            <FaImages /> Main Image
+          </p>
+          <img
+            src={tourData.mainImage}
+            alt="Tour"
+            className="w-full max-h-[300px] object-contain rounded mt-2 shadow"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState ,useRef } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -11,16 +11,16 @@ const Signup = () => {
   const [phone, setPhone] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [userId,setUserId]=useState("")
+  const [userId, setUserId] = useState("");
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const CODE_LENGTH = 6;
   const [step, setStep] = useState(1);
-    const [code, setCode] = useState(new Array(CODE_LENGTH).fill(""));
-    const [timer, setTimer] = useState(60);
-    const inputsRef = useRef([]);
+  const [code, setCode] = useState(new Array(CODE_LENGTH).fill(""));
+  const [timer, setTimer] = useState(60);
+  const inputsRef = useRef([]);
   const handleChangeCode = (e, index) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     if (value) {
@@ -46,17 +46,15 @@ const Signup = () => {
         { userId, code: enteredCode }
       );
       toast.success("Code verified successfully!");
- setTimeout(() => {
-            navigate("/");
-          }, 3000);
-            } catch (error) {
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+    } catch (error) {
       toast.error(
         error?.response?.data?.error?.message || "Verification failed"
       );
     }
   };
-
-
 
   const handleGoogleLogin = () => {
     window.location.href =
@@ -93,12 +91,11 @@ const Signup = () => {
           response.data.data.message ===
           "User Signup Successfully Go Verify Email"
         ) {
-          setStep(2)
-          setUserId(response.data.data.userId)
-          localStorage.setItem("token", response.data.data.token);
-localStorage.setItem("user", JSON.stringify(response.data.data.user));
+          setStep(2);
+          setUserId(response.data.data.userId);
+          // localStorage.setItem("token", response.data.data.token);
+          // localStorage.setItem("user", JSON.stringify(response.data.data.user));
           toast.success(`Welcome ${name} `);
-         
         }
       })
       .catch((error) => {
@@ -154,136 +151,150 @@ localStorage.setItem("user", JSON.stringify(response.data.data.user));
           className="absolute top-2 right-2 text-3xl text-one cursor-pointer"
           onClick={() => navigate(-1)}
         />
-   {step === 1 && (
+        {step === 1 && (
           <>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl text-one font-semibold mb-2">
-          Create New Account
-        </h2>
-        <p className="text-base text-gray-600 mb-6">Sign Up</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-one font-semibold mb-2">
+              Create New Account
+            </h2>
+            <p className="text-base text-gray-600 mb-6">Sign Up</p>
 
-        {/* Full Name */}
-        <div className="w-full max-w-md flex flex-col gap-2 mb-2">
-          <label htmlFor="name" className="text-sm font-medium text-gray-700">
-            Full Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-12 border border-one rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-one"
-            placeholder="Enter your full name"
-          />
-        </div>
+            {/* Full Name */}
+            <div className="w-full max-w-md flex flex-col gap-2 mb-2">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-gray-700"
+              >
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="h-12 border border-one rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-one"
+                placeholder="Enter your full name"
+              />
+            </div>
 
-        {/* Phone */}
-        <div className="w-full max-w-md flex flex-col gap-2 mb-2">
-          <label htmlFor="phone" className="text-sm font-medium text-gray-700">
-            Phone Number
-          </label>
-          <input
-            id="phone"
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="h-12 border border-one rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-one"
-            placeholder="Enter your phone number"
-          />
-        </div>
+            {/* Phone */}
+            <div className="w-full max-w-md flex flex-col gap-2 mb-2">
+              <label
+                htmlFor="phone"
+                className="text-sm font-medium text-gray-700"
+              >
+                Phone Number
+              </label>
+              <input
+                id="phone"
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="h-12 border border-one rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-one"
+                placeholder="Enter your phone number"
+              />
+            </div>
 
-        {/* Email */}
-        <div className="w-full max-w-md flex flex-col gap-2 mb-2">
-          <label htmlFor="email" className="text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="h-12 border border-one rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-one"
-            placeholder="Enter your email"
-          />
-        </div>
+            {/* Email */}
+            <div className="w-full max-w-md flex flex-col gap-2 mb-2">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="h-12 border border-one rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-one"
+                placeholder="Enter your email"
+              />
+            </div>
 
-        {/* Password */}
-        <div className="w-full max-w-md flex flex-col gap-2 mb-2 relative">
-          <label
-            htmlFor="password"
-            className="text-sm font-medium text-gray-700"
-          >
-            Password
-          </label>
-          <input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-12 border border-one rounded-lg px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-one"
-            placeholder="Enter your password"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-[64%] right-4 transform -translate-y-1/2 text-gray-600"
-          >
-            {/* {showPassword ? <FiEyeOff /> : <FiEye />} */}
-          </button>
-        </div>
+            {/* Password */}
+            <div className="w-full max-w-md flex flex-col gap-2 mb-2 relative">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-12 border border-one rounded-lg px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-one"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-[64%] right-4 transform -translate-y-1/2 text-gray-600"
+              >
+                {/* {showPassword ? <FiEyeOff /> : <FiEye />} */}
+              </button>
+            </div>
 
-        {/* Forgot Password */}
-        <div className="w-full max-w-md text-right mb-4">
-          <button
-            onClick={() => navigate("/forgotpassword")}
-            className="text-sm text-one hover:underline"
-          >
-            Forgot Password?
-          </button>
-        </div>
+            {/* Forgot Password */}
+            <div className="w-full max-w-md text-right mb-4">
+              <button
+                onClick={() => navigate("/forgotpassword")}
+                className="text-sm text-one hover:underline"
+              >
+                Forgot Password?
+              </button>
+            </div>
 
-        {/* Submit Button */}
-        <button
-          onClick={handleLogin}
-          className="w-full max-w-md h-12 py-3 bg-one text-white rounded-lg font-semibold mb-4 transition-transform hover:scale-95"
-        >
-          Sign Up
-        </button>
+            {/* Submit Button */}
+            <button
+              onClick={handleLogin}
+              className="w-full max-w-md h-12 py-3 bg-one text-white rounded-lg font-semibold mb-4 transition-transform hover:scale-95"
+            >
+              Sign Up
+            </button>
 
-        {/* Social Buttons */}
-        <div className="w-full max-w-md flex items-center gap-2 mb-4">
-          <div className="flex-1 h-px bg-gray-300" />
-          <span className="text-sm text-gray-500">or continue with</span>
-          <div className="flex-1 h-px bg-gray-300" />
-        </div>
+            {/* Social Buttons */}
+            <div className="w-full max-w-md flex items-center gap-2 mb-4">
+              <div className="flex-1 h-px bg-gray-300" />
+              <span className="text-sm text-gray-500">or continue with</span>
+              <div className="flex-1 h-px bg-gray-300" />
+            </div>
 
-        <div className="w-full max-w-md flex flex-col sm:flex-row gap-4 mb-6">
-          <button
-            onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition"
-          >
-            <FaGoogle size={18} />
-            <span className="text-sm font-medium">Continue with Google</span>
-          </button>
+            <div className="w-full max-w-md flex flex-col sm:flex-row gap-4 mb-6">
+              <button
+                onClick={handleGoogleLogin}
+                className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition"
+              >
+                <FaGoogle size={18} />
+                <span className="text-sm font-medium">
+                  Continue with Google
+                </span>
+              </button>
 
-          {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition">
+              {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition">
             <FaFacebookF size={18} />
             <span className="text-sm font-medium">Continue with Facebook</span>
           </button> */}
-        </div>
+            </div>
 
-        <span className="text-sm text-three font-medium">
-          Already have an account?{" "}
-          <button
-            onClick={() => navigate("/login")}
-            className="text-one underline"
-          >
-            Login
-          </button>
-        </span>
-        </> )}
-    {step === 2 && (
+            <span className="text-sm text-three font-medium">
+              Already have an account?{" "}
+              <button
+                onClick={() => navigate("/login")}
+                className="text-one underline"
+              >
+                Login
+              </button>
+            </span>
+          </>
+        )}
+        {step === 2 && (
           <>
-            <h2 className="text-2xl font-semibold text-one">Enter Verification Code</h2>
+            <h2 className="text-2xl font-semibold text-one">
+              Enter Verification Code
+            </h2>
             <p className="text-sm text-gray-500">
               Code sent to <span className="text-blue-500">{username}</span>
             </p>
@@ -326,7 +337,6 @@ localStorage.setItem("user", JSON.stringify(response.data.data.user));
             </p>
           </>
         )}
-
       </div>
 
       <ToastContainer />

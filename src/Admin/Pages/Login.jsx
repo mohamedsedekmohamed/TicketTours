@@ -15,6 +15,7 @@ function Login({ setIsLoggedIn }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [check,setcheck]=useState(false)
   // const togglePasswordVisibility = () => setShowPassword(!showPassword);
 useEffect(()=>{
   localStorage.removeItem('token');

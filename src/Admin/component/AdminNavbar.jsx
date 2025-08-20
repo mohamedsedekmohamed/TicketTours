@@ -22,7 +22,7 @@ const AdminNavbar = ({setIsLoggedIn}) => {
 
 const loghandled = () => {
   localStorage.removeItem("token");
-sessionStorage.clear();
+  localStorage.removeItem("groupedPrivileges");
   setIsLoggedIn(false);
   navigate("/");
 };

@@ -3,6 +3,7 @@ import Head from "../../../ui/Head";
 import Loading from "../../../ui/Loading";
 import InputField from "../../../ui/InputField";
 import InputArrow from "../../../ui/InputArrow";
+import InputArrowarray from "../../../ui/InputArrowarray";
 import Inputfiltter from "../../../ui/Inputfiltter";
 import SwitchButton from "../../../ui/SwitchButton";
 import FileUploadButton from "../../../ui/FileUploadButton";
@@ -27,7 +28,7 @@ const AddToursManagement = () => {
   const [edit, setEdit] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
   const [loading, setLoading] = useState(true);
-
+const [promocode,setPromocode]=useState([])
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [describtion, setDescribtion] = useState("");
@@ -140,6 +141,7 @@ const AddToursManagement = () => {
         .then((response) => {
           const user = response.data.data;
           if (user) {
+      
             setTitle(user.title || "");
             setDescribtion(user.description || "");
             setCategory(user.category || "");
@@ -253,6 +255,8 @@ const AddToursManagement = () => {
                 description: tit.answer,
               }))
             );
+             setPromocode((user.promoCode || []).map((it) => it.id))
+
           }
         })
         .catch(() => {
@@ -337,6 +341,7 @@ const AddToursManagement = () => {
     arrayimage: "",
     status: "",
     featured: "",
+    Promocode:""
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -601,19 +606,20 @@ const AddToursManagement = () => {
       formErrors.excludes = "excludes are required";
     }
     if (
-      !Array.isArray(prices) ||
-      prices.length === 0 ||
-      prices.some(
-        (item) =>
-          !item.adult.toString().trim() ||
-          !item.child.toString().trim() ||
-          !item.infant.toString().trim() ||
-          !item.currencyId?.toString().trim()
-      )
-    ) {
-      formErrors.prices =
-        "All price fields (adult, child, infant, currency) are required";
-    }
+  !Array.isArray(prices) ||
+  prices.length === 0 ||
+  prices.some(
+    (item) =>
+      !item.adult?.toString().trim() ||
+      !item.child?.toString().trim() ||
+      !item.infant?.toString().trim() ||
+      !item.currencyId?.toString().trim()
+  )
+) {
+  formErrors.prices =
+    "All price fields (adult, child, infant, currency) are required";
+}
+
     if (
       !Array.isArray(discounts) ||
       discounts.length === 0 ||
@@ -697,6 +703,7 @@ const AddToursManagement = () => {
       maxUsers: parseInt(maxUsers),
       categoryId: parseInt(category),
       country,
+     promoCodeIds: promocode,
       city,
       mainImage,
       images: arrayimage.map((b) => b.imagePath),
@@ -744,6 +751,7 @@ currencyId: parseInt(prices[0].currencyId)
     const itineraryupdata = buildItineraryPayload(faq, faqor);
     const payloadtwo = {
       title,
+     promoCodeIds: promocode,
       description: describtion,
       startDate: String(startDate),
       endDate: String(endDate),
@@ -927,6 +935,13 @@ currencyId: parseInt(prices[0].currencyId)
               placeholder="Select Category"
               value={category}
               onChange={(val) => setCategory(val)}
+            />
+            <InputArrowarray
+              name="tours/add-data"
+              namedata="PromoCode"
+              placeholder="Select Promo Code"
+              value={promocode}
+              onChange={(val) => setPromocode(val)}
             />
 
             <SwitchButton value={status} setValue={setStatus} title="Status" />

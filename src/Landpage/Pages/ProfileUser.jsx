@@ -5,6 +5,8 @@ import { BiIdCard } from "react-icons/bi";
 import axios from "axios";
 import { MdOutlineNearbyError } from "react-icons/md";
 import { MdLocalHospital } from "react-icons/md";
+import { MdMonetizationOn } from "react-icons/md";
+import { FaCircleInfo } from "react-icons/fa6";
 
 import { useNavigate } from "react-router-dom";
 const ProfileUser = () => {
@@ -573,7 +575,7 @@ const handleLogout = () => {
   <div className="p-4 md:p-6 space-y-12">
     {/* ✅ Accepted Requests */}
     <section>
-      <h2 className="text-xl md:text-2xl font-bold mb-6 text-green-700 flex items-center gap-2">
+      <h2 className="text-xl md:text-2xl font-bold  mb-6 lg:mb-10 text-green-700 text-center gap-2">
         ✅ Accepted Requests
       </h2>
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -586,10 +588,10 @@ const handleLogout = () => {
             return (
               <div
                 key={item.id + item.title}
-                className="p-5 border rounded-2xl shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
+                className="p-5  rounded-2xl shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
               >
-                <h3 className="font-semibold text-lg md:text-xl text-green-700 flex items-center gap-2">
-                  <FaFileAlt className="text-green-600" />
+                <h3 className="font-semibold text-lg md:text-xl text-one flex items-center gap-2">
+                  <FaFileAlt className="text-one" />
    {item.titles?.map((it, index) => (
   <span key={index}>
     {it}{index !== item.titles.length - 1 && " - "}
@@ -615,13 +617,13 @@ const handleLogout = () => {
 
                 {item.documentUrl && (
                   <div className="mt-4">
-                    {isImage && (
+                    {/* {isImage && (
                       <img
                         src={item.documentUrl}
                         alt={item.title}
                         className="w-full h-40 object-cover rounded-lg border"
                       />
-                    )}
+                    )} */}
                     <a
                       href={item.documentUrl}
                       download
@@ -634,9 +636,9 @@ const handleLogout = () => {
                   </div>
                 )}
 
-                <p className="mt-4 text-green-700 font-bold text-sm md:text-base">
-                  💰 Price: {item.price || "Not specified"}
-                </p>
+                <span className="mt-4 flex gap-1 items-center text-green-700 font-bold ">
+             <MdMonetizationOn className="text-[20px]" /> <span>     Price: {item.price || "Not specified"}</span>
+                </span>
               </div>
             );
           })
@@ -648,7 +650,7 @@ const handleLogout = () => {
 
     {/* ❌ Rejected Requests */}
     <section>
-      <h2 className="text-xl md:text-2xl font-bold mb-6 text-red-700 flex items-center gap-2">
+      <h2 className="text-xl md:text-2xl font-bold mb-b lg:mb-10 text-red-700 text-center gap-2">
          Rejected Requests
       </h2>
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -661,10 +663,10 @@ const handleLogout = () => {
             return (
               <div
                 key={item.id + item.title}
-                className="p-5 border rounded-2xl shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
+                className="p-5  rounded-2xl shadow-xl bg-white hover:shadow-xl transition-shadow duration-300"
               >
-                <h3 className="font-semibold text-lg md:text-xl text-red-700 flex items-center gap-2">
-                  <FaFileAlt className="text-red-600" />
+                <h3 className="font-semibold text-lg md:text-xl text-one flex items-center gap-2">
+                  <FaFileAlt className="text-one" />
                   {item.title}
                 </h3>
 
@@ -704,8 +706,8 @@ const handleLogout = () => {
                   </div>
                 )}
 
-                <p className="mt-4 flex items-center gap-2 text-red-400 font-bold text-sm md:text-base">
-                <MdOutlineNearbyError/>  <span className="text-black">{item.reason}</span>
+                <p className="mt-2 flex items-center gap-1 text-red-700 font-bold ">
+                <FaCircleInfo className=""/>  <span className="">{item.reason}</span>
                 </p>
               </div>
             );

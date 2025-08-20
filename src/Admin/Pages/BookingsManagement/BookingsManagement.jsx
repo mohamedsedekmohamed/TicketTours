@@ -20,49 +20,110 @@ import { RiDiscountPercentFill } from "react-icons/ri";
 import { FaHouseChimneyWindow, FaMapLocationDot } from "react-icons/fa6";
 
 const BookingsManagement = () => {
-  const [data, setData] = useState({
-    upcoming: [],
-    current: [],
-    history: [],
-  });
+  const [allBookings, setAllBookings] = useState([]); // جميع البوكينجز
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("upcoming"); // الافتراضي
+  const [activeTab, setActiveTab] = useState("upcoming");
   const [viewRow, setViewRow] = useState(null);
+
+  // دالة لتنسيق التاريخ
+  const formatDate = (dateString) => {
+    if (!dateString) return "No Date";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      });
+    } catch {
+      return "Invalid Date";
+    }
+  };
+
+  // دالة لتصنيف البوكينجز حسب التاريخ
+  const categorizeBookings = (bookings) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    const upcoming = [];
+    const current = [];
+    const history = [];
+
+    bookings.forEach((booking) => {
+      console.log(`Booking ID: ${booking.id}`);
+      console.log(`Start Date: ${booking.originalStartDate}`);
+      console.log(`End Date: ${booking.originalEndDate}`);
+      
+      if (!booking.originalStartDate || !booking.originalEndDate) {
+        console.log("No dates - moving to history");
+        history.push(booking);
+        return;
+      }
+
+      const startDate = new Date(booking.originalStartDate);
+      const endDate = new Date(booking.originalEndDate);
+      const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+
+      console.log(`Today: ${today.toDateString()}`);
+      console.log(`Start Date Only: ${startDateOnly.toDateString()}`);
+      console.log(`End Date Only: ${endDateOnly.toDateString()}`);
+
+      if (startDateOnly > today) {
+        console.log("Moving to upcoming");
+        upcoming.push(booking);
+      } else if (startDateOnly <= today && endDateOnly >= today) {
+        console.log("Moving to current");
+        current.push(booking);
+      } else {
+        console.log("Moving to history");
+        history.push(booking);
+      }
+      console.log("---");
+    });
+
+    console.log(`Final counts - Upcoming: ${upcoming.length}, Current: ${current.length}, History: ${history.length}`);
+    return { upcoming, current, history };
+  };
+
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/bookings`)
       .then((response) => {
-        const apiData = response.data.data;
-console.log(apiData)
+        const apiData = response.data.data.bookings || []; // تعديل هنا حسب البنية الجديدة
+        
         const formatBookings = (list) =>
           list.map((item) => ({
             id: item.id,
             status: item.status,
             discountNumber: item.discountNumber,
-            location: item.location,
-            address: item.address,
+            location: item.tourMeetingPointLocation,
+            address: item.tourMeetingPointAddress,
             createdAt: item.createdAt,
 
-            userId: item.user?.id,
-            UserEmail: item.bookingDetails?.UserEmail,
-            UserPhone: item.bookingDetails?.UserPhone,
-            UserFullName: item.bookingDetails?.UserFullName,
+            userId: item.userId,
+            UserEmail: item.bookingDetails?.email,
+            UserPhone: item.bookingDetails?.phone,
+            UserFullName: item.bookingDetails?.fullName,
 
-            tourId: item.tour?.id,
-            tourName: item.tour?.name,
-            tourMainImage: item.tour?.mainImage,
-            tourDescription: item.tour?.description,
-            tourStartDate: item.tour?.startDate,
-            tourEndDate: item.tour?.endDate,
-            durationDays: item.tour?.durationDays,
-            hours: item.tour?.hours,
-            maxUsers: item.tour?.maxUsers,
+            tourId: item.tourId,
+            tourName: item.tourName,
+            tourMainImage: item.tourMainImage,
+            tourDescription: item.tourDescription,
+            originalStartDate: item.tourStartDate,
+            originalEndDate: item.tourEndDate,
+            tourStartDate: formatDate(item.tourStartDate),
+            tourEndDate: formatDate(item.tourEndDate),
+            durationDays: item.tourDurationDays,
+            hours: item.tourHours,
+            maxUsers: item.tourMaxUser,
 
-              notes: item.bookingDetails?.notes,
-              adultsCount: item.bookingDetails?.adultsCount,
-              childrenCount: item.bookingDetails?.childrenCount,
-              infantCount: item.bookingDetails?.infantCount,
+            notes: item.bookingDetails?.notes,
+            adultsCount: item.bookingDetails?.adultsCount,
+            childrenCount: item.bookingDetails?.childrenCount,
+            infantCount: item.bookingDetails?.infantsCount,
+            totalAmount: item.bookingDetails?.totalAmount,
 
             bookingExtras: item.bookingExtras?.map((extra) => ({
               id: extra.id,
@@ -73,18 +134,17 @@ console.log(apiData)
             })),
           }));
 
-        setData({
-          upcoming: formatBookings(apiData.upcoming || []),
-          current: formatBookings(apiData.current || []),
-          history: formatBookings(apiData.history || []),
-        });
-
+        const formattedBookings = formatBookings(apiData);
+        setAllBookings(formattedBookings);
         setLoading(false);
       })
       .catch(() => {
         setLoading(false);
       });
   }, []);
+
+  // تقسيم البوكينجز حسب التاريخ
+  const categorizedData = categorizeBookings(allBookings);
 
   const columns = [
     { key: "tourName", label: "Tour Name" },
@@ -95,7 +155,7 @@ console.log(apiData)
     { key: "tourEndDate", label: "End Date" },
   ];
 
-  const filteredData = (data[activeTab] || []).filter((item) =>
+  const filteredData = (categorizedData[activeTab] || []).filter((item) =>
     Object.values(item || {}).some((value) =>
       value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -108,9 +168,9 @@ console.log(apiData)
       {/* Tabs */}
       <div className="flex gap-4 justify-around mb-4 border-b ">
         {[
-          { key: "upcoming", label: "Upcoming" },
-          { key: "current", label: "Current" },
-          { key: "history", label: "History" },
+          { key: "upcoming", label: "Upcoming", count: categorizedData.upcoming.length },
+          { key: "current", label: "Current", count: categorizedData.current.length },
+          { key: "history", label: "History", count: categorizedData.history.length },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -121,7 +181,7 @@ console.log(apiData)
             }`}
             onClick={() => setActiveTab(tab.key)}
           >
-            {tab.label}
+            {tab.label} ({tab.count})
           </button>
         ))}
       </div>
@@ -134,7 +194,7 @@ console.log(apiData)
       <ToastContainer />
 
       <DynamicTable
-        data={data[activeTab]}
+        data={categorizedData[activeTab]}
         view={(row) => (
           <button
             onClick={() => setViewRow(row)}
@@ -145,31 +205,27 @@ console.log(apiData)
         )}
         columns={columns}
         filteredData={filteredData}
-        
       />
+      
       {viewRow && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/80 bg-opacity-50   z-50">
-          <div className="bg-white w-11/12 md:w-2/3 lg:w-1/2 p-6 rounded shadow-lg max-h-[80vh] overflow-y-auto  text-one">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 bg-opacity-50 z-50">
+          <div className="bg-white w-11/12 md:w-2/3 lg:w-1/2 p-6 rounded shadow-lg max-h-[80vh] overflow-y-auto text-one">
             <h2 className="text-xl font-bold mb-4">
-              Payment Details #{viewRow.ids}
+              Booking Details #{viewRow.id}
             </h2>
-            <div className="space-y-4 ">
+            <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <p className="flex items-center gap-2">
                   <FaUser className="text-blue-500" />
-                  <strong>Name:</strong> {viewRow.fullName}
+                  <strong>Name:</strong> {viewRow.UserFullName}
                 </p>
                 <p className="flex items-center gap-2">
                   <FaPhone className="text-green-500" />
-                  <strong>Phone:</strong> {viewRow.phone}
+                  <strong>Phone:</strong> {viewRow.UserPhone}
                 </p>
                 <p className="flex items-center gap-2">
-                  <MdCategory className="text-purple-500" />
-                  <strong>Method:</strong> {viewRow.method}
-                </p>
-                <p className="flex items-center gap-2">
-                  <FaMoneyBill className="text-yellow-500" />
-                  <strong>Amount:</strong> {viewRow.amount}
+                  <FaEnvelope className="text-pink-500" />
+                  <strong>Email:</strong> {viewRow.UserEmail}
                 </p>
                 <p className="flex items-center gap-2">
                   <FaCheckCircle
@@ -184,10 +240,6 @@ console.log(apiData)
                   <strong>Status:</strong> {viewRow.status}
                 </p>
                 <p className="flex items-center gap-2">
-                  <FaEnvelope className="text-pink-500" />
-                  <strong>Email:</strong> {viewRow.email}
-                </p>
-                <p className="flex items-center gap-2">
                   <FaUsers className="text-blue-400" />
                   <strong>Adults:</strong> {viewRow.adultsCount}
                 </p>
@@ -197,7 +249,7 @@ console.log(apiData)
                 </p>
                 <p className="flex items-center gap-2">
                   <FaBaby className="text-purple-400" />
-                  <strong>Infants:</strong> {viewRow.infantsCount}
+                  <strong>Infants:</strong> {viewRow.infantCount}
                 </p>
                 <p className="flex items-center gap-2">
                   <FaMoneyBill className="text-green-600" />
@@ -205,12 +257,11 @@ console.log(apiData)
                 </p>
                 <p className="flex items-center gap-2">
                   <RiDiscountPercentFill className="text-green-600" />
-                  <strong> Discount :</strong> {viewRow.discountNumber}
+                  <strong>Discount:</strong> {viewRow.discountNumber || "No discount"}
                 </p>
-
                 <p className="flex items-center gap-2">
                   <FaHouseChimneyWindow className="text-one" />
-                  <strong> Address :</strong> {viewRow.address || "No address"}
+                  <strong>Address:</strong> {viewRow.address || "No address"}
                 </p>
                 <p className="flex items-start gap-2 w-[90%]">
                   <MdOutlineSpeakerNotes className="text-gray-400 mt-1 shrink-0" />
@@ -222,26 +273,32 @@ console.log(apiData)
                   </span>
                 </p>
               </div>
-              <p className="flex items-start gap-2 w-[90%]">
-                <FaMapLocationDot className="text-amber-300 shrink-0 mt-1" />
-                <span className="min-w-0 break-words [overflow-wrap:anywhere]">
-                  <strong>Location :</strong>{" "}
-                  <a
-                    href={viewRow.location}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline break-words [overflow-wrap:anywhere]"
-                  >
-                    {viewRow.location || "No location"}
-                  </a>
-                </span>
-              </p>
+              
+              {viewRow.location && (
+                <p className="flex items-start gap-2 w-[90%]">
+                  <FaMapLocationDot className="text-amber-300 shrink-0 mt-1" />
+                  <span className="min-w-0 break-words [overflow-wrap:anywhere]">
+                    <strong>Location:</strong>{" "}
+                    <a
+                      href={viewRow.location}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline break-words [overflow-wrap:anywhere]"
+                    >
+                      {viewRow.location}
+                    </a>
+                  </span>
+                </p>
+              )}
 
-              <img
-                src={viewRow.proofImage}
-                alt="Proof"
-                className="w-full max-h-[400px] object-contain rounded"
-              />
+              {viewRow.tourMainImage && (
+                <img
+                  src={viewRow.tourMainImage}
+                  alt="Tour"
+                  className="w-full max-h-[400px] object-contain rounded"
+                />
+              )}
+              
               <div>
                 <strong className="text-lg">Extras:</strong>
                 {viewRow.bookingExtras && viewRow.bookingExtras.length > 0 ? (
