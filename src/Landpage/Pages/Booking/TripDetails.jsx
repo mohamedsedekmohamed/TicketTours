@@ -217,7 +217,7 @@ const third = images?.[2] ?? null;
     <div>
       <Navtwo />
       <ToastContainer />
-      <span className="px-3 text-[14px] font-normal text-ten">
+      <span className="px-3 text-[14px] md:text-2xl font-normal text-ten">
         <button onClick={() => navigate(-1)}>{data.category}</button> /{" "}
         <span className="text-four">{data.city}</span>
       </span>

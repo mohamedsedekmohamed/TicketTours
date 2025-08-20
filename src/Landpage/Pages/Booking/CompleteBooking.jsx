@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import Navtwo from "../../component/Navtwo";
 import axios from "axios";
@@ -7,6 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FileUploadButtontype from "./FileUploadButtontype";
 import MapPicker from "../../../ui/MapPicker";
+import { FaCheckCircle, FaTimesCircle, FaPercent, FaTag } from "react-icons/fa";
+import { MdLocalOffer } from "react-icons/md";
 
 const CompleteBooking = () => {
   const [data, setData] = useState(null);
@@ -24,7 +26,12 @@ const CompleteBooking = () => {
     phone: "",
     notes: "",
   });
-
+  const [code, setCode] = useState("");
+  const [discountcode, setDiscountcode] = useState("");
+  const [numbercode, setNumbercode] = useState("");
+  const [errorcode, setErrorcode] = useState("");
+  const [discountType, setDiscountType] = useState("");
+const [codeid,setcodeid]=useState("")
   const navigate = useNavigate();
   const { id } = useParams();
   const { state } = useLocation();
@@ -61,7 +68,7 @@ const CompleteBooking = () => {
 
         if (tourData?.meetingPointAddress && tourData?.meetingPointLocation) {
           setDescription(tourData.meetingPointAddress);
-           // لو جاي كرابط Google Maps
+          // لو جاي كرابط Google Maps
           if (
             typeof tourData.meetingPointLocation === "string" &&
             tourData.meetingPointLocation.includes("maps?q=")
@@ -105,7 +112,6 @@ const CompleteBooking = () => {
           }));
           setPaymentOptions(formatted);
         }
-        
       } catch (err) {
         console.error("Error fetching payment methods:", err);
       }
@@ -130,10 +136,10 @@ const CompleteBooking = () => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
+  const token = localStorage.getItem("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
 
     if (!token) {
       toast.warn("You need to log in first.");
@@ -152,9 +158,18 @@ const CompleteBooking = () => {
       toast.warn("meetingPointLocation is required .");
       return;
     }
+// final total calculation safely
+const finalTotal =
+  discountcode && discountType
+    ? discountType === "amount"
+      ? Math.max(total - discountcode, 0)
+      : discountType === "percentage"
+      ? Math.max(total - (total * discountcode) / 100, 0)
+      : total
+    : total;
 
     try {
-   const payload = {
+     const payload = {
   tourId: data.tourScheduleId,
   fullName: formData.name,
   email: formData.email,
@@ -163,25 +178,33 @@ const CompleteBooking = () => {
   adultsCount: Number(adults),
   childrenCount: Number(children),
   infantsCount: Number(infants),
-  totalAmount: total,
+  totalAmount: finalTotal,
   paymentMethodId: selectedPayment,
-  proofImage: image?.startsWith("data:image") 
-    ? image 
+  proofImage: image?.startsWith("data:image")
+    ? image
     : `data:image/jpeg;base64,${image}`,
   discount: Number(adultsDiscount),
   address: description,
   location: `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`,
-  extras: selectedExtras.map((extra) => ({
+};
+
+if (codeid) {
+  payload.promoCodeId = codeid;
+}
+
+// لو في extras ضيفه
+if (selectedExtras && selectedExtras.length > 0) {
+  payload.extras = selectedExtras.map((extra) => ({
     id: extra.id,
     count: {
       adult: String(extra.counts.adults),
       child: String(extra.counts.children),
       infant: String(extra.counts.infants),
     },
-  })),
-};
+  }));
+}
 
-console.log(payload)
+
       await axios.post(
         "https://bcknd.tickethub-tours.com/api/user/landpage/book-tour",
         payload,
@@ -192,8 +215,11 @@ console.log(payload)
         }
       );
       localStorage.removeItem("bookingData");
-
       toast.success("Booking completed successfully!");
+      setTimeout(() => {
+               navigate('/')
+
+      }, 2000);
     } catch (err) {
       toast.error("Failed to complete booking.");
     }
@@ -202,6 +228,51 @@ console.log(payload)
   const pricePerAdult = data.price?.adult || 0;
   const pricePerChild = data.price?.child || 0;
   const pricePerInfant = data.price?.infant || 0;
+
+  const handleApply = async () => {
+    if (!token) {
+      toast.warn("You need to log in first.");
+      return;
+    }
+    if (!code) {
+      toast.warn("You should write code");
+      return;
+    }
+
+    try {
+      setErrorcode("");
+      const res = await axios.post(
+        "https://bcknd.tickethub-tours.com/api/user/landpage/apply-promo-code",
+        { code: code, tourId: id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success && res.data.data?.promoCodeData) {
+        const promo = res.data.data.promoCodeData;
+        setDiscountcode(promo.discountValue);
+        setNumbercode(promo.usageLimit);
+        setDiscountType(promo.discountType);
+        setcodeid(promo.id)
+      } else {
+        setErrorcode("Invalid promo code");
+      }
+    } catch (err) {
+      setErrorcode(
+        err.response?.data?.error?.message ||
+          err.response?.data?.message ||
+          err.message ||
+          "Something went wrong, try again."
+      );
+      setcodeid("")
+      setDiscountcode("");
+      setNumbercode("");
+      setDiscountType("");
+    }
+  };
 
   return (
     <div>
@@ -220,13 +291,26 @@ console.log(payload)
           <h2 className="text-2xl font-bold mb-6 text-black">Your Info</h2>
 
           {[
-            { label: "Full Name", id: "name", type: "text", placeholder: "Full Name" },
-            { label: "Email", id: "email", type: "email", placeholder: "you@company.com" },
+            {
+              label: "Full Name",
+              id: "name",
+              type: "text",
+              placeholder: "Full Name",
+            },
+            {
+              label: "Email",
+              id: "email",
+              type: "email",
+              placeholder: "you@gmail.com",
+            },
             { label: "Phone", id: "phone", type: "tel", placeholder: "Phone" },
             { label: "Notes", id: "notes", type: "text", placeholder: "Notes" },
           ].map(({ label, id, type, placeholder }) => (
             <div key={id} className="mb-4">
-              <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={id}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 {label}
               </label>
               <input
@@ -240,10 +324,80 @@ console.log(payload)
             </div>
           ))}
 
+          <div>
+            {/* Label */}
+            <label
+              htmlFor="promo"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              If you have a Promo code, enter it
+            </label>
+
+            {/* Input + Button */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                id="promo"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Enter code"
+                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 
+                 text-gray-800 placeholder-gray-400 focus:outline-none 
+                 focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={handleApply}
+                type="button"
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-one 
+                 text-white hover:bg-one disabled:bg-gray-400"
+              >
+               Apply
+                <MdLocalOffer className="text-lg" />
+              </button>
+            </div>
+
+            {/* Messages */}
+            <div className="flex flex-col gap-2 mt-3 text-sm">
+              {/* Error */}
+              {errorcode && (
+                <span className="flex items-center gap-2 text-red-600">
+                  <FaTimesCircle className="text-lg" />
+                  {errorcode}
+                </span>
+              )}
+
+              {/* Discount value */}
+              {discountcode && (
+                <span className="flex items-center gap-2 text-green-600">
+                  <FaCheckCircle className="text-lg" />
+                  You will get a discount: {discountcode}
+                </span>
+              )}
+
+              {/* Discount type */}
+              {discountType && (
+                <span className="flex items-center gap-2 text-green-600">
+                  <FaPercent className="text-lg" />
+                  Discount Type: {discountType}
+                </span>
+              )}
+
+              {/* Usage limit */}
+              {numbercode && (
+                <span className="flex items-center gap-2 text-gray-600">
+                  <FaTag className="text-lg" />
+                  Usage limit: {numbercode}
+                </span>
+              )}
+            </div>
+          </div>
           {/* Meeting Point Address */}
           {hasMeetingPointFromApi ? (
             <>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address
+              </label>
               <input
                 type="text"
                 value={description}
@@ -254,7 +408,9 @@ console.log(payload)
             </>
           ) : (
             <>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address
+              </label>
               <input
                 type="text"
                 placeholder="Description of the Address"
@@ -262,17 +418,21 @@ console.log(payload)
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-gray-800"
               />
-             <div className="my-3">
-               <MapPicker
-                location={meetingPointLocation}
-                onLocationChange={(newLocation) => SetMeetingPointLocation(newLocation)}
-              />
-             </div>
+              <div className="my-3">
+                <MapPicker
+                  location={meetingPointLocation}
+                  onLocationChange={(newLocation) =>
+                    SetMeetingPointLocation(newLocation)
+                  }
+                />
+              </div>
             </>
           )}
 
           {/* Payment */}
-          <h3 className="text-xl font-semibold text-black mt-6 mb-3">Payment</h3>
+          <h3 className="text-xl font-semibold text-black mt-6 mb-3">
+            Payment
+          </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             {paymentOptions.map((method) => (
               <button
@@ -285,10 +445,16 @@ console.log(payload)
                     : "border-gray-300"
                 }`}
               >
-                <img src={method.image} alt={method.label} className="w-12 h-12 object-contain mb-2" />
+                <img
+                  src={method.image}
+                  alt={method.label}
+                  className="w-12 h-12 object-contain mb-2"
+                />
                 <span
                   className={`text-sm ${
-                    selectedPayment === method.id ? "text-one font-semibold" : "text-gray-600"
+                    selectedPayment === method.id
+                      ? "text-one font-semibold"
+                      : "text-gray-600"
                   }`}
                 >
                   {method.label}
@@ -312,29 +478,42 @@ console.log(payload)
 
         {/* Summary */}
         <div className="w-full lg:w-1/2 bg-gray-200 h-fit py-10 rounded-3xl p-6 shadow-lg">
-          <h2 className="text-xl font-bold text-one mb-2">Complete Your Booking</h2>
+          <h2 className="text-xl font-bold text-one mb-2">
+            Complete Your Booking
+          </h2>
 
           <div className="text-sm text-gray-500 mb-4">
-            Destination: <span className="text-one font-medium">{data.country}, {data.city}</span>
+            Destination:{" "}
+            <span className="text-one font-medium">
+              {data.country}, {data.city}
+            </span>
           </div>
 
           <div className="text-sm text-gray-500 mb-4">
             Days:
             {data?.daysOfWeek?.map((item, index) => (
-              <span key={index} className="text-one font-medium ml-1">{item}</span>
+              <span key={index} className="text-one font-medium ml-1">
+                {item}
+              </span>
             ))}
           </div>
 
           <div className="mb-4 flex gap-2">
             <h4 className="font-medium text-gray-800">Date:</h4>
-            <p className="text-one">{new Date(data.startDate).toISOString().split("T")[0]}</p>
+            <p className="text-one">
+              {new Date(data.startDate).toISOString().split("T")[0]}
+            </p>
           </div>
 
           <div className="mt-6 border-t pt-4">
-            <h3 className="text-md font-semibold text-one mb-2">Pricing Details:</h3>
+            <h3 className="text-md font-semibold text-one mb-2">
+              Pricing Details:
+            </h3>
 
             <div className="flex justify-between text-sm py-1">
-              <span>Adults ({adults} x ${pricePerAdult}):</span>
+              <span>
+                Adults ({adults} x ${pricePerAdult}):
+              </span>
               <span>${adultsTotal.toFixed(2)}</span>
             </div>
             {adultsDiscount > 0 && (
@@ -345,7 +524,9 @@ console.log(payload)
             )}
 
             <div className="flex justify-between text-sm py-1">
-              <span>Children ({children} x ${pricePerChild}):</span>
+              <span>
+                Children ({children} x ${pricePerChild}):
+              </span>
               <span>${childrenTotal.toFixed(2)}</span>
             </div>
             {childrenDiscount > 0 && (
@@ -356,7 +537,9 @@ console.log(payload)
             )}
 
             <div className="flex justify-between text-sm py-1">
-              <span>Infants ({infants} x ${pricePerInfant}):</span>
+              <span>
+                Infants ({infants} x ${pricePerInfant}):
+              </span>
               <span>${infantsTotal.toFixed(2)}</span>
             </div>
             {infantsDiscount > 0 && (
@@ -368,36 +551,98 @@ console.log(payload)
 
             {selectedExtras.length > 0 && (
               <>
-                <h3 className="text-md font-semibold text-one mt-4 mb-2 border-t pt-4">Extras:</h3>
+                <h3 className="text-md font-semibold text-one mt-4 mb-2 border-t pt-4">
+                  Extras:
+                </h3>
                 {selectedExtras.map((extra) => (
                   <div key={extra.id} className="mb-2">
                     <h4 className="font-medium text-gray-800">{extra.name}</h4>
                     {extra.counts.adults > 0 && (
                       <div className="flex justify-between text-sm py-1 pl-4">
-                        <span>Adults ({extra.counts.adults} x ${extra.price.adult}):</span>
-                        <span>${(extra.counts.adults * extra.price.adult).toFixed(2)}</span>
+                        <span>
+                          Adults ({extra.counts.adults} x ${extra.price.adult}):
+                        </span>
+                        <span>
+                          $
+                          {(extra.counts.adults * extra.price.adult).toFixed(2)}
+                        </span>
                       </div>
                     )}
                     {extra.counts.children > 0 && (
                       <div className="flex justify-between text-sm py-1 pl-4">
-                        <span>Children ({extra.counts.children} x ${extra.price.child}):</span>
-                        <span>${(extra.counts.children * extra.price.child).toFixed(2)}</span>
+                        <span>
+                          Children ({extra.counts.children} x $
+                          {extra.price.child}):
+                        </span>
+                        <span>
+                          $
+                          {(extra.counts.children * extra.price.child).toFixed(
+                            2
+                          )}
+                        </span>
                       </div>
                     )}
                     {extra.counts.infants > 0 && (
                       <div className="flex justify-between text-sm py-1 pl-4">
-                        <span>Infants ({extra.counts.infants} x ${extra.price.infant}):</span>
-                        <span>${(extra.counts.infants * extra.price.infant).toFixed(2)}</span>
+                        <span>
+                          Infants ({extra.counts.infants} x $
+                          {extra.price.infant}):
+                        </span>
+                        <span>
+                          $
+                          {(extra.counts.infants * extra.price.infant).toFixed(
+                            2
+                          )}
+                        </span>
                       </div>
                     )}
                   </div>
                 ))}
               </>
             )}
+            <div className="flex flex-col gap-2 mt-3 border-t pt-4">
+              <div className="flex justify-between text-base font-semibold">
+                <span>Total:</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
 
-            <div className="flex justify-between text-base font-semibold border-t pt-4 mt-3">
-              <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+         {/* Check if number of people bigger than code limit */}
+{numbercode ? (
+  infants + children + adults >= numbercode ? (
+    <span className="text-red-500 font-medium">
+      Number of people exceeds this promo code limit
+    </span>
+  ) : (
+    discountcode && (
+      <div className="flex justify-between text-base text-green-600">
+        <span>Discount Code:</span>
+        {discountType === "amount" ? (
+          <span>- ${discountcode}</span>
+        ) : (
+          <span>- {discountcode}%</span>
+        )}
+      </div>
+    )
+  )
+) : null}
+
+
+
+
+
+              <div className="flex justify-between text-lg font-bold text-one">
+                <span>Final Total:</span>
+                <span>
+                  $
+                  {discountType === "amount"
+                    ? Math.max(total - discountcode, 0).toFixed(2)
+                    : discountType === "percentage"
+                    ? Math.max(total - (total * discountcode) / 100, 0).toFixed(
+                        2
+                      )
+                    : total.toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
         </div>

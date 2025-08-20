@@ -23,6 +23,7 @@ useEffect(()=>{
 
 },[])
  const handleLogin = () => {
+  setcheck(true)
   axios
     .post("https://bcknd.tickethub-tours.com/api/admin/auth/login", {
       email: username,
@@ -46,6 +47,7 @@ useEffect(()=>{
       }
     })
     .catch(() => {
+      setcheck(false)
       toast.error("Connection failed");
     });
 };
@@ -100,7 +102,7 @@ useEffect(()=>{
   </div> */}
 
   <button
-    onClick={handleLogin}
+    onClick={handleLogin} disabled={check}
     className="w-full max-w-md h-14 bg-one text-white rounded-lg font-semibold mb-4 transition-transform hover:scale-95"
   >
     Login
