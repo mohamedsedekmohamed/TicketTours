@@ -240,13 +240,16 @@ function Loginuser() {
       });
   };
 
-  const handleGoogleLogin = () => {
-    const currentPath = window.location.pathname;
+const handleGoogleLogin = () => {
+    // حفظ المسار الحالي لو عايز ترجّع المستخدم بعد اللوجين
+    const currentPath = window.location.pathname + window.location.search;
     if (currentPath !== "/login") {
       localStorage.setItem("returnTo", currentPath);
     }
-    
-    window.location.href = "https://bcknd.tickethub-tours.com/api/user/auth/google";
+
+    // تحويل المستخدم على Google OAuth
+    window.location.href =
+      "https://bcknd.tickethub-tours.com/api/user/auth/google";
   };
 
   return (

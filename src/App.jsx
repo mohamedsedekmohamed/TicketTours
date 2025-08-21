@@ -16,7 +16,8 @@ import Loginuser from "./Landpage/Pages/Loginuser";
 import ForgotPasswordFlow from "./Landpage/Pages/ForgotPasswordFlow";
 import CompleteBooking from '../src/Landpage/Pages/Booking/CompleteBooking'
 import ProfileUser from './Landpage/Pages/ProfileUser'
-import GoogleAuthHandler from './Landpage/Pages/GoogleAuthHandler'
+import GoogleAuthHandler from './Landpage/Pages/GoogleAuthHandler'\
+import Dashboard from "./Landpage/Pages/Dashboard";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const stored = sessionStorage.getItem("isLoggedIn");
@@ -40,8 +41,9 @@ function App() {
                 path="/loginadmin"
                 element={<Login setIsLoggedIn={setIsLoggedIn} />}
               />
-              <Route path="/api/user/auth/google/callback" element={<GoogleAuthHandler />} />
+              {/* <Route path="/api/user/auth/google/callback" element={<GoogleAuthHandler />} /> */}
               <Route path="/login" element={<Loginuser />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/localtourism" element={<Local />} />
               <Route path="/internationaltourism" element={<International />} />
