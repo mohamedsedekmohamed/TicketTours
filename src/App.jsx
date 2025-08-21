@@ -16,7 +16,7 @@ import Loginuser from "./Landpage/Pages/Loginuser";
 import ForgotPasswordFlow from "./Landpage/Pages/ForgotPasswordFlow";
 import CompleteBooking from '../src/Landpage/Pages/Booking/CompleteBooking'
 import ProfileUser from './Landpage/Pages/ProfileUser'
-import GoogleAuthHandler from './Landpage/Pages/GoogleAuthHandler'\
+import GoogleAuthHandler from './Landpage/Pages/GoogleAuthHandler'
 import Dashboard from "./Landpage/Pages/Dashboard";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
