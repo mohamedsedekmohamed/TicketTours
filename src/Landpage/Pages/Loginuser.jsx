@@ -240,17 +240,27 @@ function Loginuser() {
       });
   };
 
-const handleGoogleLogin = () => {
-    // حفظ المسار الحالي لو عايز ترجّع المستخدم بعد اللوجين
-    const currentPath = window.location.pathname + window.location.search;
-    if (currentPath !== "/login") {
-      localStorage.setItem("returnTo", currentPath);
-    }
+// const handleGoogleLogin = () => {
+//     // حفظ المسار الحالي لو عايز ترجّع المستخدم بعد اللوجين
+//     const currentPath = window.location.pathname + window.location.search;
+//     if (currentPath !== "/login") {
+//       localStorage.setItem("returnTo", currentPath);
+//     }
 
-    // تحويل المستخدم على Google OAuth
-    window.location.href =
-      "https://bcknd.tickethub-tours.com/api/user/auth/google";
-  };
+//     // تحويل المستخدم على Google OAuth
+//     window.location.href =
+//       "https://bcknd.tickethub-tours.com/api/user/auth/google";
+//   };
+
+// src/components/Loginuser.jsx
+// (Your existing code, but ensure handleGoogleLogin redirects to backend)
+const handleGoogleLogin = () => {
+  const currentPath = window.location.pathname + window.location.search;
+  if (currentPath !== "/login") {
+    localStorage.setItem("returnTo", currentPath);
+  }
+  window.location.href = `https://bcknd.tickethub-tours.com/api/user/auth/google`;
+};
 
   return (
     <div className="w-screen h-screen flex gap-1 bg-white">

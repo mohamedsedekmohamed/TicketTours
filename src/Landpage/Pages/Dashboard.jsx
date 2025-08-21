@@ -12,8 +12,8 @@ const Dashboard = () => {
     // استخرج التوكن + البيانات من الـ URL
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
-    const email = params.get("email");
-    const name = params.get("name");
+    const email = decodeURIComponent(params.get("email") || "");
+    const name = decodeURIComponent(params.get("name") || "");
 
     if (token) {
       try {
