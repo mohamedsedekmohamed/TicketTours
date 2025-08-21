@@ -119,7 +119,9 @@ const GoogleAuthHandler = () => {
   useEffect(() => {
     // نجيب الـ query parameters
     const params = new URLSearchParams(location.search);
-    const token = params.get("token");
+const token = params.get("token");
+const email = params.get("email");
+const name = params.get("name");
 
     if (token) {
       try {
@@ -128,10 +130,8 @@ const GoogleAuthHandler = () => {
 
         toast.success("Welcome! Logged in successfully with Google 🎉");
 
-        // تنظيف الـ URL من الـ query string
         window.history.replaceState({}, document.title, window.location.pathname);
 
-        // بعد ثانية رجّع المستخدم للصفحة الرئيسية
         setTimeout(() => {
           navigate("/", { replace: true });
         }, 1000);

@@ -406,13 +406,14 @@ const third = images?.[2] ?? null;
             {showPicker && (
               <div className="fixed inset-0 bg-black/80  bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-4 rounded-lg shadow-lg relative">
-                  <div className="pointer-events-none">
+                  <div className="">
                     <DatePicker
                       selected={startDate}
                       startDate={startDate}
                       endDate={endDate}
                       selectsRange
-                      inline
+  inline
+  disabled
                     />
                   </div>
                   <button

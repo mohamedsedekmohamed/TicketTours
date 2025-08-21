@@ -28,7 +28,7 @@ const CompleteBooking = () => {
   });
   const [code, setCode] = useState("");
   const [discountcode, setDiscountcode] = useState("");
-  const [numbercode, setNumbercode] = useState("");
+  // const [numbercode, setNumbercode] = useState("");
   const [errorcode, setErrorcode] = useState("");
   const [discountType, setDiscountType] = useState("");
 const [codeid,setcodeid]=useState("")
@@ -158,7 +158,6 @@ const [codeid,setcodeid]=useState("")
       toast.warn("meetingPointLocation is required .");
       return;
     }
-// final total calculation safely
 const finalTotal =
   discountcode && discountType
     ? discountType === "amount"
@@ -254,7 +253,7 @@ if (selectedExtras && selectedExtras.length > 0) {
       if (res.data.success && res.data.data?.promoCodeData) {
         const promo = res.data.data.promoCodeData;
         setDiscountcode(promo.discountValue);
-        setNumbercode(promo.usageLimit);
+        // setNumbercode(promo.usageLimit);
         setDiscountType(promo.discountType);
         setcodeid(promo.id)
       } else {
@@ -269,7 +268,7 @@ if (selectedExtras && selectedExtras.length > 0) {
       );
       setcodeid("")
       setDiscountcode("");
-      setNumbercode("");
+      // setNumbercode("");
       setDiscountType("");
     }
   };
@@ -383,13 +382,12 @@ if (selectedExtras && selectedExtras.length > 0) {
                 </span>
               )}
 
-              {/* Usage limit */}
-              {numbercode && (
+              {/* {numbercode && (
                 <span className="flex items-center gap-2 text-gray-600">
                   <FaTag className="text-lg" />
                   Usage limit: {numbercode}
                 </span>
-              )}
+              )} */}
             </div>
           </div>
           {/* Meeting Point Address */}
@@ -607,13 +605,8 @@ if (selectedExtras && selectedExtras.length > 0) {
               </div>
 
          {/* Check if number of people bigger than code limit */}
-{numbercode ? (
-  infants + children + adults >= numbercode ? (
-    <span className="text-red-500 font-medium">
-      Number of people exceeds this promo code limit
-    </span>
-  ) : (
-    discountcode && (
+
+   { discountcode && (
       <div className="flex justify-between text-base text-green-600">
         <span>Discount Code:</span>
         {discountType === "amount" ? (
@@ -623,10 +616,7 @@ if (selectedExtras && selectedExtras.length > 0) {
         )}
       </div>
     )
-  )
-) : null}
-
-
+  }
 
 
 

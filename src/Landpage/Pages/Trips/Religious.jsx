@@ -20,7 +20,7 @@ const Religious = () => {
 useEffect(() => {
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://bcknd.tickethub-tours.com/api/user/landpage/category-tours/International%20Tourism');
+      const response = await axios.get('https://bcknd.tickethub-tours.com/api/user/landpage/category-tours/Religious%20Tourism');
 
       const toursData = response.data.data.tours.map((item) => ({
         id: item.id,
@@ -39,7 +39,7 @@ const uniqueTours = Array.from(
     toursData.map(tour => [tour.id, tour])
   ).values()
 );
-
+console.log(response.data.data)
 
       setData(uniqueTours);
       setFilteredData(uniqueTours);
@@ -116,7 +116,6 @@ const uniqueTours = Array.from(
           alt="Religiouss"
           />
                    </div>
-
           <span className='p-10 font-semibold text-2xl text-one '>Found {data.length} results</span>
  <div className="flex flex-col md:flex-row gap-8 p-4">
         {/* Filters Section */}

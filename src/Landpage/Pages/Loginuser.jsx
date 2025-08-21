@@ -175,7 +175,6 @@ function Loginuser() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // التحقق من وجود خطأ في الـ URL (من Google OAuth)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const error = params.get("error");
@@ -242,17 +241,14 @@ function Loginuser() {
   };
 
   const handleGoogleLogin = () => {
-    // حفظ الصفحة الحالية للعودة إليها بعد تسجيل الدخول (إختياري)
     const currentPath = window.location.pathname;
     if (currentPath !== "/login") {
       localStorage.setItem("returnTo", currentPath);
     }
     
-    // إعادة توجيه لـ Google OAuth
     window.location.href = "https://bcknd.tickethub-tours.com/api/user/auth/google";
   };
 
-  // باقي الكود يبقى كما هو...
   return (
     <div className="w-screen h-screen flex gap-1 bg-white">
       {/* Left Side: Form */}

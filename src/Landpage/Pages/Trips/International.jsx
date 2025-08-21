@@ -107,7 +107,7 @@ const International = () => {
       <div className="bg-nine w-[95%] py-4 mx-auto flex justify-between items-center">
         <span className="text-3xl font-semibold px-5 text-one">
           {" "}
-          International Tourism
+          International Tourism 
         </span>
         <img
           src={Internationall}
@@ -116,7 +116,7 @@ const International = () => {
         />
       </div>
       <span className="p-10 font-semibold text-2xl text-one ">
-        Found {data.length} results
+        Found {data.length} results 
       </span>
 
       <div className="flex flex-col md:flex-row gap-8 p-4">

@@ -42,7 +42,7 @@ const BookingsManagement = () => {
   };
 
   // دالة لتصنيف البوكينجز حسب التاريخ
-  const categorizeBookings = (bookings) => {
+    const categorizeBookings = (bookings) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
@@ -51,9 +51,9 @@ const BookingsManagement = () => {
     const history = [];
 
     bookings.forEach((booking) => {
-      console.log(`Booking ID: ${booking.id}`);
-      console.log(`Start Date: ${booking.originalStartDate}`);
-      console.log(`End Date: ${booking.originalEndDate}`);
+      // console.log(`Booking ID: ${booking.id}`);
+      // console.log(`Start Date: ${booking.originalStartDate}`);
+      // console.log(`End Date: ${booking.originalEndDate}`);
       
       if (!booking.originalStartDate || !booking.originalEndDate) {
         console.log("No dates - moving to history");
@@ -66,9 +66,9 @@ const BookingsManagement = () => {
       const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
       const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
 
-      console.log(`Today: ${today.toDateString()}`);
-      console.log(`Start Date Only: ${startDateOnly.toDateString()}`);
-      console.log(`End Date Only: ${endDateOnly.toDateString()}`);
+      // console.log(`Today: ${today.toDateString()}`);
+      // console.log(`Start Date Only: ${startDateOnly.toDateString()}`);
+      // console.log(`End Date Only: ${endDateOnly.toDateString()}`);
 
       if (startDateOnly > today) {
         console.log("Moving to upcoming");
@@ -143,7 +143,6 @@ const BookingsManagement = () => {
       });
   }, []);
 
-  // تقسيم البوكينجز حسب التاريخ
   const categorizedData = categorizeBookings(allBookings);
 
   const columns = [
