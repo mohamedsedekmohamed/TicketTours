@@ -33,7 +33,8 @@ function App() {
         <Routes>
           {!isLoggedIn ? (
             <>
-              <Route path="/" element={<Home />} />
+
+              <Route path="/" element={<Home />} /> 
               <Route path="/*" element={<Home />} />
               <Route path="/contactus" element={<Contactus />} />
               <Route path="/aboutus" element={<Aboutus />} />
