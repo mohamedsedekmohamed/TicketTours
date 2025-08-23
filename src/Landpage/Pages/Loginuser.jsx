@@ -259,7 +259,7 @@ const handleGoogleLogin = () => {
   if (currentPath !== "/login") {
     localStorage.setItem("returnTo", currentPath);
   }
-  window.location.href = `https://bcknd.tickethub-tours.com/api/user/auth/google`;
+  window.location.href = `https://bcknd.tickethub-tours.com`;
 };
 
 

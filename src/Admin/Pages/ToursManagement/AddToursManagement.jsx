@@ -753,8 +753,8 @@ currencyId: parseInt(prices[0].currencyId)
       title,
      promoCodeIds: promocode,
       description: describtion,
-      startDate: String(startDate),
-      endDate: String(endDate),
+      // startDate: String(startDate),
+      // endDate: String(endDate),
       durationDays: parseInt(durationDays),
       durationHours: parseInt(durationHours),
       points: parseInt(points),
@@ -799,15 +799,16 @@ currencyId: parseInt(prices[0].currencyId)
         answer: item.description,
       })),
       itinerary: itineraryupdata,
-      daysOfWeek: selectedDays.map((p) => p.value),
+        // daysOfWeek: selectedDays.map((p) => p.value),
       status,
       featured,
     };
     if (mainImage !== mainImagecheck) {
       payloadtwo.mainImage = mainImage;
     }
+    setCheckLoading(true);
 
-    console.log(itineraryupdata);
+    console.log(payloadtwo);
     const request = edit
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`,
