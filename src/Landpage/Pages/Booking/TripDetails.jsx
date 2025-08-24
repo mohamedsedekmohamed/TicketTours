@@ -38,6 +38,15 @@ const TripDetails = () => {
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [open, setOpen] = useState(false); 
+  const [selectedId, setSelectedId] = useState(null); // القيمة المخزنة (id)
+  const [selectedDate, setSelectedDate] = useState(""); // القيمة اللي يشوفها المستخدم
+
+  const handleSelect = (schedule) => {
+    setSelectedId(schedule.id);       
+    setSelectedDate(schedule.date);   
+    setOpen(false);                   
+  };
 
   useEffect(() => {
     const storedBooking = JSON.parse(localStorage.getItem("bookingData"));
@@ -48,6 +57,7 @@ const TripDetails = () => {
         setAdults(storedBooking.adults || 0);
         setChildren(storedBooking.children || 0);
         setInfants(storedBooking.infants || 0);
+        setSelectedId(storedBooking.tourScheduleId)
         // Load extras from local storage
         if (storedBooking.selectedExtras) {
             setSelectedExtras(storedBooking.selectedExtras);
@@ -199,16 +209,21 @@ const third = images?.[2] ?? null;
       childrenDiscount,
       infantsDiscount,
       discountAmount,
-      total,
+      total,    
+      tourScheduleId:selectedId,
       // Store the array of selected extras
       selectedExtras,
     };
 
-    localStorage.setItem("bookingData", JSON.stringify(bookingData));
     if (adults === 0 && children === 0 && infants === 0) {
       toast.warn("At least one person must be entered.");
       return; // stop navigation
     }
+    if (selectedId ===null ) {
+      toast.warn("Should  Select date");
+      return; // stop navigation
+    }
+    localStorage.setItem("bookingData", JSON.stringify(bookingData));
 
     navigate(`/completebooking/${data.id}`);
   };
@@ -401,7 +416,10 @@ const third = images?.[2] ?? null;
               <p className="text-one">
                 {startDate.toISOString().split("T")[0]} {"->"} {endDate.toISOString().split("T")[0]}
               </p>
+             
+
             </div>
+          
             {showPicker && (
               <div className="fixed inset-0 bg-black/80  bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-4 rounded-lg shadow-lg relative">
@@ -425,6 +443,31 @@ const third = images?.[2] ?? null;
               </div>
             )}
           </div>
+ <div className="relative inline-block py-2">
+      <button
+        onClick={() => setOpen(!open)}
+        className="mt-3 px-4 py-2 border rounded-lg bg-white text-one hover:bg-one hover:text-white transition"
+      >
+        {selectedDate || "Select date"}
+      </button>
+
+      {/* اللستة */}
+      {open && (
+        <div className="absolute mt-2 bg-white border rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto w-48">
+          {data?.schedules?.map((s) => (
+            <div
+              key={s.id}
+              onClick={() => handleSelect(s)}
+              className="px-4 py-2 cursor-pointer hover:bg-one hover:text-white"
+            >
+              {s.date}
+            </div>
+          ))}
+        </div>
+      )}
+
+    
+    </div>
           {[
             ["Adults", "Over 18", pricePerAdult, adults, setAdults],
             ["Children", "Under 12", pricePerChild, children, setChildren],

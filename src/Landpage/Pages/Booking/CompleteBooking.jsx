@@ -50,10 +50,10 @@ const [codeid,setcodeid]=useState("")
     adultsDiscount = 0,
     childrenDiscount = 0,
     infantsDiscount = 0,
+    tourScheduleId=0,
     selectedExtras = [],
   } = bookingData;
 
-  // عشان نعرف إذا القيم من الـ API موجودة
   const [hasMeetingPointFromApi, setHasMeetingPointFromApi] = useState(false);
 
   // Fetch tour data
@@ -131,6 +131,22 @@ const [codeid,setcodeid]=useState("")
     navigate(-1);
     return null;
   }
+const calculateFinalTotal = () => {
+  if (!discountcode || !discountType) {
+    return total;
+  }
+  
+  let finalAmount;
+  if (discountType === "amount") {
+    finalAmount = Math.max(total - discountcode, 0);
+  } else if (discountType === "percentage") {
+    finalAmount = Math.max(total - (total * discountcode) / 100, 0);
+  } else {
+    finalAmount = total;
+  }
+  
+  return finalAmount;
+};
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -138,91 +154,82 @@ const [codeid,setcodeid]=useState("")
   };
   const token = localStorage.getItem("token");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!token) {
-      toast.warn("You need to log in first.");
-      return;
+  if (!token) {
+    toast.warn("You need to log in first.");
+    return;
+  }
+
+  if (!selectedPayment) {
+    toast.warn("Please select a payment method.");
+    return;
+  }
+  if (!description) {
+    toast.warn("description is required .");
+    return;
+  }
+  if (!meetingPointLocation) {
+    toast.warn("meetingPointLocation is required .");
+    return;
+  }
+
+  const finalTotal = calculateFinalTotal(); // استخدم الدالة هنا
+
+  try {
+    const payload = {
+      tourId: tourScheduleId,
+      fullName: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      notes: formData.notes,
+      adultsCount: Number(adults),
+      childrenCount: Number(children),
+      infantsCount: Number(infants),
+      totalAmount: finalTotal,
+      paymentMethodId: selectedPayment,
+      proofImage: image?.startsWith("data:image")
+        ? image
+        : `data:image/jpeg;base64,${image}`,
+      discount: Number(adultsDiscount),
+      address: description,
+      location: `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`,
+    };
+
+    if (codeid) {
+      payload.promoCodeId = codeid;
     }
 
-    if (!selectedPayment) {
-      toast.warn("Please select a payment method.");
-      return;
+    if (selectedExtras && selectedExtras.length > 0) {
+      payload.extras = selectedExtras.map((extra) => ({
+        id: extra.id,
+        count: {
+          adult: String(extra.counts.adults),
+          child: String(extra.counts.children),
+          infant: String(extra.counts.infants),
+        },
+      }));
     }
-    if (!description) {
-      toast.warn("description is required .");
-      return;
-    }
-    if (!meetingPointLocation) {
-      toast.warn("meetingPointLocation is required .");
-      return;
-    }
-const finalTotal =
-  discountcode && discountType
-    ? discountType === "amount"
-      ? Math.max(total - discountcode, 0)
-      : discountType === "percentage"
-      ? Math.max(total - (total * discountcode) / 100, 0)
-      : total
-    : total;
 
-    try {
-     const payload = {
-  tourId: data.tourScheduleId,
-  fullName: formData.name,
-  email: formData.email,
-  phone: formData.phone,
-  notes: formData.notes,
-  adultsCount: Number(adults),
-  childrenCount: Number(children),
-  infantsCount: Number(infants),
-  totalAmount: finalTotal,
-  paymentMethodId: selectedPayment,
-  proofImage: image?.startsWith("data:image")
-    ? image
-    : `data:image/jpeg;base64,${image}`,
-  discount: Number(adultsDiscount),
-  address: description,
-  location: `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`,
+    await axios.post(
+      "https://bcknd.tickethub-tours.com/api/user/landpage/book-tour",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    localStorage.removeItem("bookingData");
+    toast.success("Booking completed successfully!");
+    setTimeout(() => {
+      navigate('/');
+    }, 2000);
+  } catch (err) {
+    toast.error("Failed to complete booking.");
+  }
 };
-
-if (codeid) {
-  payload.promoCodeId = codeid;
-}
-
-// لو في extras ضيفه
-if (selectedExtras && selectedExtras.length > 0) {
-  payload.extras = selectedExtras.map((extra) => ({
-    id: extra.id,
-    count: {
-      adult: String(extra.counts.adults),
-      child: String(extra.counts.children),
-      infant: String(extra.counts.infants),
-    },
-  }));
-}
-
-
-      await axios.post(
-        "https://bcknd.tickethub-tours.com/api/user/landpage/book-tour",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      localStorage.removeItem("bookingData");
-      toast.success("Booking completed successfully!");
-      setTimeout(() => {
-               navigate('/')
-
-      }, 2000);
-    } catch (err) {
-      toast.error("Failed to complete booking.");
-    }
-  };
 
   const pricePerAdult = data.price?.adult || 0;
   const pricePerChild = data.price?.child || 0;
@@ -620,19 +627,10 @@ if (selectedExtras && selectedExtras.length > 0) {
 
 
 
-              <div className="flex justify-between text-lg font-bold text-one">
-                <span>Final Total:</span>
-                <span>
-                  $
-                  {discountType === "amount"
-                    ? Math.max(total - discountcode, 0).toFixed(2)
-                    : discountType === "percentage"
-                    ? Math.max(total - (total * discountcode) / 100, 0).toFixed(
-                        2
-                      )
-                    : total.toFixed(2)}
-                </span>
-              </div>
+            <div className="flex justify-between text-lg font-bold text-one">
+  <span>Final Total:</span>
+  <span>${calculateFinalTotal().toFixed(2)}</span>
+</div>
             </div>
           </div>
         </div>

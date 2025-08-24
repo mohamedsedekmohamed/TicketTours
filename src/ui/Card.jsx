@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Card = ({ id,image, title, description, duration, price, discount }) => {
+const Card = ({ id,image, title, description, duration, price, discount ,startDate}) => {
   return (
     <div className=" w-70 md:w-80 lg:w-90 lx:w-100">
       <Link to={`/tripdetails/${id}`} className="block rounded-lg p-4 shadow-xs shadow-indigo-100">
@@ -24,6 +24,9 @@ const Card = ({ id,image, title, description, duration, price, discount }) => {
               : description}
           </p>
           <p className="text-sm text-gray-500 mt-1">Days: {duration}</p>
+<p className="text-sm text-gray-500 mt-1">
+  Date: {startDate?.split("T")[0]}
+</p>
 
           <div className="mt-2 flex items-center gap-2">
             <span className="text-sm text-gray-400 line-through">

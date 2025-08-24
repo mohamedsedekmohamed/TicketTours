@@ -9,6 +9,7 @@ const Local = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
+const [filterDate, setFilterDate] = useState("");
 
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -27,6 +28,7 @@ useEffect(() => {
         title: item.title,
         country: item.country,
         city: item.city,
+        startDate: item.startDate,
         image: item.imagePath,
         price: parseFloat(item.price),
         discount: parseFloat(item.discount),
@@ -56,38 +58,41 @@ const uniqueTours = Array.from(
   fetchData();
 }, []);
 
-  useEffect(() => {
-    const filtered = data.filter((tour) => {
-      const price = tour.price;
-      const duration = tour.duration;
-      const city = tour.city;
-      
-      const min = parseFloat(minPrice);
-      const max = parseFloat(maxPrice);
-      const priceMatch = (
-        (isNaN(min) || price >= min) &&
-        (isNaN(max) || price <= max)
-      );
-      
-      const durationMatch =
-        selectedDurations.length === 0 || selectedDurations.includes(duration);
-      
-      const cityMatch =
-        selectedCities.length === 0 || selectedCities.includes(city);
-      
-      return priceMatch && durationMatch && cityMatch;
-    });
+ useEffect(() => {
+  const filtered = data.filter((tour) => {
+    const price = tour.price;
+    const duration = tour.duration;
+    const city = tour.city;
 
-    setFilteredData(filtered);
+    const min = parseFloat(minPrice);
+    const max = parseFloat(maxPrice);
+    const priceMatch =
+      (isNaN(min) || price >= min) &&
+      (isNaN(max) || price <= max);
 
-    const citiesSet = new Set(filtered.map((item) => item.city));
-    setUniqueCities([...citiesSet]);
+    const durationMatch =
+      selectedDurations.length === 0 || selectedDurations.includes(duration);
 
-    const durationsSet = new Set(filtered.map((item) => item.duration));
-    setUniqueDurations([...durationsSet].sort((a, b) => a - b));
-    
-  }, [data, minPrice, maxPrice, selectedDurations, selectedCities]);
-  
+    const cityMatch =
+      selectedCities.length === 0 || selectedCities.includes(city);
+
+    // ✅ فلترة التاريخ
+    const dateMatch =
+      !filterDate ||
+      new Date(tour.startDate).toISOString().slice(0, 10) === filterDate;
+
+    return priceMatch && durationMatch && cityMatch && dateMatch;
+  });
+
+  setFilteredData(filtered);
+
+  const citiesSet = new Set(filtered.map((item) => item.city));
+  setUniqueCities([...citiesSet]);
+
+  const durationsSet = new Set(filtered.map((item) => item.duration));
+  setUniqueDurations([...durationsSet].sort((a, b) => a - b));
+}, [data, minPrice, maxPrice, selectedDurations, selectedCities, filterDate]);
+
   const handleDurationChange = (value) => {
     setSelectedDurations((prev) =>
       prev.includes(value) ? prev.filter((d) => d !== value) : [...prev, value]
@@ -127,16 +132,12 @@ const uniqueTours = Array.from(
               type="number"
               placeholder="Min"
               value={minPrice}
-                            min={0}
-
               onChange={(e) => setMinPrice(e.target.value)}
               className="w-1/2 border p-2 rounded"
             />
             <input
               type="number"
               placeholder="Max"
-                            min={0}
-
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               className="w-1/2 border p-2 rounded"
@@ -155,6 +156,13 @@ const uniqueTours = Array.from(
                 {`${d} day${d > 1 ? 's' : ''}`}
               </label>
             ))}
+            <input
+  type="date"
+  value={filterDate}
+  onChange={(e) => setFilterDate(e.target.value)}
+  className="border p-2 rounded mb-4"
+/>
+
           </div>
 
           <h2 className="font-semibold mb-2">Governorate / Location</h2>
@@ -172,7 +180,6 @@ const uniqueTours = Array.from(
           </div>
         </div>
 
-        {/* Cards Section */}
         <div className="w-full flex flex-wrap justify-center gap-4">
           {filteredData.length > 0 ? (
             filteredData.map((tour) => (
@@ -180,6 +187,7 @@ const uniqueTours = Array.from(
                 key={`${tour.id}-${tour.title}`}
                 image={tour.image}
                 id={tour.id}
+                startDate={tour.startDate}
                 title={tour.title}
                 description={tour.description}
                 duration={tour.duration}
