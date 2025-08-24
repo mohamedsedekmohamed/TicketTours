@@ -12,7 +12,9 @@ const DynamicTable = ({
   view,
   buttonstatus,
   filteredData = [],
-  searchQuery
+  searchQuery,
+  Start,
+  End
 }) => {
 
 
@@ -39,6 +41,8 @@ const DynamicTable = ({
               </th>
             ))}
             {Seen && <th className="py-3 text-one px-4">Seen</th>}
+            {Start && <th className="py-3 text-one px-4">Start</th>}
+            {End && <th className="py-3 text-one px-4">End</th>}
             {view && <th className="py-3 text-one px-4">view</th>}
             {buttonstatus && <th className="py-3 text-one px-4">Status Actions</th>}
             {actions && <th className="py-3 text-one px-4">Actions</th>}
@@ -79,6 +83,8 @@ const DynamicTable = ({
             ))}
             {Seen && <th className="py-3 text-one px-4">Seen</th>}
             {view && <th className="py-3 text-one px-4">view</th>}
+            {Start && <th className="py-3 text-one px-4">Start</th>}
+            {End && <th className="py-3 text-one px-4">End</th>}
             {buttonstatus && <th className="py-3 text-one px-4">Status Actions</th>}
             {actions && <th className="py-3 text-one px-4">Actions</th>}
             {actionsstates && (
@@ -105,6 +111,9 @@ const DynamicTable = ({
                     : truncate(row[key])}
                 </td>
               ))}
+              {Seen && <td className="py-3 px-4">{Seen(row)}</td>}
+              {Start && <td className="py-3 px-4">{Start(row)}</td>}
+              {End && <td className="py-3 px-4">{End(row)}</td>}
               {Seen && <td className="py-3 px-4">{Seen(row)}</td>}
               {view && <td className="py-3 px-4">{view(row)}</td>}
                 {buttonstatus && (

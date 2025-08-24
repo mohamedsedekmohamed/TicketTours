@@ -1,165 +1,7 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { ToastContainer, toast } from "react-toastify";
-// import { useNavigate } from "react-router-dom";
-// import "react-toastify/dist/ReactToastify.css";
-// import { FiEye, FiEyeOff } from "react-icons/fi";
-// import { IoHeartSharp } from "react-icons/io5";
-// import { IoIosArrowBack } from "react-icons/io";
-// import { FaGoogle, FaFacebookF } from "react-icons/fa";
-// import content from "../../assets/content.png";
-// import { BsArrowRightCircleFill } from "react-icons/bs";
-
-// function Loginuser() {
-//   const [username, setUsername] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [showPassword, setShowPassword] = useState(false);
-//   const navigate = useNavigate();
- 
-//   const handleLogin = () => {
-
-//     axios
-//       .post("https://bcknd.tickethub-tours.com/api/user/auth/local/login", {
-//         email: username,
-//         password: password,
-//       })
-//       .then((response) => {
-//         if (response.data.data.message === "login Successful") {
-//           localStorage.setItem("token", response.data.data.token);
-//           localStorage.setItem("user", JSON.stringify(response.data.data.user));
-
-//           toast.success("Welcome ");
-
-//           setTimeout(() => {
-//             navigate(-1);
-//           }, 1000);
-//         }
-//       })
-//    .catch((error) => {
-//           const err = error?.response?.data?.error;
-  
-//           if (err?.details && Array.isArray(err.details)) {
-//             err.details.forEach((detail) => {
-//               toast.error(`${detail.field}: ${detail.message}`);
-//             });
-//           } else if (err?.message) {
-//             toast.error(err.message);
-//           } else {
-//             toast.error("Something went wrong.");
-//           }
-//         });
-//   };
-
-//   const handleGoogleLogin = () => {
-//     window.location.href =
-//       "https://bcknd.tickethub-tours.com/api/user/auth/google";
-//   };
-
-//   return (
-//     <div className="w-screen h-screen flex gap-1  bg-white">
-//       {/* Left Side: Form */}{" "}
-//       <div className="hidden md:flex w-full max-w-1/2 h-full ">
-//         <img src={content} alt="Logo" className="w-full h-full " />
-//       </div>
-//       <div className="flex flex-col justify-center gap-2 items-center px-6 md:px-10 w-full">
-//         <BsArrowRightCircleFill
-//           className="absolute top-2 text-4xl right-2"
-//           onClick={() => {
-//             navigate(-1);
-//           }}
-//         >
-//           {">"}
-//         </BsArrowRightCircleFill>
-
-//         <h2 className="text-3xl lg:text-4xl text-one font-semibold mb-2">
-//           Welcome back
-//         </h2>
-//         <p className="text-base lg:text-lg text-gray-700 mb-6">
-//           Login to your account
-//         </p>
-
-//         <input
-//           type="text"
-//           value={username}
-//           onChange={(e) => setUsername(e.target.value)}
-//           className="w-full max-w-md h-14 border border-one rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-one"
-//           placeholder="Email"
-//         />
-
-//         <div className="relative w-full max-w-md mb-2">
-//           <input
-//             type={showPassword ? "text" : "password"}
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//             className="w-full h-14 border border-one rounded-lg px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-one"
-//             placeholder="Password"
-//           />
-//           <button
-//             type="button"
-//             onClick={() => setShowPassword(!showPassword)}
-//             className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600"
-//           >
-//             {/* {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />} */}
-//           </button>
-//         </div>
-
-//         {/* Forgot password */}
-//         <div className="w-full max-w-md text-right mb-4">
-//           <button
-//             onClick={() => navigate("/forgotpassword")}
-//             className="text-sm text-one hover:underline"
-//           >
-//             Forgot Password?
-//           </button>
-//         </div>
-
-//         <button
-//           onClick={handleLogin}
-//           className="w-full max-w-md h-14 bg-one text-white rounded-lg font-semibold mb-2 transition-transform hover:scale-95"
-//         >
-//           Login
-//         </button>
-
-//         <div className="w-full max-w-md flex items-center gap-2 mb-2">
-//           <div className="flex-1 h-px bg-gray-300" />
-//           <span className="text-sm text-gray-500">or continue with</span>
-//           <div className="flex-1 h-px bg-gray-300" />
-//         </div>
-//         <span className="text-three font-medium">
-//           Don't have an account?
-//           <button
-//             onClick={() => navigate("/signup")}
-//             className="text-sm text-one underline"
-//           >
-//             Sign Up
-//           </button>
-//         </span>
-
-//         <div className="w-full max-w-md flex flex-col md:flex-row gap-4">
-//           <button
-//             onClick={handleGoogleLogin}
-//             className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition"
-//           >
-//             <FaGoogle size={18} />
-//             <span className="text-sm font-medium">Continue with Google</span>
-//           </button>
-
-//           {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition">
-//             <FaFacebookF size={18} />
-//             <span className="text-sm font-medium">Continue with Facebook</span>
-//           </button> */}
-//         </div>
-//       </div>
-//       <ToastContainer />
-//     </div>
-//   );
-// }
-
-// export default Loginuser;
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { IoHeartSharp } from "react-icons/io5";
@@ -173,40 +15,8 @@ function Loginuser() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const error = params.get("error");
-    
-    if (error) {
-      let errorMessage = "An error occurred";
-      switch (error) {
-        case "google_auth_failed":
-          errorMessage = "Google authentication failed. Please try again.";
-          break;
-        case "no_token":
-          errorMessage = "Authentication failed. Please try again.";
-          break;
-        case "callback_error":
-          errorMessage = "Authentication error. Please contact support.";
-          break;
-        default:
-          errorMessage = "Login failed. Please try again.";
-      }
-      
-      toast.error(errorMessage);
-      
-      // تنظيف الـ URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, [location]);
-
+ 
   const handleLogin = () => {
-    if (!username || !password) {
-      toast.warn("Please enter both email and password");
-      return;
-    }
 
     axios
       .post("https://bcknd.tickethub-tours.com/api/user/auth/local/login", {
@@ -218,63 +28,48 @@ function Loginuser() {
           localStorage.setItem("token", response.data.data.token);
           localStorage.setItem("user", JSON.stringify(response.data.data.user));
 
-          toast.success("Welcome!");
+          toast.success("Welcome ");
 
           setTimeout(() => {
             navigate(-1);
           }, 1000);
         }
       })
-      .catch((error) => {
-        const err = error?.response?.data?.error;
-
-        if (err?.details && Array.isArray(err.details)) {
-          err.details.forEach((detail) => {
-            toast.error(`${detail.field}: ${detail.message}`);
-          });
-        } else if (err?.message) {
-          toast.error(err.message);
-        } else {
-          toast.error("Something went wrong.");
-        }
-      });
+   .catch((error) => {
+          const err = error?.response?.data?.error;
+  
+          if (err?.details && Array.isArray(err.details)) {
+            err.details.forEach((detail) => {
+              toast.error(`${detail.field}: ${detail.message}`);
+            });
+          } else if (err?.message) {
+            toast.error(err.message);
+          } else {
+            toast.error("Something went wrong.");
+          }
+        });
   };
 
-// const handleGoogleLogin = () => {
-//     // حفظ المسار الحالي لو عايز ترجّع المستخدم بعد اللوجين
-//     const currentPath = window.location.pathname + window.location.search;
-//     if (currentPath !== "/login") {
-//       localStorage.setItem("returnTo", currentPath);
-//     }
-
-//     // تحويل المستخدم على Google OAuth
-//     window.location.href =
-//       "https://bcknd.tickethub-tours.com/api/user/auth/google";
-//   };
-
-// src/components/Loginuser.jsx
-// (Your existing code, but ensure handleGoogleLogin redirects to backend)
-const handleGoogleLogin = () => {
-  const currentPath = window.location.pathname + window.location.search;
-  if (currentPath !== "/login") {
-    localStorage.setItem("returnTo", currentPath);
-  }
-  window.location.href = `https://bcknd.tickethub-tours.com`;
-};
-
-
+  const handleGoogleLogin = () => {
+    window.location.href =
+      "https://bcknd.tickethub-tours.com/api/user/auth/google";
+  };
 
   return (
-    <div className="w-screen h-screen flex gap-1 bg-white">
-      {/* Left Side: Form */}
-      <div className="hidden md:flex w-full max-w-1/2 h-full">
-        <img src={content} alt="Logo" className="w-full h-full" />
+    <div className="w-screen h-screen flex gap-1  bg-white">
+      {/* Left Side: Form */}{" "}
+      <div className="hidden md:flex w-full max-w-1/2 h-full ">
+        <img src={content} alt="Logo" className="w-full h-full " />
       </div>
       <div className="flex flex-col justify-center gap-2 items-center px-6 md:px-10 w-full">
         <BsArrowRightCircleFill
-          className="absolute top-2 text-4xl right-2 cursor-pointer hover:text-blue-600 transition"
-          onClick={() => navigate(-1)}
-        />
+          className="absolute top-2 text-4xl right-2"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          {">"}
+        </BsArrowRightCircleFill>
 
         <h2 className="text-3xl lg:text-4xl text-one font-semibold mb-2">
           Welcome back
@@ -284,12 +79,11 @@ const handleGoogleLogin = () => {
         </p>
 
         <input
-          type="email"
+          type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="w-full max-w-md h-14 border border-one rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-one"
           placeholder="Email"
-          required
         />
 
         <div className="relative w-full max-w-md mb-2">
@@ -299,14 +93,13 @@ const handleGoogleLogin = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full h-14 border border-one rounded-lg px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-one"
             placeholder="Password"
-            required
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+            className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600"
           >
-            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+            {/* {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />} */}
           </button>
         </div>
 
@@ -323,7 +116,6 @@ const handleGoogleLogin = () => {
         <button
           onClick={handleLogin}
           className="w-full max-w-md h-14 bg-one text-white rounded-lg font-semibold mb-2 transition-transform hover:scale-95"
-          disabled={!username || !password}
         >
           Login
         </button>
@@ -333,12 +125,11 @@ const handleGoogleLogin = () => {
           <span className="text-sm text-gray-500">or continue with</span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
-
         <span className="text-three font-medium">
-          Don't have an account?{" "}
+          Don't have an account?
           <button
             onClick={() => navigate("/signup")}
-            className="text-sm text-one underline hover:text-blue-800"
+            className="text-sm text-one underline"
           >
             Sign Up
           </button>
@@ -347,11 +138,16 @@ const handleGoogleLogin = () => {
         <div className="w-full max-w-md flex flex-col md:flex-row gap-4">
           <button
             onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition-all hover:scale-105"
+            className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition"
           >
-            <FaGoogle size={18} className="text-red-500" />
+            <FaGoogle size={18} />
             <span className="text-sm font-medium">Continue with Google</span>
           </button>
+
+          {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition">
+            <FaFacebookF size={18} />
+            <span className="text-sm font-medium">Continue with Facebook</span>
+          </button> */}
         </div>
       </div>
       <ToastContainer />
@@ -360,3 +156,195 @@ const handleGoogleLogin = () => {
 }
 
 export default Loginuser;
+
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import { ToastContainer, toast } from "react-toastify";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import "react-toastify/dist/ReactToastify.css";
+// import { FiEye, FiEyeOff } from "react-icons/fi";
+// import { IoHeartSharp } from "react-icons/io5";
+// import { IoIosArrowBack } from "react-icons/io";
+// import { FaGoogle, FaFacebookF } from "react-icons/fa";
+// import content from "../../assets/content.png";
+// import { BsArrowRightCircleFill } from "react-icons/bs";
+
+// function Loginuser() {
+//   const [username, setUsername] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [showPassword, setShowPassword] = useState(false);
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   useEffect(() => {
+//     const params = new URLSearchParams(location.search);
+//     const error = params.get("error");
+    
+//     if (error) {
+//       let errorMessage = "An error occurred";
+//       switch (error) {
+//         case "google_auth_failed":
+//           errorMessage = "Google authentication failed. Please try again.";
+//           break;
+//         case "no_token":
+//           errorMessage = "Authentication failed. Please try again.";
+//           break;
+//         case "callback_error":
+//           errorMessage = "Authentication error. Please contact support.";
+//           break;
+//         default:
+//           errorMessage = "Login failed. Please try again.";
+//       }
+      
+//       toast.error(errorMessage);
+      
+//       // تنظيف الـ URL
+//       window.history.replaceState({}, document.title, window.location.pathname);
+//     }
+//   }, [location]);
+
+//   const handleLogin = () => {
+//     if (!username || !password) {
+//       toast.warn("Please enter both email and password");
+//       return;
+//     }
+
+//     axios
+//       .post("https://bcknd.tickethub-tours.com/api/user/auth/local/login", {
+//         email: username,
+//         password: password,
+//       })
+//       .then((response) => {
+//         if (response.data.data.message === "login Successful") {
+//           localStorage.setItem("token", response.data.data.token);
+//           localStorage.setItem("user", JSON.stringify(response.data.data.user));
+
+//           toast.success("Welcome!");
+
+//           setTimeout(() => {
+//             navigate(-1);
+//           }, 1000);
+//         }
+//       })
+//       .catch((error) => {
+//         const err = error?.response?.data?.error;
+
+//         if (err?.details && Array.isArray(err.details)) {
+//           err.details.forEach((detail) => {
+//             toast.error(`${detail.field}: ${detail.message}`);
+//           });
+//         } else if (err?.message) {
+//           toast.error(err.message);
+//         } else {
+//           toast.error("Something went wrong.");
+//         }
+//       });
+//   };
+
+
+// const handleGoogleLogin = () => {
+//   const currentPath = window.location.pathname + window.location.search;
+//   if (currentPath !== "/login") {
+//     localStorage.setItem("returnTo", currentPath);
+//   }
+//   window.location.href = `https://bcknd.tickethub-tours.com/api/user/auth/google`;
+// };
+
+
+
+//   return (
+//     <div className="w-screen h-screen flex gap-1 bg-white">
+//       {/* Left Side: Form */}
+//       <div className="hidden md:flex w-full max-w-1/2 h-full">
+//         <img src={content} alt="Logo" className="w-full h-full" />
+//       </div>
+//       <div className="flex flex-col justify-center gap-2 items-center px-6 md:px-10 w-full">
+//         <BsArrowRightCircleFill
+//           className="absolute top-2 text-4xl right-2 cursor-pointer hover:text-blue-600 transition"
+//           onClick={() => navigate(-1)}
+//         />
+
+//         <h2 className="text-3xl lg:text-4xl text-one font-semibold mb-2">
+//           Welcome back
+//         </h2>
+//         <p className="text-base lg:text-lg text-gray-700 mb-6">
+//           Login to your account
+//         </p>
+
+//         <input
+//           type="email"
+//           value={username}
+//           onChange={(e) => setUsername(e.target.value)}
+//           className="w-full max-w-md h-14 border border-one rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-one"
+//           placeholder="Email"
+//           required
+//         />
+
+//         <div className="relative w-full max-w-md mb-2">
+//           <input
+//             type={showPassword ? "text" : "password"}
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             className="w-full h-14 border border-one rounded-lg px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-one"
+//             placeholder="Password"
+//             required
+//           />
+//           <button
+//             type="button"
+//             onClick={() => setShowPassword(!showPassword)}
+//             className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+//           >
+//             {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+//           </button>
+//         </div>
+
+//         {/* Forgot password */}
+//         <div className="w-full max-w-md text-right mb-4">
+//           <button
+//             onClick={() => navigate("/forgotpassword")}
+//             className="text-sm text-one hover:underline"
+//           >
+//             Forgot Password?
+//           </button>
+//         </div>
+
+//         <button
+//           onClick={handleLogin}
+//           className="w-full max-w-md h-14 bg-one text-white rounded-lg font-semibold mb-2 transition-transform hover:scale-95"
+//           disabled={!username || !password}
+//         >
+//           Login
+//         </button>
+
+//         <div className="w-full max-w-md flex items-center gap-2 mb-2">
+//           <div className="flex-1 h-px bg-gray-300" />
+//           <span className="text-sm text-gray-500">or continue with</span>
+//           <div className="flex-1 h-px bg-gray-300" />
+//         </div>
+
+//         <span className="text-three font-medium">
+//           Don't have an account?{" "}
+//           <button
+//             onClick={() => navigate("/signup")}
+//             className="text-sm text-one underline hover:text-blue-800"
+//           >
+//             Sign Up
+//           </button>
+//         </span>
+
+//         <div className="w-full max-w-md flex flex-col md:flex-row gap-4">
+//           <button
+//             onClick={handleGoogleLogin}
+//             className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition-all hover:scale-105"
+//           >
+//             <FaGoogle size={18} className="text-red-500" />
+//             <span className="text-sm font-medium">Continue with Google</span>
+//           </button>
+//         </div>
+//       </div>
+//       <ToastContainer />
+//     </div>
+//   );
+// }
+
+// export default Loginuser;

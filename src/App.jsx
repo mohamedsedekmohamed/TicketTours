@@ -44,7 +44,7 @@ function App() {
               />
               {/* <Route path="/api/user/auth/google/callback" element={<GoogleAuthHandler />} /> */}
               <Route path="/login" element={<Loginuser />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
               <Route path="/signup" element={<Signup />} />
               <Route path="/localtourism" element={<Local />} />
               <Route path="/internationaltourism" element={<International />} />

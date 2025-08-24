@@ -23,11 +23,11 @@ const Contactus = () => {
           <h2 className="text-one text-3xl sm:text-4xl lg:text-5xl mb-4 font-semibold judson-regular">
             Get in Touch with Us
           </h2>
-          <p className="text-base sm:text-lg lg:text-xl mb-6 text-three open-sans-regular leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl mb-4 text-three open-sans-regular leading-relaxed">
             We’d love to hear from you! Whether you have a question about our trips, need assistance with booking, or just want to say hi — our team is ready to help.
           </p>
 
-          <form className="w-full space-y-5 judson-bold">
+          <form className="w-full space-y-4 judson-bold">
             {/* Name */}
             <div>
               <label className="block text-seven text-sm mb-1">Name</label>
@@ -78,10 +78,10 @@ const Contactus = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="text-center pt-2">
+            <div className="text-center py-2">
               <button
                 type="submit"
-                className="bg-one text-white text-lg px-6 py-3 rounded-3xl transition transform hover:scale-95"
+                className="bg-one w-80 text-white text-lg px-6 py-3 rounded-3xl transition transform hover:scale-95"
               >
                 Send
               </button>

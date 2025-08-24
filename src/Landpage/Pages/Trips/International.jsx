@@ -128,6 +128,7 @@ const International = () => {
               type="number"
               placeholder="Min"
               value={minPrice}
+              min={0}
               onChange={(e) => setMinPrice(e.target.value)}
               className="w-1/2 border p-2 rounded"
             />
@@ -135,6 +136,8 @@ const International = () => {
               type="number"
               placeholder="Max"
               value={maxPrice}
+                            min={0}
+
               onChange={(e) => setMaxPrice(e.target.value)}
               className="w-1/2 border p-2 rounded"
             />

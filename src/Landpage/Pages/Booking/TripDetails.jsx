@@ -348,7 +348,6 @@ const third = images?.[2] ?? null;
     Included / Excluded
   </h2>
   <div className="flex flex-col sm:flex-row sm:gap-7 flex-wrap">
-    {/* Included Items List */}
     <ul className="flex-1 space-y-3 py-4">
       {data.includes?.map((inc, i) => (
         <li
@@ -370,7 +369,7 @@ const third = images?.[2] ?? null;
         >
           <VscError className="text-red-500 flex-shrink-0" />
           <span className="mx-3 break-words w-full sm:w-full">
-            {exc}
+            {exc}   
           </span>
         </li>
       ))}
@@ -427,30 +426,30 @@ const third = images?.[2] ?? null;
             )}
           </div>
           {[
-            ["Adults", "Over 18+", pricePerAdult, adults, setAdults],
+            ["Adults", "Over 18", pricePerAdult, adults, setAdults],
             ["Children", "Under 12", pricePerChild, children, setChildren],
             ["Infant", "Under 3", pricePerInfant, infants, setInfants],
           ].map(([label, desc, price, count, setFn]) => (
             <div
               key={label}
-              className="flex justify-between items-center border-t py-3"
+              className="flex justify-between items-center border-t border-gray-500 py-3"
             >
               <div>
-                <p className="font-medium text-gray-800">{label}</p>
-                <p className="font-medium text-gray-800">{price}$</p>
+                <p className="font-bold text-one">{label}</p>
+                <p className="font-semibold text-one">{price}$</p>
                 <p className="text-sm text-gray-500">{desc}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setFn(count > 0 ? count - 1 : 0)}
-                  className="w-7 h-7 bg-one text-white rounded-full"
+                  className="w-8 h-8 bg-one text-white rounded-full"
                 >
                   -
                 </button>
                 <span className="w-6 text-center">{count}</span>
                 <button
                   onClick={() => setFn(count + 1)}
-                  className="w-7 h-7 bg-one text-white rounded-full"
+                  className="w-8 h-8 bg-one text-white rounded-full"
                 >
                   +
                 </button>
@@ -506,14 +505,14 @@ const third = images?.[2] ?? null;
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setFn(count > 0 ? count - 1 : 0)}
-                        className="w-7 h-7 bg-one text-white rounded-full"
+                  className="w-8 h-8 bg-one text-white rounded-full"
                       >
                         -
                       </button>
                       <span className="w-6 text-center">{count}</span>
                       <button
                         onClick={() => setFn(count + 1)}
-                        className="w-7 h-7 bg-one text-white rounded-full"
+                  className="w-8 h-8 bg-one text-white rounded-full"
                       >
                         +
                       </button>

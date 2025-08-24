@@ -154,8 +154,8 @@ const [promocode,setPromocode]=useState([])
             SetEndDate(user.endDate || "");
             setStatus(user.status || false);
             setFeatured(user.featured || false);
-            SetDurationDays(String(user.durationDays) || "");
-            SetDurationHours(String(user.durationHours) || "");
+            SetDurationDays(String(user.durationDays) || 0);
+            SetDurationHours(String(user.durationHours) || 0);
             setArrayImage(
               (user.images || []).map((img) => ({
                 imagePath: img.url,
@@ -167,7 +167,7 @@ const [promocode,setPromocode]=useState([])
                 imagePath: img.url,
               }))
             );
-            setPoints(String(user.points));
+            setPoints(String(user.points)||0);
             setMeetingPointAddress(user.meetingPointAddress);
             if (user?.meetingPointLocation) {
               const coords = user.meetingPointLocation
@@ -256,6 +256,7 @@ const [promocode,setPromocode]=useState([])
               }))
             );
              setPromocode((user.promoCode || []).map((it) => it.id))
+            meetingPoint(user.meetingPoint || false);
 
           }
         })
@@ -753,8 +754,8 @@ currencyId: parseInt(prices[0].currencyId)
       title,
      promoCodeIds: promocode,
       description: describtion,
-      // startDate: String(startDate),
-      // endDate: String(endDate),
+      startDate: String(startDate),
+      endDate: String(endDate),
       durationDays: parseInt(durationDays),
       durationHours: parseInt(durationHours),
       points: parseInt(points),
@@ -799,7 +800,7 @@ currencyId: parseInt(prices[0].currencyId)
         answer: item.description,
       })),
       itinerary: itineraryupdata,
-        // daysOfWeek: selectedDays.map((p) => p.value),
+        daysOfWeek: selectedDays.map((p) => p.value),
       status,
       featured,
     };
@@ -945,30 +946,9 @@ currencyId: parseInt(prices[0].currencyId)
               onChange={(val) => setPromocode(val)}
             />
 
-            <SwitchButton value={status} setValue={setStatus} title="Status" />
-            <SwitchButton
-              value={featured}
-              setValue={setFeatured}
-              title="Featured"
-            />
-            <SwitchButton
-              value={meetingPoint}
-              setValue={setMeetingPoint}
-              title="Meeting Point"
-            />
-            <div className="flex flex-col">
-              <label className="mb-2 font-medium text-one">Select Days</label>
-              <Select
-                isMulti
-                options={days}
-                value={selectedDays} // Now this will work correctly
-                onChange={handleSelectChange}
-                className="basic-multi-select w-75 h-[80px] rounded-2xl"
-                classNamePrefix="select"
-              />
-            </div>
+       
 
-            <div className="relative flex flex-col w-[300px] h-[80px]">
+            <div className="relative flex flex-col w-[300px] h-[80px] z-100">
               <label className="text-sm font-semibold text-gray-700 mb-1">
                 Start Date
               </label>
@@ -1010,6 +990,29 @@ currencyId: parseInt(prices[0].currencyId)
                   yearDropdownItemNumber={100}
                 />
               </div>
+            </div>
+                 <SwitchButton value={status} setValue={setStatus} title="Status" />
+            <SwitchButton
+              value={featured}
+              setValue={setFeatured}
+              title="Featured"
+            />
+            <SwitchButton
+              value={meetingPoint}
+              setValue={setMeetingPoint}
+              title="Meeting Point"
+            />
+           
+             <div className="flex flex-col">
+              <label className="mb-2 font-medium text-one">Select Days</label>
+              <Select
+                isMulti
+                options={days}
+                value={selectedDays} // Now this will work correctly
+                onChange={handleSelectChange}
+                className="basic-multi-select w-75 h-[80px] rounded-2xl"
+                classNamePrefix="select"
+              />
             </div>
             {meetingPoint ? (
               <div className=" flex   w-full flex-col gap-3">

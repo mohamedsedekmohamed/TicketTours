@@ -9,9 +9,10 @@ import Loading from "../../../ui/Loading";
 import Swal from "sweetalert2";
 import { CiSearch, CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { FaCalendarAlt, FaUsers } from "react-icons/fa";
+import { MdOutlineAccessTime } from "react-icons/md";
+import { AiOutlineCalendar } from "react-icons/ai"
 import {
-  FaCalendarAlt,
-  FaUsers,
   FaMapMarkerAlt,
   FaDollarSign,
   FaListUl,
@@ -19,7 +20,6 @@ import {
   FaImages,
 } from "react-icons/fa";
 import {
-  MdOutlineAccessTime,
   MdHighlight,
   MdQuestionAnswer,
 } from "react-icons/md";
@@ -37,13 +37,15 @@ const ToursManagement = () => {
 
   const columns = [
     { key: "title", label: "Title" },
-    { key: "startDate", label: "Start Date" },
-    { key: "endDate", label: "End Date" },
+    // { key: "startDate", label: "Start Date" },
+    // { key: "endDate", label: "End Date" },
     { key: "mainImage", label: "Image" },
     { key: "durationDays", label: "Duration Days" },
     { key: "status", label: "Status" },
     { key: "maxUsers", label: "Max Users" },
   ];
+    const [activeTab, setActiveTab] = useState("overview"); 
+
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -229,207 +231,293 @@ const ToursManagement = () => {
             View
           </button>
         )}
+        Start={(row) => (
+          <span
+            className=" rounded-[6px]  px-3 py-1"
+          >
+      {row.startDate ? row.startDate.split("T")[0] : "N/A"}
+          </span>
+        )}
+        End={(row) => (
+          <span
+            className="rounded-[6px]  px-3 py-1"
+          >
+      {row.endDate ? row.endDate.split("T")[0] : "N/A"}
+            </span>
+        )}
       />
    {tourData && (
-  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-    <div className="bg-white max-h-[90vh] overflow-y-auto w-[95%] md:w-[75%] lg:w-[65%] xl:w-[50%] p-6 rounded-2xl shadow-2xl relative space-y-4">
-      
-      {/* زرار إغلاق */}
-      <button
-        onClick={() => setTourData("")}
-        className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 transition"
-      >
-        ✕
-      </button>
+   
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div className="bg-white max-h-[90vh] overflow-y-auto w-[95%] md:w-[75%] lg:w-[65%] xl:w-[50%] p-6 rounded-2xl shadow-2xl relative space-y-4">
 
-      {/* Title */}
-      <div className="flex items-center gap-2 text-2xl font-bold text-one border-b pb-2">
-        <FaInfoCircle className="text-one" /> 
-        <span>{tourData.title || "N/A"}</span>
-      </div>
+        {/* زر إغلاق */}
+        <button
+          onClick={() => setTourData("")}
+          className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 transition"
+        >
+          ✕
+        </button>
 
-      {/* Dates + Duration + Users */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <p className="flex items-center gap-2 text-gray-700">
-          <FaCalendarAlt className="text-orange-500" />
-          {tourData.startDate} → {tourData.endDate}
-        </p>
-        <p className="flex items-center gap-2 text-gray-700">
-          <MdOutlineAccessTime className="text-purple-500" />
-          {tourData.durationDays} days / {tourData.durationHours} hours
-        </p>
-        <p className="flex items-center gap-2 text-gray-700">
-          <FaUsers className="text-green-600" /> Max Users: {tourData.maxUsers}
-        </p>
-      </div>
-
-      {/* Meeting Point */}
-      <div className="p-3 rounded-lg bg-gray-50">
-        <p className="flex items-center gap-2 text-gray-700">
-          <FaMapMarkerAlt className="text-red-500" />
-          {tourData.meetingPointAddress}
-          {tourData.meetingPointLocation && (
-            <a
-              href={tourData.meetingPointLocation}
-              target="_blank"
-              rel="noreferrer"
-              className="text-blue-500 underline ml-2"
-            >
-              View Map
-            </a>
-          )}
-        </p>
-      </div>
-
-      {/* Pricing */}
-      {tourData.price && (
-        <div className="bg-blue-50 p-3 rounded-lg shadow-sm">
-          <p className="font-semibold flex items-center gap-2 text-blue-600">
-            <FaDollarSign /> Pricing
-          </p>
-          <ul className="ml-6 mt-1 list-disc text-gray-700">
-            <li>Adult: {tourData.price.adult}</li>
-            <li>Child: {tourData.price.child}</li>
-            <li>Infant: {tourData.price.infant}</li>
-          </ul>
+        {/* Title */}
+        <div className="flex items-center gap-2 text-2xl font-bold text-one border-b pb-2">
+          <FaInfoCircle className="text-one" />
+          <span>{tourData.title || "N/A"}</span>
         </div>
-      )}
 
-      {/* Highlights */}
-      {tourData.highlights?.length > 0 && (
-        <div className="bg-yellow-50 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-yellow-700">
-            <MdHighlight /> Highlights
-          </p>
-          <ul className="ml-6 list-disc text-gray-700">
-            {tourData.highlights.map((h, i) => (
-              <li key={i}>{h}</li>
-            ))}
-          </ul>
+        {/* Tabs Navigation */}
+        <div className="flex border-b">
+          <button
+            onClick={() => setActiveTab("overview")}
+            className={`px-4 py-2 font-medium ${
+              activeTab === "overview"
+                ? "border-b-2 border-one text-one"
+                : "text-gray-500"
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => setActiveTab("details")}
+            className={`px-4 py-2 font-medium ${
+              activeTab === "details"
+                ? "border-b-2 border-one text-one"
+                : "text-gray-500"
+            }`}
+          >
+            schedules
+          </button>
         </div>
-      )}
 
-      {/* Includes */}
-      {tourData.includes?.length > 0 && (
-        <div className="bg-green-50 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-green-700">
-            <AiOutlineCheckCircle /> Includes
-          </p>
-          <ul className="ml-6 list-disc text-gray-700">
-            {tourData.includes.map((inc, i) => (
-              <li key={i}>{inc}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+        {/* Tab Content */}
+        {activeTab === "overview" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <p className="flex items-center gap-2 text-gray-700">
+                <FaCalendarAlt className="text-orange-500" />
+                {tourData.startDate?.split("T")[0]} → {tourData.endDate?.split("T")[0]}
+              </p>
+              <p className="flex items-center gap-2 text-gray-700">
+                <MdOutlineAccessTime className="text-purple-500" />
+                {tourData.durationDays} days / {tourData.durationHours} hours
+              </p>
+              <p className="flex items-center gap-2 text-gray-700">
+                <FaUsers className="text-green-600" /> Max Users: {tourData.maxUsers}
+              </p>
+            </div>
 
-      {/* Excludes */}
-      {tourData.excludes?.length > 0 && (
-        <div className="bg-red-50 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-red-700">
-            <AiOutlineCloseCircle /> Excludes
-          </p>
-          <ul className="ml-6 list-disc text-gray-700">
-            {tourData.excludes.map((exc, i) => (
-              <li key={i}>{exc}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+            <div className="p-3 rounded-lg bg-gray-50">
+              <p className="flex items-center gap-2 text-gray-700">
+                <FaMapMarkerAlt className="text-red-500" />
+                {tourData.meetingPointAddress}
+                {tourData.meetingPointLocation && (
+                  <a
+                    href={tourData.meetingPointLocation}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-500 underline ml-2"
+                  >
+                    View Map
+                  </a>
+                )}
+              </p>
+            </div>
 
-      {/* Itinerary */}
-      {tourData.itinerary?.length > 0 && (
-        <div className="bg-indigo-50 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-indigo-700">
-            <FaRegListAlt /> Itinerary
-          </p>
-          {tourData.itinerary.map((it) => (
-            <div key={it.id} className="border rounded p-3 mt-2 bg-white shadow-sm">
-              <p className="font-semibold">{it.title}</p>
-              <p className="text-gray-700">{it.description}</p>
-              {it.imagePath && (
+            {tourData.price && (
+              <div className="bg-blue-50 p-3 rounded-lg shadow-sm">
+                <p className="font-semibold flex items-center gap-2 text-blue-600">
+                  <FaDollarSign /> Pricing
+                </p>
+                <ul className="ml-6 mt-1 list-disc text-gray-700">
+                  <li>Adult: {tourData.price.adult}</li>
+                  <li>Child: {tourData.price.child}</li>
+                  <li>Infant: {tourData.price.infant}</li>
+                </ul>
+              </div>
+            )}
+            <div className="space-y-4">
+            {tourData.highlights?.length > 0 && (
+              <div className="bg-yellow-50 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-yellow-700">
+                  <MdHighlight /> Highlights
+                </p>
+                <ul className="ml-6 list-disc text-gray-700">
+                  {tourData.highlights.map((h, i) => (
+                    <li key={i}>{h}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Includes */}
+            {tourData.includes?.length > 0 && (
+              <div className="bg-green-50 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-green-700">
+                  <AiOutlineCheckCircle /> Includes
+                </p>
+                <ul className="ml-6 list-disc text-gray-700">
+                  {tourData.includes.map((inc, i) => (
+                    <li key={i}>{inc}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {tourData.excludes?.length > 0 && (
+              <div className="bg-red-50 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-red-700">
+                  <AiOutlineCloseCircle /> Excludes
+                </p>
+                <ul className="ml-6 list-disc text-gray-700">
+                  {tourData.excludes.map((exc, i) => (
+                    <li key={i}>{exc}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Itinerary */}
+            {tourData.itinerary?.length > 0 && (
+              <div className="bg-indigo-50 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-indigo-700">
+                  <FaRegListAlt /> Itinerary
+                </p>
+                {tourData.itinerary.map((it) => (
+                  <div
+                    key={it.id}
+                    className="border rounded p-3 mt-2 bg-white shadow-sm"
+                  >
+                    <p className="font-semibold">{it.title}</p>
+                    <p className="text-gray-700">{it.description}</p>
+                    {it.imagePath && (
+                      <img
+                        src={it.imagePath}
+                        alt={it.title}
+                        className="w-full max-h-[200px] object-cover mt-2 rounded"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tourData.faq?.length > 0 && (
+              <div className="bg-indigo-100 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-indigo-700">
+                  <MdQuestionAnswer /> FAQ
+                </p>
+                {tourData.faq.map((f, i) => (
+                  <div
+                    key={i}
+                    className="border p-2 rounded bg-white mt-1 shadow-sm"
+                  >
+                    <p className="font-semibold">Q: {f.question}</p>
+                    <p className="text-gray-700">A: {f.answer}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tourData.discounts?.length > 0 && (
+              <div className="bg-pink-50 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-pink-700">
+                  <MdDiscount /> Discounts
+                </p>
+                {tourData.discounts.map((d) => (
+                  <div
+                    key={d.id}
+                    className="border p-2 rounded bg-white mt-1 shadow-sm"
+                  >
+                    <p>Target: {d.targetGroup}</p>
+                    <p>Type: {d.type}</p>
+                    <p>Value: {d.value}</p>
+                    <p>
+                      People: {d.minPeople} - {d.maxPeople}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tourData.extras?.length > 0 && (
+              <div className="bg-teal-50 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-teal-700">
+                  <FaUtensils /> Extras
+                </p>
+                {tourData.extras.map((ex) => (
+                  <div
+                    key={ex.id}
+                    className="border p-2 rounded bg-white mt-1 shadow-sm"
+                  >
+                    <p className="font-semibold">{ex.name}</p>
+                    <ul className="ml-6 list-disc text-gray-700">
+                      <li>Adult: {ex.price.adult}</li>
+                      <li>Child: {ex.price.child}</li>
+                      <li>Infant: {ex.price.infant}</li>
+                    </ul>
+                    <p className="text-sm text-gray-500">
+                      Currency: {ex.price.currencyName}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tourData.mainImage && (
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="flex items-center gap-2 font-semibold text-gray-700">
+                  <FaImages /> Main Image
+                </p>
                 <img
-                  src={it.imagePath}
-                  alt={it.title}
-                  className="w-full max-h-[200px] object-cover mt-2 rounded"
+                  src={tourData.mainImage}
+                  alt="Tour"
+                  className="w-full max-h-[300px] object-contain rounded mt-2 shadow"
                 />
-              )}
-            </div>
-          ))}
+              </div>
+            )}
+          </div>
+          </div>
+          
+        )}
+   
+        {activeTab === "details" && (
+       <div>
+        <div className="space-y-3">
+  {tourData.schedules?.length > 0 ? (
+    tourData.schedules.map((s) => (
+      <div
+        key={s.id}
+        className="border p-4 rounded-xl shadow-md bg-gradient-to-r from-blue-50 to-white hover:shadow-lg transition"
+      >
+        <div className="flex items-center gap-2 text-blue-700 font-semibold">
+          <FaCalendarAlt />
+          <span>{s.date}</span>
         </div>
-      )}
 
-      {/* FAQ */}
-      {tourData.faq?.length > 0 && (
-        <div className="bg-indigo-100 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-indigo-700">
-            <MdQuestionAnswer /> FAQ
-          </p>
-          {tourData.faq.map((f, i) => (
-            <div key={i} className="border p-2 rounded bg-white mt-1 shadow-sm">
-              <p className="font-semibold">Q: {f.question}</p>
-              <p className="text-gray-700">A: {f.answer}</p>
-            </div>
-          ))}
+        <div className="flex items-center gap-2 text-green-700 mt-2">
+          <FaUsers />
+          <span>Available Seats: {s.availableSeats}</span>
         </div>
-      )}
 
-      {/* Discounts */}
-      {tourData.discounts?.length > 0 && (
-        <div className="bg-pink-50 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-pink-700">
-            <MdDiscount /> Discounts
-          </p>
-          {tourData.discounts.map((d) => (
-            <div key={d.id} className="border p-2 rounded bg-white mt-1 shadow-sm">
-              <p>Target: {d.targetGroup}</p>
-              <p>Type: {d.type}</p>
-              <p>Value: {d.value}</p>
-              <p>
-                People: {d.minPeople} - {d.maxPeople}
-              </p>
-            </div>
-          ))}
+        <div className="flex items-center gap-2 text-purple-700 mt-2">
+          <MdOutlineAccessTime />
+          <span>Start: {s.startDate}</span>
         </div>
-      )}
 
-      {/* Extras */}
-      {tourData.extras?.length > 0 && (
-        <div className="bg-teal-50 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-teal-700">
-            <FaUtensils /> Extras
-          </p>
-          {tourData.extras.map((ex) => (
-            <div key={ex.id} className="border p-2 rounded bg-white mt-1 shadow-sm">
-              <p className="font-semibold">{ex.name}</p>
-              <ul className="ml-6 list-disc text-gray-700">
-                <li>Adult: {ex.price.adult}</li>
-                <li>Child: {ex.price.child}</li>
-                <li>Infant: {ex.price.infant}</li>
-              </ul>
-              <p className="text-sm text-gray-500">
-                Currency: {ex.price.currencyName}
-              </p>
-            </div>
-          ))}
+        <div className="flex items-center gap-2 text-red-600 mt-2">
+          <AiOutlineCalendar />
+          <span>End: {s.endDate}</span>
         </div>
-      )}
-
-      {/* Main Image */}
-      {tourData.mainImage && (
-        <div className="bg-gray-50 p-3 rounded-lg">
-          <p className="flex items-center gap-2 font-semibold text-gray-700">
-            <FaImages /> Main Image
-          </p>
-          <img
-            src={tourData.mainImage}
-            alt="Tour"
-            className="w-full max-h-[300px] object-contain rounded mt-2 shadow"
-          />
+      </div>
+    ))
+  ) : (
+    <p className="text-gray-500">No schedules available.</p>
+  )}
+</div>
         </div>
-      )}
+        )}
+      </div>
     </div>
-  </div>
 )}
 
     </div>

@@ -177,7 +177,7 @@ Choosing a location        </div>
         <div ref={mapRef} className="w-full relative" style={{ height }}>
           {/* مربع البحث */}
           <div
-            className="absolute top-5 left-5 right-5 z-[1100] bg-white p-4 rounded-xl shadow-xl"
+            className="absolute top-5 left-5 right-5  bg-white p-4 rounded-xl shadow-xl"
             style={{
               backdropFilter: 'blur(4px)',
               backgroundColor: 'rgba(255, 255, 255, 0.9)'

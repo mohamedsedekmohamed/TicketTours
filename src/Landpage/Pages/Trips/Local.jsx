@@ -127,12 +127,16 @@ const uniqueTours = Array.from(
               type="number"
               placeholder="Min"
               value={minPrice}
+                            min={0}
+
               onChange={(e) => setMinPrice(e.target.value)}
               className="w-1/2 border p-2 rounded"
             />
             <input
               type="number"
               placeholder="Max"
+                            min={0}
+
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               className="w-1/2 border p-2 rounded"
