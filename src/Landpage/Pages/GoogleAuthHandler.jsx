@@ -11,15 +11,12 @@ const GoogleAuthHandler = () => {
     const name = searchParams.get("name");
 
     if (token) {
-      // Save auth data
       localStorage.setItem("authToken", token);
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userName", name);
+      if (email) localStorage.setItem("userEmail", email);
+      if (name) localStorage.setItem("userName", name);
 
-      // Redirect to dashboard or home
-      navigate("/dashboard");
+      navigate("/"); 
     } else {
-      // If no token, send back to login
       navigate("/login");
     }
   }, [searchParams, navigate]);
