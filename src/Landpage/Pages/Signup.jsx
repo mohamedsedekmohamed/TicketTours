@@ -19,7 +19,6 @@ const Signup = () => {
   const CODE_LENGTH = 6;
   const [step, setStep] = useState(1);
   const [code, setCode] = useState(new Array(CODE_LENGTH).fill(""));
-  const [timer, setTimer] = useState(60);
   const inputsRef = useRef([]);
   const handleChangeCode = (e, index) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
@@ -88,8 +87,8 @@ const Signup = () => {
       })
       .then((response) => {
         if (
-          response.data.data.message ===
-          "User Signup Successfully Go Verify Email"
+          response.data.success ===
+         true
         ) {
           setStep(2);
           setUserId(response.data.data.userId);
@@ -291,7 +290,7 @@ const Signup = () => {
           </>
         )}
         {step === 2 && (
-          <>
+          <div className="space-y-4">
             <h2 className="text-2xl font-semibold text-one">
               Enter Verification Code
             </h2>
@@ -313,10 +312,10 @@ const Signup = () => {
               ))}
             </div>
 
-            <p className="text-sm text-gray-400">
+            {/* <p className="text-sm text-gray-400">
               Retry After {String(Math.floor(timer / 60)).padStart(2, "0")}:
               {String(timer % 60).padStart(2, "0")}
-            </p>
+            </p> */}
 
             <button
               onClick={handleVerifyCode}
@@ -326,7 +325,6 @@ const Signup = () => {
             </button>
 
             <p className="text-sm text-gray-500">
-              Didn’t receive the code?{" "}
               {/* <button
                 className="text-one underline"
                 onClick={handleResendCode}
@@ -335,7 +333,7 @@ const Signup = () => {
                 Resend
               </button> */}
             </p>
-          </>
+          </div>
         )}
       </div>
 

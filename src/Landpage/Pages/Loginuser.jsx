@@ -37,8 +37,15 @@ function Loginuser() {
       })
    .catch((error) => {
           const err = error?.response?.data?.error;
-  
-          if (err?.details && Array.isArray(err.details)) {
+                  const status = error?.response?.status;
+ if (status === 401) {
+  toast.warn("Please verify your email")
+setTimeout(() => {
+            navigate("/signup");
+
+}, 2000);     
+     return;
+        }          if (err?.details && Array.isArray(err.details)) {
             err.details.forEach((detail) => {
               toast.error(`${detail.field}: ${detail.message}`);
             });
