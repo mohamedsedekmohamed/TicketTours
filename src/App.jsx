@@ -43,7 +43,7 @@ function App() {
                 element={<Login setIsLoggedIn={setIsLoggedIn} />}
               />
 
-<Route path="/api/user/auth/google/callback" element={<></>} />
+<Route path="/api/user/auth/google/callback/*" element={<div>Testing callback page</div>} />
 <Route path="/google-auth" element={<GoogleAuthHandler />} />
               <Route path="/login" element={<Loginuser />} />
               {/* <Route path="/dashboard" element={<Dashboard />} /> */}
