@@ -72,7 +72,7 @@ setTimeout(() => {
         <BsArrowRightCircleFill
           className="absolute top-2 text-4xl right-2"
           onClick={() => {
-            navigate(-1);
+            navigate("/");
           }}
         >
           {">"}

@@ -148,7 +148,7 @@ const Signup = () => {
       <div className="flex flex-col items-center justify-center w-full md:w-1/2 px-4 sm:px-6 lg:px-12 py-8">
         <BsArrowRightCircleFill
           className="absolute top-2 right-2 text-3xl text-one cursor-pointer"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
         />
         {step === 1 && (
           <>
