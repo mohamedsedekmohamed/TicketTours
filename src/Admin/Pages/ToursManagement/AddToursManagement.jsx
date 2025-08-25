@@ -21,6 +21,7 @@ import MapPicker from "../../../ui/MapPicker";
 
 const AddToursManagement = () => {
   const [activeTab, setActiveTab] = useState(0);
+          const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -131,12 +132,11 @@ const [promocode,setPromocode]=useState([])
     if (sendData) {
       setEdit(true);
 
-      const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const user = response.data.data;
@@ -814,10 +814,18 @@ currencyId: parseInt(prices[0].currencyId)
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`,
           payloadtwo
+          , {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },}
         )
       : axios.post(
           "https://bcknd.tickethub-tours.com/api/admin/tours",
           payload
+          , {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },}
         );
 
     request

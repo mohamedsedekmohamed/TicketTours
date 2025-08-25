@@ -21,13 +21,14 @@ const PromoCodes = () => {
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges =
     groupedPrivileges["Promo Code"]?.map((p) => p.action) || [];
+          const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/promocodes`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(

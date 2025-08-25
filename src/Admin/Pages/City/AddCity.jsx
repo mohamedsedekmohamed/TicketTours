@@ -17,6 +17,7 @@ const AddCity = () => {
   const [edit, setEdit] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+      const token = localStorage.getItem("token");
 
   const [name, setName] = useState("");
   const [country, setCountry] = useState("");
@@ -29,12 +30,11 @@ const AddCity = () => {
     if (sendData) {
       setEdit(true);
 
-      const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/city/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const user = response.data.data;
@@ -82,16 +82,16 @@ const AddCity = () => {
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/city/${sendData}`,
           newUser
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+         , {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       : axios.post("https://bcknd.tickethub-tours.com/api/admin/city", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
     request

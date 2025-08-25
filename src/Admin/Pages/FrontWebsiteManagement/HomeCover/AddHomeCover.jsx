@@ -30,9 +30,9 @@ const AddHomeCover = () => {
       const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/homepage/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const user = response.data.data.page;
@@ -74,21 +74,22 @@ const AddHomeCover = () => {
     if (iamge !== iamgetwo) {
       eidtUser.imagePath = iamge;
     }
+      const token = localStorage.getItem("token");
 
     const request = edit
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/homepage/${sendData}`,
           eidtUser
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+        ,  {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       : axios.post("https://bcknd.tickethub-tours.com/api/admin/homepage", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
     request

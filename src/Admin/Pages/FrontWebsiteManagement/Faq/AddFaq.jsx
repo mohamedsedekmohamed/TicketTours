@@ -18,6 +18,8 @@ const AddFaq = () => {
       const[answer,setAnswer]=useState("")
        const [value, setValue] = useState(false);
         const [edit, setEdit] = useState(false);
+              const token = localStorage.getItem("token");
+
  const [errors, setErrors] = useState({
     question: "",
     answer: "",
@@ -29,9 +31,9 @@ const AddFaq = () => {
       const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/faq/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const user = response.data.data.faq;
@@ -84,16 +86,16 @@ const AddFaq = () => {
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/faq/${sendData}`,
           newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       : axios.post("https://bcknd.tickethub-tours.com/api/admin/faq", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
     request

@@ -15,7 +15,8 @@ const AddMedical = () => {
       const [edit, setEdit] = useState(false);
       const [checkLoading, setCheckLoading] = useState(false);
       const [loading, setLoading] = useState(true);
-  
+        const token = localStorage.getItem("token");
+
         const [name, setName] = useState("");
      
         const [errors, setErrors] = useState({
@@ -25,12 +26,11 @@ const AddMedical = () => {
     if (sendData) {
       setEdit(true);
 
-      const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/medical/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const user = response.data.data.categorymedical;
@@ -70,16 +70,16 @@ const AddMedical = () => {
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/medical/${sendData}`,
           newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       : axios.post("https://bcknd.tickethub-tours.com/api/admin/medical", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
     request

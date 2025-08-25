@@ -21,13 +21,14 @@ const Faq = () => {
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges =
     groupedPrivileges["Home Page Faq"]?.map((p) => p.action) || [];
+      const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/faq`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(
@@ -101,7 +102,7 @@ const Faq = () => {
         `https://bcknd.tickethub-tours.com/api/admin/faq/${row.id}`,
         updateHome,
         {
-          // headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       )
       .then(() => {

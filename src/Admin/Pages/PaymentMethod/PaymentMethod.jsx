@@ -21,12 +21,14 @@ const PaymentMethod = () => {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
+        const token = localStorage.getItem("token");
+
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/paymentmethod`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(
@@ -101,7 +103,7 @@ const PaymentMethod = () => {
         `https://bcknd.tickethub-tours.com/api/admin/paymentmethod/${row.id}`,
         updateHome,
         {
-          // headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       )
       .then(() => {

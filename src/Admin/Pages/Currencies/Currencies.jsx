@@ -19,13 +19,14 @@ const Currencies = () => {
   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges = groupedPrivileges["Currency"]?.map((p) => p.action) || [];
+    const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/currencies`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(
@@ -46,7 +47,6 @@ const Currencies = () => {
     navigate("/admin/addcurrencies", { state: { sendData: id } });
   };
   const handleDelete = (userId, userName) => {
-    const token = localStorage.getItem("token");
 
     Swal.fire({
       title: `Are you sure you want to delete ${userName}?`,

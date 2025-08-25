@@ -25,8 +25,8 @@ const BookingsManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("upcoming");
   const [viewRow, setViewRow] = useState(null);
+      const token = localStorage.getItem("token");
 
-  // دالة لتنسيق التاريخ
   const formatDate = (dateString) => {
     if (!dateString) return "No Date";
     try {
@@ -41,7 +41,6 @@ const BookingsManagement = () => {
     }
   };
 
-  // دالة لتصنيف البوكينجز حسب التاريخ
     const categorizeBookings = (bookings) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -89,7 +88,11 @@ const BookingsManagement = () => {
 
   useEffect(() => {
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/bookings`)
+      .get(`https://bcknd.tickethub-tours.com/api/admin/bookings`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const apiData = response.data.data.bookings || []; // تعديل هنا حسب البنية الجديدة
         

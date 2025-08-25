@@ -27,9 +27,9 @@ const CategoriesManagement = () => {
  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/categories`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(

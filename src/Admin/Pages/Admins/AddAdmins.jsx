@@ -26,6 +26,8 @@ const AddAdmins = () => {
   const [isSuperAdmin, setIsSuperAdmin] = useState("");
   const [imagePath, setimagePath] = useState(null);
   const [imagePathtwo, setimagePathtwo] = useState(null);
+        const token = localStorage.getItem("token");
+
 const [errors, setErrors] = useState({
     name: "",
     phone: "",
@@ -35,12 +37,11 @@ const [errors, setErrors] = useState({
     useEffect(() => {
     if (sendData) {
       setEdit(true);
-      const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/admins/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const user = response.data.data;
@@ -126,16 +127,16 @@ if (edit && password && password.length >= 8) {
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/admins/${sendData}`,
           newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       : axios.post("https://bcknd.tickethub-tours.com/api/admin/admins", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
     request

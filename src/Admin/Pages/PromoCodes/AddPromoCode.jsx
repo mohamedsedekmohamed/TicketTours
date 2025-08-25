@@ -37,18 +37,18 @@ const AddPromoCode = () => {
     startDate: "",
     endDate: "",
   });
+    const token = localStorage.getItem("token");
 
 useEffect(() => {
 
   if (sendData) {
     setEdit(true);
-    const token = localStorage.getItem("token");
 
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/promocodes/${sendData}`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         const promocodes = response.data.data;
@@ -160,16 +160,16 @@ const handstartDate = (newData) => {
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/promocodes/${sendData}`,
           newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       : axios.post("https://bcknd.tickethub-tours.com/api/admin/promocodes", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
     request

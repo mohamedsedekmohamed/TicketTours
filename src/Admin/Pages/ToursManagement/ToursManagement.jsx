@@ -52,12 +52,14 @@ const ToursManagement = () => {
   const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
   const [tourData, setTourData] = useState("");
+            const token = localStorage.getItem("token");
+
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/tours`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(
@@ -150,7 +152,11 @@ const ToursManagement = () => {
   });
   const openHnadle = (id) => {
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/tours/${id}`)
+      .get(`https://bcknd.tickethub-tours.com/api/admin/tours/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         const tour = res.data.data;
         setTourData(tour);

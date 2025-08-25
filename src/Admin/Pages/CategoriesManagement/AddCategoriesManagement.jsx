@@ -23,9 +23,9 @@ const AddCategoriesManagement = () => {
       const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/categories/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const category = response.data.data.category;
@@ -55,18 +55,18 @@ const handleSave = () => {
         }, 1000);
         return
    }
-     // const token = localStorage.getItem("token");
+     const token = localStorage.getItem("token");
    const newUser = {
 imagePath:iamge
 };
  axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/categories/${sendData}`,
           newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         ). then(() => {
   toast.success(`Categories Management updated successfully`);
   setTimeout(() => {

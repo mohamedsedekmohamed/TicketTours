@@ -20,13 +20,14 @@ const Roles = () => {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
+          const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/admins`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(

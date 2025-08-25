@@ -20,10 +20,15 @@ const UsersManagement = () => {
   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges = groupedPrivileges["Tour"]?.map((p) => p.action) || [];
+      const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/users`)
+      .get(`https://bcknd.tickethub-tours.com/api/admin/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setData(
           response.data.data.users.map((item) => ({

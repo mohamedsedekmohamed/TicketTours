@@ -156,6 +156,8 @@ const uniqueTours = Array.from(
                 {`${d} day${d > 1 ? 's' : ''}`}
               </label>
             ))}
+                    <h2 className="font-semibold mb-2">Date</h2>
+
             <input
   type="date"
   value={filterDate}

@@ -28,10 +28,15 @@ const [updata,setUpdata]=useState(false)
   // لتخزين بيانات الفورم
   const [confirmForm, setConfirmForm] = useState({ rowId: null, price: "", file: null });
   const [rejectForm, setRejectForm] = useState({ rowId: null, reason: "" });
+          const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/medical/medicalTour-all`)
+      .get(`https://bcknd.tickethub-tours.com/api/admin/medical/medicalTour-all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const apiData = response.data.data.medicals;
 
@@ -89,7 +94,9 @@ const [updata,setUpdata]=useState(false)
       await axios.post(
         "https://bcknd.tickethub-tours.com/api/admin/medical/accept-medical",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {  headers: {
+          Authorization: `Bearer ${token}`,
+        }, }
       );
       toast.success("Request confirmed successfully!");
       setUpdata(p=>!p)

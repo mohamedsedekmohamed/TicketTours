@@ -16,6 +16,7 @@ const City = () => {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
+      const token = localStorage.getItem("token");
 
   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
@@ -24,9 +25,9 @@ const City = () => {
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/city`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(

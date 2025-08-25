@@ -23,16 +23,17 @@ const AddCurrencies = () => {
       code: "",
       symbol: "",
     });
+          const token = localStorage.getItem("token");
+
      useEffect(() => {
     if (sendData) {
       setEdit(true);
 
-      const token = localStorage.getItem("token");
       axios
         .get(`https://bcknd.tickethub-tours.com/api/admin/currencies/${sendData}`, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         .then((response) => {
           const user = response.data.data.currency;
@@ -89,16 +90,16 @@ const AddCurrencies = () => {
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/currencies/${sendData}`,
           newUser,
-          // {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       : axios.post("https://bcknd.tickethub-tours.com/api/admin/currencies", newUser, {
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
     request

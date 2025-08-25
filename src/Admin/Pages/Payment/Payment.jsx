@@ -43,12 +43,17 @@ const Payment = () => {
   const [activeTabcard, setActiveTabcard] = useState("booking");
   const [tourData, setTourData] = useState(null);
   const [loadingTour, setLoadingTour] = useState(false);
+          const token = localStorage.getItem("token");
 
   // جلب البيانات
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/payments/allPayment`)
+      .get(`https://bcknd.tickethub-tours.com/api/admin/payments/allPayment`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const payments = response.data.data.payments.map((item) => ({
           method: item.payment?.method || "N/A",
@@ -108,7 +113,7 @@ const Payment = () => {
         `https://bcknd.tickethub-tours.com/api/admin/payments/pending-payments/${row.ids}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          Authorization: `Bearer ${token}`,
           body: JSON.stringify({ status: newStatus }),
         }
       );
@@ -138,7 +143,7 @@ const Payment = () => {
         `https://bcknd.tickethub-tours.com/api/admin/payments/pending-payments/${selectedRow.ids}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          Authorization: `Bearer ${token}`,
           body: JSON.stringify({
             status: "cancelled",
             rejectionReason,
@@ -177,10 +182,12 @@ const Payment = () => {
     try {
       setLoadingTour(true);
       const response = await axios.get(
-        `https://bcknd.tickethub-tours.com/api/admin/tours/${tourId}`
-      );
+        `https://bcknd.tickethub-tours.com/api/admin/tours/${tourId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       
-      // Fixed: Use response.data instead of destructuring {datas}
       setTourData(response.data.data || response.data);
       console.log("Tour data:", response.data);
     } catch (err) {

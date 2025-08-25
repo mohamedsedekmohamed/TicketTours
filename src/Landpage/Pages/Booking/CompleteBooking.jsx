@@ -174,8 +174,12 @@ const handleSubmit = async (e) => {
     toast.warn("meetingPointLocation is required .");
     return;
   }
+  if (!image) {
+    toast.warn("image is required .");
+    return;
+  }
 
-  const finalTotal = calculateFinalTotal(); // استخدم الدالة هنا
+  const finalTotal = calculateFinalTotal(); 
 
   try {
     const payload = {
@@ -189,9 +193,7 @@ const handleSubmit = async (e) => {
       infantsCount: Number(infants),
       totalAmount: finalTotal,
       paymentMethodId: selectedPayment,
-      proofImage: image?.startsWith("data:image")
-        ? image
-        : `data:image/jpeg;base64,${image}`,
+      proofImage: image,
       discount: Number(adultsDiscount),
       address: description,
       location: `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`,

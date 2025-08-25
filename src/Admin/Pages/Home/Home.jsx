@@ -12,9 +12,14 @@ import axios from "axios";
 import BarChart from '../../../ui/BarChart'
 const Home = () => {
    const [stats, setStats] = useState([]);
+      const token = localStorage.getItem("token");
 
   useEffect(() => {
-    axios.get("https://bcknd.tickethub-tours.com/api/admin/home/header").then((res) => {
+    axios.get("https://bcknd.tickethub-tours.com/api/admin/home/header", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => {
       const data = res.data.data;
       const updatedStats = [
         {

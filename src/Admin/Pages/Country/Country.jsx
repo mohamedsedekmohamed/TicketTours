@@ -19,13 +19,14 @@ const Country = () => {
   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges = groupedPrivileges["Country"]?.map((p) => p.action) || [];
+      const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/country`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(

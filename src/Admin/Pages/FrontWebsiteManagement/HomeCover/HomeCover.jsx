@@ -20,13 +20,14 @@ const HomeCover = () => {
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges =
     groupedPrivileges["Home Page Cover"]?.map((p) => p.action) || [];
+      const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/homepage`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         setData(
@@ -84,7 +85,6 @@ const HomeCover = () => {
   const columns = [{ key: "imagePath", label: "Cover Iamge" }];
   const handleToggleStatus = (row) => {
     const newStatus = row.status ? false : true;
-    const token = localStorage.getItem("token");
 
     const updateHome = {
       status: newStatus,
@@ -95,7 +95,7 @@ const HomeCover = () => {
         `https://bcknd.tickethub-tours.com/api/admin/homepage/${row.id}`,
         updateHome,
         {
-          // headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       )
       .then(() => {
