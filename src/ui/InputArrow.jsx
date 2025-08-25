@@ -13,9 +13,14 @@ const InputArrow = ({
   const [options, setOptions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef(null);
+      const token = localStorage.getItem("token");
 
   useEffect(() => {
-    axios.get(`https://bcknd.tickethub-tours.com/api/admin/${name}`)
+    axios.get(`https://bcknd.tickethub-tours.com/api/admin/${name}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(response => {
         const list = response.data.data[namedata]; 
         if(namedata==="categories"){

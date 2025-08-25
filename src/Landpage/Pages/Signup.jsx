@@ -262,7 +262,7 @@ const Signup = () => {
               <div className="flex-1 h-px bg-gray-300" />
             </div>
 
-            <div className="w-full text-center max-w-md flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="w-full justify-center  flex mb-6">
              <GoogleLogin
   onSuccess={async (credentialResponse) => {
     try {

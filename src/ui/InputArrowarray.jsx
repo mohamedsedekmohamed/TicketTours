@@ -11,10 +11,15 @@ const InputArrowarray = ({
   disabled = false,
 }) => {
   const [options, setOptions] = useState([]);
+      const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/${name}`)
+      .get(`https://bcknd.tickethub-tours.com/api/admin/${name}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         const list = response.data.data[namedata];
         setOptions(

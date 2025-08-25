@@ -23,6 +23,7 @@ const CategoriesManagement = () => {
   const [update, setUpdate] = useState(false);
   const groupedPrivileges = JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges = groupedPrivileges["Category"]?.map((p) => p.action) || [];
+      const token = localStorage.getItem("token");
 
  useEffect(() => {
     axios

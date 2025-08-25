@@ -113,10 +113,12 @@ const Payment = () => {
         `https://bcknd.tickethub-tours.com/api/admin/payments/pending-payments/${row.ids}`,
         {
           method: "PATCH",
-          Authorization: `Bearer ${token}`,
-          body: JSON.stringify({ status: newStatus }),
+   headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // ✅ هنا مكانه الصح
+      },          body: JSON.stringify({ status: newStatus }),
         }
-      );
+      );  
 
       if (res.ok) {
         toast.success("Status updated successfully.");
@@ -143,8 +145,10 @@ const Payment = () => {
         `https://bcknd.tickethub-tours.com/api/admin/payments/pending-payments/${selectedRow.ids}`,
         {
           method: "PATCH",
-          Authorization: `Bearer ${token}`,
-          body: JSON.stringify({
+   headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // ✅ هنا مكانه الصح
+      },          body: JSON.stringify({
             status: "cancelled",
             rejectionReason,
           }),

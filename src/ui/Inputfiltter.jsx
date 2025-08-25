@@ -29,7 +29,7 @@ const Inputfiltter = ({ placeholder, value, onChange, name, shara ,namedata }) =
       }
   else  {
       axios.get(`https://bcknd.tickethub-tours.com/api/admin/${name}`, {
-        // headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
       })
         .then(response => {
           if (namedata === "cities") {
