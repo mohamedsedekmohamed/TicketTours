@@ -9,6 +9,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import content from "../../assets/content.png";
 import { BsArrowRightCircleFill } from "react-icons/bs";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Loginuser() {
   const [username, setUsername] = useState("");
@@ -27,9 +28,7 @@ function Loginuser() {
         if (response.data.data.message === "login Successful") {
           localStorage.setItem("token", response.data.data.token);
           localStorage.setItem("user", JSON.stringify(response.data.data.user));
-
           toast.success("Welcome ");
-
           setTimeout(() => {
             navigate(-1);
           }, 1000);
@@ -143,18 +142,37 @@ setTimeout(() => {
         </span>
 
         <div className="w-full max-w-md flex flex-col md:flex-row gap-4">
-          <button
-            onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition"
-          >
-            <FaGoogle size={18} />
-            <span className="text-sm font-medium">Continue with Google</span>
-          </button>
+         <div className="  w-full">
+  <GoogleLogin
+  onSuccess={async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential; 
+      console.log("Raw Token:", token);
 
-          {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg w-full hover:bg-gray-100 transition">
-            <FaFacebookF size={18} />
-            <span className="text-sm font-medium">Continue with Facebook</span>
-          </button> */}
+      const res = await fetch("https://bcknd.tickethub-tours.com/api/user/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!res.ok) {
+        throw new Error("فشل تسجيل الدخول في الباك اند");
+      }
+
+      const data = await res.json(); 
+         localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+navigate("/")
+    } catch (err) {
+      console.error("Error:", err.message);
+    }
+  }}
+  onError={() => {
+    console.log("فشل تسجيل الدخول");
+  }}
+/>
+
+    </div>
         </div>
       </div>
       <ToastContainer />

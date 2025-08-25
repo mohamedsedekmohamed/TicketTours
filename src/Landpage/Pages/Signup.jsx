@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import content from "../../assets/content.png";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { BsArrowRightCircleFill } from "react-icons/bs";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Signup = () => {
   const [phone, setPhone] = useState("");
@@ -261,21 +262,37 @@ const Signup = () => {
               <div className="flex-1 h-px bg-gray-300" />
             </div>
 
-            <div className="w-full max-w-md flex flex-col sm:flex-row gap-4 mb-6">
-              <button
-                onClick={handleGoogleLogin}
-                className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition"
-              >
-                <FaGoogle size={18} />
-                <span className="text-sm font-medium">
-                  Continue with Google
-                </span>
-              </button>
+            <div className="w-full text-center max-w-md flex flex-col sm:flex-row gap-4 mb-6">
+             <GoogleLogin
+  onSuccess={async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential; 
+      console.log("Raw Token:", token);
 
-              {/* <button className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg w-full hover:bg-gray-100 transition">
-            <FaFacebookF size={18} />
-            <span className="text-sm font-medium">Continue with Facebook</span>
-          </button> */}
+      const res = await fetch("https://bcknd.tickethub-tours.com/api/user/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!res.ok) {
+        throw new Error("فشل تسجيل الدخول في الباك اند");
+      }
+
+      const data = await res.json(); 
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+navigate("/")
+    } catch (err) {
+      console.error("Error:", err.message);
+    }
+  }}
+  onError={() => {
+    console.log("فشل تسجيل الدخول");
+  }}
+/>
+
             </div>
 
             <span className="text-sm text-three font-medium">
