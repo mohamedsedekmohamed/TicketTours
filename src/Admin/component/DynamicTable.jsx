@@ -111,11 +111,12 @@ const DynamicTable = ({
                     : truncate(row[key])}
                 </td>
               ))}
+                            {view && <td className="py-3 px-4">{view(row)}</td>}
+
               {Seen && <td className="py-3 px-4">{Seen(row)}</td>}
               {Start && <td className="py-3 px-4">{Start(row)}</td>}
               {End && <td className="py-3 px-4">{End(row)}</td>}
               {Seen && <td className="py-3 px-4">{Seen(row)}</td>}
-              {view && <td className="py-3 px-4">{view(row)}</td>}
                 {buttonstatus && (
                   <td className="py-3 px-4">{buttonstatus(row)}</td>
                 )}

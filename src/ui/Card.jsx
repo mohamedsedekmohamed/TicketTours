@@ -1,38 +1,47 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Card = ({ id,image, title, description, duration, price, discount ,startDate}) => {
+const Card = ({ id, image, title, description, duration, price, discount, startDate }) => {
+  const safeTitle = title || "No Title Available";
+  const safeDescription = description || "No Description Available";
+  const safeImage = image || "https://via.placeholder.com/400x250?text=No+Image";
+  const safeDuration = duration ?? "N/A";
+  const safePrice = price ?? "N/A";
+  const safeDiscount = discount ?? null;
+  const safeDate = startDate ? startDate.split("T")[0] : "N/A";
+
   return (
-    <div className=" w-70 md:w-80 lg:w-90 lx:w-100">
-      <Link to={`/tripdetails/${id}`} className="block rounded-lg p-4 shadow-xs shadow-indigo-100">
+    <div className="w-70 md:w-80 lg:w-90 lx:w-100">
+      <Link
+        to={`/tripdetails/${id || "#"}`}
+        className="block rounded-lg p-4 shadow-xs shadow-indigo-100"
+      >
         <img
-          alt={title}
-          src={image}
+          alt={safeTitle}
+          src={safeImage}
           className="h-56 w-full rounded-md object-cover"
         />
         <div className="mt-2">
           <h3 className="text-lg font-semibold text-gray-900">
-             {" "}
-            {title.length > 20
-              ? title.slice(0, 20) + "..."
-              : title}
+            {safeTitle.length > 20 ? safeTitle.slice(0, 20) + "..." : safeTitle}
           </h3>
+
           <p className="text-sm text-gray-500 mt-1">
-            {" "}
-            {description.length > 40
-              ? description.slice(0, 100) + "  ....."
-              : description}
+            {safeDescription.length > 100
+              ? safeDescription.slice(0, 100) + "..."
+              : safeDescription}
           </p>
-          <p className="text-sm text-gray-500 mt-1">Days: {duration}</p>
-<p className="text-sm text-gray-500 mt-1">
-  Date: {startDate?.split("T")[0]}
-</p>
+
+          <p className="text-sm text-gray-500 mt-1">Days: {safeDuration}</p>
+          <p className="text-sm text-gray-500 mt-1">Date: {safeDate}</p>
 
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-sm text-gray-400 line-through">
-              ${discount}
-            </span>
-            <span className="text-sm text-four font-medium">${price}</span>
+            {safeDiscount ? (
+              <span className="text-sm text-gray-400 line-through">
+                ${safeDiscount}
+              </span>
+            ) : null}
+            <span className="text-sm text-four font-medium">${safePrice}</span>
           </div>
         </div>
       </Link>

@@ -281,7 +281,7 @@ const AppRoutes = ({ setIsLoggedIn }) => {
           }
         />
         <Route
-          path="admins"
+          path="addadmins"
           element={
             <ProtectedRoute moduleName="Admin" requiredAction={["Add", "Edit"]}>
               <AddAdmins />

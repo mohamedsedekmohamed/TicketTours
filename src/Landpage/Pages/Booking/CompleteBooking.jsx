@@ -16,6 +16,8 @@ const CompleteBooking = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [image, setimage] = useState(null);
   const [description, setDescription] = useState("");
+const storedUser = localStorage.getItem("user");
+const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
   const [meetingPointLocation, SetMeetingPointLocation] = useState({
     lat: 31.200092,
     lng: 29.918739,
@@ -31,7 +33,7 @@ const CompleteBooking = () => {
   // const [numbercode, setNumbercode] = useState("");
   const [errorcode, setErrorcode] = useState("");
   const [discountType, setDiscountType] = useState("");
-const [codeid,setcodeid]=useState("")
+  const [codeid, setcodeid] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
   const { state } = useLocation();
@@ -50,7 +52,7 @@ const [codeid,setcodeid]=useState("")
     adultsDiscount = 0,
     childrenDiscount = 0,
     infantsDiscount = 0,
-    tourScheduleId=0,
+    tourScheduleId = 0,
     selectedExtras = [],
   } = bookingData;
 
@@ -58,6 +60,7 @@ const [codeid,setcodeid]=useState("")
 
   // Fetch tour data
   useEffect(() => {
+  
     const fetchData = async () => {
       try {
         const res = await axios.get(
@@ -131,22 +134,22 @@ const [codeid,setcodeid]=useState("")
     navigate(-1);
     return null;
   }
-const calculateFinalTotal = () => {
-  if (!discountcode || !discountType) {
-    return total;
-  }
-  
-  let finalAmount;
-  if (discountType === "amount") {
-    finalAmount = Math.max(total - discountcode, 0);
-  } else if (discountType === "percentage") {
-    finalAmount = Math.max(total - (total * discountcode) / 100, 0);
-  } else {
-    finalAmount = total;
-  }
-  
-  return finalAmount;
-};
+  const calculateFinalTotal = () => {
+    if (!discountcode || !discountType) {
+      return total;
+    }
+
+    let finalAmount;
+    if (discountType === "amount") {
+      finalAmount = Math.max(total - discountcode, 0);
+    } else if (discountType === "percentage") {
+      finalAmount = Math.max(total - (total * discountcode) / 100, 0);
+    } else {
+      finalAmount = total;
+    }
+
+    return finalAmount;
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -154,84 +157,84 @@ const calculateFinalTotal = () => {
   };
   const token = localStorage.getItem("token");
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!token) {
-    toast.warn("You need to log in first.");
-    return;
-  }
-
-  if (!selectedPayment) {
-    toast.warn("Please select a payment method.");
-    return;
-  }
-  if (!description) {
-    toast.warn("description is required .");
-    return;
-  }
-  if (!meetingPointLocation) {
-    toast.warn("meetingPointLocation is required .");
-    return;
-  }
-  if (!image) {
-    toast.warn("image is required .");
-    return;
-  }
-
-  const finalTotal = calculateFinalTotal(); 
-
-  try {
-    const payload = {
-      tourId: tourScheduleId,
-      fullName: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      notes: formData.notes,
-      adultsCount: Number(adults),
-      childrenCount: Number(children),
-      infantsCount: Number(infants),
-      totalAmount: finalTotal,
-      paymentMethodId: selectedPayment,
-      proofImage: image,
-      discount: Number(adultsDiscount),
-      address: description,
-      location: `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`,
-    };
-
-    if (codeid) {
-      payload.promoCodeId = codeid;
+    if (!token) {
+      toast.warn("You need to log in first.");
+      return;
     }
 
-    if (selectedExtras && selectedExtras.length > 0) {
-      payload.extras = selectedExtras.map((extra) => ({
-        id: extra.id,
-        count: {
-          adult: String(extra.counts.adults),
-          child: String(extra.counts.children),
-          infant: String(extra.counts.infants),
-        },
-      }));
+    if (!selectedPayment) {
+      toast.warn("Please select a payment method.");
+      return;
+    }
+    if (!description) {
+      toast.warn("description is required .");
+      return;
+    }
+    if (!meetingPointLocation) {
+      toast.warn("meetingPointLocation is required .");
+      return;
+    }
+    if (!image) {
+      toast.warn("image is required .");
+      return;
     }
 
-    await axios.post(
-      "https://bcknd.tickethub-tours.com/api/user/landpage/book-tour",
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const finalTotal = calculateFinalTotal();
+
+    try {
+      const payload = {
+        tourId: tourScheduleId,
+        fullName: user.name,
+        email: user.email,
+        phone: formData.phone,
+        notes: formData.notes,
+        adultsCount: Number(adults),
+        childrenCount: Number(children),
+        infantsCount: Number(infants),
+        totalAmount: finalTotal,
+        paymentMethodId: selectedPayment,
+        proofImage: image,
+        discount: Number(adultsDiscount),
+        address: description,
+        location: `https://www.google.com/maps?q=${meetingPointLocation.lat},${meetingPointLocation.lng}`,
+      };
+
+      if (codeid) {
+        payload.promoCodeId = codeid;
       }
-    );
-    localStorage.removeItem("bookingData");
-    toast.success("Booking completed successfully!");
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
-  } catch (err) {
-    toast.error("Failed to complete booking.");
-  }
-};
+
+      if (selectedExtras && selectedExtras.length > 0) {
+        payload.extras = selectedExtras.map((extra) => ({
+          id: extra.id,
+          count: {
+            adult: String(extra.counts.adults),
+            child: String(extra.counts.children),
+            infant: String(extra.counts.infants),
+          },
+        }));
+      }
+
+      await axios.post(
+        "https://bcknd.tickethub-tours.com/api/user/landpage/book-tour",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      localStorage.removeItem("bookingData");
+      toast.success("Booking completed successfully!");
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (err) {
+      toast.error("Failed to complete booking.");
+    }
+  };
 
   const pricePerAdult = data.price?.adult || 0;
   const pricePerChild = data.price?.child || 0;
@@ -264,7 +267,7 @@ const handleSubmit = async (e) => {
         setDiscountcode(promo.discountValue);
         // setNumbercode(promo.usageLimit);
         setDiscountType(promo.discountType);
-        setcodeid(promo.id)
+        setcodeid(promo.id);
       } else {
         setErrorcode("Invalid promo code");
       }
@@ -275,7 +278,7 @@ const handleSubmit = async (e) => {
           err.message ||
           "Something went wrong, try again."
       );
-      setcodeid("")
+      setcodeid("");
       setDiscountcode("");
       // setNumbercode("");
       setDiscountType("");
@@ -299,18 +302,18 @@ const handleSubmit = async (e) => {
           <h2 className="text-2xl font-bold mb-6 text-black">Your Info</h2>
 
           {[
-            {
-              label: "Full Name",
-              id: "name",
-              type: "text",
-              placeholder: "Full Name",
-            },
-            {
-              label: "Email",
-              id: "email",
-              type: "email",
-              placeholder: "you@gmail.com",
-            },
+            // {
+            //   label: "Full Name",
+            //   id: "name",
+            //   type: "text",
+            //   placeholder: "Full Name",
+            // },
+            // {
+            //   label: "Email",
+            //   id: "email",
+            //   type: "email",
+            //   placeholder: "you@gmail.com",
+            // },
             { label: "Phone", id: "phone", type: "tel", placeholder: "Phone" },
             { label: "Notes", id: "notes", type: "text", placeholder: "Notes" },
           ].map(({ label, id, type, placeholder }) => (
@@ -360,7 +363,7 @@ const handleSubmit = async (e) => {
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-one 
                  text-white hover:bg-one disabled:bg-gray-400"
               >
-               Apply
+                Apply
                 <MdLocalOffer className="text-lg" />
               </button>
             </div>
@@ -613,26 +616,23 @@ const handleSubmit = async (e) => {
                 <span>${total.toFixed(2)}</span>
               </div>
 
-         {/* Check if number of people bigger than code limit */}
+              {/* Check if number of people bigger than code limit */}
 
-   { discountcode && (
-      <div className="flex justify-between text-base text-green-600">
-        <span>Discount Code:</span>
-        {discountType === "amount" ? (
-          <span>- ${discountcode}</span>
-        ) : (
-          <span>- {discountcode}%</span>
-        )}
-      </div>
-    )
-  }
+              {discountcode && (
+                <div className="flex justify-between text-base text-green-600">
+                  <span>Discount Code:</span>
+                  {discountType === "amount" ? (
+                    <span>- ${discountcode}</span>
+                  ) : (
+                    <span>- {discountcode}%</span>
+                  )}
+                </div>
+              )}
 
-
-
-            <div className="flex justify-between text-lg font-bold text-one">
-  <span>Final Total:</span>
-  <span>${calculateFinalTotal().toFixed(2)}</span>
-</div>
+              <div className="flex justify-between text-lg font-bold text-one">
+                <span>Final Total:</span>
+                <span>${calculateFinalTotal().toFixed(2)}</span>
+              </div>
             </div>
           </div>
         </div>

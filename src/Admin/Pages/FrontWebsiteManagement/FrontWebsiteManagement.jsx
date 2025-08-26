@@ -3,7 +3,7 @@ import HomeCover from "./HomeCover/HomeCover";
 import Faq from "./Faq/Faq";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "../../ProtectedRoute/ProtectedRoute"; // نفس اللي عملناه قبل
-
+import Tour from "./Tour/Tour";
 const FrontWebsiteManagement = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const location = useLocation();
@@ -38,14 +38,14 @@ const FrontWebsiteManagement = () => {
         >
           FAQ
         </button>
-        {/* <button
+        <button
           className={`flex-1 py-2 text-center ${
             activeTab === "tab3" ? "bg-eight rounded-2xl text-2xl font-normal" : ""
           }`}
           onClick={() => setActiveTab("tab3")}
         >
-          Contact us
-        </button> */}
+Tour 
+        </button>
       </div>
 
       <div>
@@ -59,11 +59,11 @@ const FrontWebsiteManagement = () => {
             <Faq />
           </ProtectedRoute>
         )}
-        {/* {activeTab === "tab3" && (
-          <ProtectedRoute moduleName="Contact" requiredAction={["View"]}>
-            <p>محتوى التاب الثالث</p>
+        {activeTab === "tab3" && (
+          <ProtectedRoute moduleName="TourinHome" requiredAction={["View"]}>
+<Tour/>
           </ProtectedRoute>
-        )} */}
+        )}
       </div>
     </div>
   );

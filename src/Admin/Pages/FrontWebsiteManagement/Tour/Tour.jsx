@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import DynamicTable from "../../component/DynamicTable";
-import { useNavigate } from "react-router-dom";
-import NavAndSearch from "../../component/NavAndSearch";
+import DynamicTable from "../../../component/DynamicTable";
+import NavAndSearch from "../../../component/NavAndSearch";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import Loading from "../../../ui/Loading";
+import Loading from "../../../../ui/Loading";
 import Swal from "sweetalert2";
-import { CiSearch, CiEdit } from "react-icons/ci";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaCalendarAlt, FaUsers } from "react-icons/fa";
 import { MdOutlineAccessTime } from "react-icons/md";
 import { AiOutlineCalendar } from "react-icons/ai"
@@ -27,25 +24,21 @@ import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import { FaUtensils, FaRegListAlt } from "react-icons/fa";
 import { MdDiscount } from "react-icons/md";
 
-const ToursManagement = () => {
-  const groupedPrivileges =
+const Tour = () => {
+   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
-  const Privileges = groupedPrivileges["Tour"]?.map((p) => p.action) || [];
+  const Privileges = groupedPrivileges["TourinHome"]?.map((p) => p.action) || [];
 
   const [data, setData] = useState([]);
 
   const columns = [
     { key: "title", label: "Title" },
     { key: "mainImage", label: "Image" },
-    { key: "durationDays", label: "Duration Days" },
-    // { key: "status", label: "Status" },
-    { key: "maxUsers", label: "Max Users" },
   ];
     const [activeTab, setActiveTab] = useState("overview"); 
 
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState("");
   const [update, setUpdate] = useState(false);
   const [tourData, setTourData] = useState("");
@@ -72,6 +65,7 @@ const ToursManagement = () => {
             description: item.describtion,
             cityName: item.country,
             countryName: item.city,
+            featured: item.featured,
           }))
         );
         setLoading(false);
@@ -81,50 +75,9 @@ const ToursManagement = () => {
       });
   }, [update]);
 
-  const handleEdit = (id) => {
-    navigate("/admin/addtoursmanagement", { state: { sendData: id } });
-  };
 
-  const handleDelete = (userId, userName) => {
-    const token = localStorage.getItem("token");
 
-    Swal.fire({
-      title: `Are you sure you want to delete ${userName}?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(
-            `https://bcknd.tickethub-tours.com/api/admin/tours/${userId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then(() => {
-            setUpdate(!update);
-            Swal.fire(
-              "Deleted!",
-              `${userName} has been deleted successfully.`,
-              "success"
-            );
-          })
-          .catch(() => {
-            Swal.fire(
-              "Error!",
-              `There was an error while deleting ${userName}.`,
-              "error"
-            );
-          });
-      } else {
-        Swal.fire("Cancelled", `${userName} was not deleted.`, "info");
-      }
-    });
-  };
+ 
 
   const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
@@ -160,17 +113,17 @@ const ToursManagement = () => {
       });
   };
   const handleToggleStatus = (row) => {
-    const newStatus = row.status ? false : true;
+    const newStatus = row.featured ? false : true;
     const token = localStorage.getItem("token");
 
     const updateHome = {
-      status: newStatus,
+      featured: newStatus,
       tourId:row.id
     };
 
     axios
       .post(
-        `https://bcknd.tickethub-tours.com/api/admin/tours/status`,
+        `https://bcknd.tickethub-tours.com/api/admin/tours/featured`,
         updateHome,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -190,43 +143,19 @@ const ToursManagement = () => {
     return <Loading />;
   }
   return (
-    <div>
-      <ToastContainer/>
-      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
-        <NavAndSearch
-          nav="/admin/addtoursmanagement"
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        />
-      ) : (
+    <div className="relative">
+         <ToastContainer/>
+
         <NavAndSearch
           like
-          nav="/admin/addtoursmanagement"
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-      )}
       <DynamicTable
         data={data}
         columns={columns}
         filteredData={filteredData}
-        actions={(row) => (
-          <div className="flex gap-1">
-            {Privileges.includes("Edit") && (
-              <CiEdit
-                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-                onClick={() => handleEdit(row.id)}
-              />
-            )}
-
-            {Privileges.includes("Delete") && (
-              <RiDeleteBin6Line
-                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-                onClick={() => handleDelete(row.id, row.title)}
-              />
-            )}
-          </div>
-        )}
+    
         customRender={(key, value) => {
           if (key === "mainImage") {
             return (
@@ -237,20 +166,7 @@ const ToursManagement = () => {
               />
             );
           }
-          // if (key === "status") {
-          //   return (
-          //     <span
-          //       className={`px-2 py-1 rounded text-sm font-medium ${
-          //         value
-          //           ? "bg-three/10 text-green-700 font-light"
-          //           : "bg-three/50 text-one/90"
-          //       }`}
-          //     >
-          //       {value ? "Active" : "Disabled"}
-          //     </span>
-          //   );
-          // }
-
+        
           return null;
         }}
         view={(row) => (
@@ -266,7 +182,7 @@ const ToursManagement = () => {
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={row.status}
+                checked={row.featured}
                 onChange={() => handleToggleStatus(row)}
                 className="sr-only peer"
               />
@@ -567,4 +483,4 @@ const ToursManagement = () => {
   );
 };
 
-export default ToursManagement;
+export default Tour;

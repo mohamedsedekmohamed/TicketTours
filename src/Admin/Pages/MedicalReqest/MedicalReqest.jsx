@@ -153,7 +153,7 @@ const [updata,setUpdata]=useState(false)
         {[
           { key: "pending", label: "Pending" },
           { key: "accepted", label: "Accepted" },
-          { key: "history", label: "History" },
+          // { key: "history", label: "History" },
         ].map((tab) => (
           <button
             key={tab.key}

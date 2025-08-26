@@ -14,6 +14,7 @@ import {
      FaUtensils, FaRegListAlt
 } from "react-icons/fa";
 import {  MdDiscount } from "react-icons/md";
+import { MdOutlineDateRange } from "react-icons/md";
 
 import {
   FaUser,
@@ -74,7 +75,8 @@ const Payment = () => {
           discountNumber: item.bookings?.discountNumber || null,
           location: item.bookings?.location || "",
           address: item.bookings?.address || "",
-          tourId: item.bookings?.tourId || null
+          tourId: item.bookings?.tourId || null,
+          tourScheduleDate:item.bookings?.tourScheduleDate||""
         }));
 
         setData(payments);
@@ -115,7 +117,7 @@ const Payment = () => {
           method: "PATCH",
    headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ هنا مكانه الصح
+        Authorization: `Bearer ${token}`, 
       },          body: JSON.stringify({ status: newStatus }),
         }
       );  
@@ -147,7 +149,7 @@ const Payment = () => {
           method: "PATCH",
    headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ هنا مكانه الصح
+        Authorization: `Bearer ${token}`,
       },          body: JSON.stringify({
             status: "cancelled",
             rejectionReason,
@@ -171,7 +173,6 @@ const Payment = () => {
     }
   };
 
-  // Fixed handleOpenTourTab function
   const handleOpenTourTab = async (tourId) => {
     setActiveTabcard("tour");
     
@@ -180,7 +181,6 @@ const Payment = () => {
       return;
     }
 
-    // Reset tour data when switching to tour tab
     setTourData(null);
     
     try {
@@ -371,6 +371,16 @@ const Payment = () => {
                   <p className="flex items-center gap-2">
                     <FaPhone className="text-green-500" />
                     <strong>Phone:</strong> {viewRow.phone}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <MdOutlineDateRange className="text-purple-700" />
+<strong>Date:</strong>{" "}
+{new Date(viewRow.tourScheduleDate).toLocaleDateString("en-US", {
+  weekday: "long",   // اليوم
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+})}
                   </p>
                   <p className="flex items-center gap-2">
                     <FaEnvelope className="text-pink-500" />
