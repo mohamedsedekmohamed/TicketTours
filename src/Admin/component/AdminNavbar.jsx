@@ -3,22 +3,30 @@ import axios from 'axios';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineLogout } from "react-icons/hi";
+import { TbBrandGmail } from "react-icons/tb";
 
 const AdminNavbar = ({setIsLoggedIn}) => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+  
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
-  // useEffect(() => {
-  //   axios.get("https://app.15may.club/api/admin/profile", {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     }
-  //   })
-  //     .then(response => {
-  //       setData(response.data.data)
-  //     });
-  // }, []);
+  useEffect(() => {
+    axios.get("https://bcknd.tickethub-tours.com/api/admin/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    })
+      .then((response) => {
+      const user = response.data.data.admin;
+      if (user) {
+        setName(user.name || "");
+        setEmail(user.email || "");
+      }
+    })
+  }, []);
 
 const loghandled = () => {
   localStorage.removeItem("token");
@@ -30,14 +38,14 @@ const loghandled = () => {
   return (
     <div className="w-full flex justify-between items-center relative">
       <div className='flex items-center gap-0.5'>
-        {data.imagePath ? (
-          <img src={data.imagePath??null} className='w-4 md:w-10 md:h-10 h-4 rounded-full' />
-        ) : (
-          <span className='w-4 md:w-10 h-4 md:h-10 bg-gray-200 rounded-full' />
-        )}
-        <div className='flex flex-col gap-0.5'>
-          <span className='text-[12px] md:text-2xl font-bold text-one'>{data.name || "no name"}</span>
+     
+      <div className='flex flex-col'>
+            <span className='text-[12px] md:text-2xl font-bold text-one'> {name}</span>
+        <div className='flex items-center text-one/80 gap-0.5'>
+          <TbBrandGmail className='text-2xl'/>
+          <span className='text-[12px] md:text-[14px] font-bold text-one/80'>{email}</span>
         </div>
+      </div>
       </div>
 
       <div className='flex items-center gap-0.5'>

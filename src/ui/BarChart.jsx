@@ -6,23 +6,24 @@ const BarChart = ({ All }) => {
   const myChartRef = useRef(null);
 
   useEffect(() => {
-    const values = [
-      All?.Jan ?? 0, All?.Feb ?? 0, All?.Mar ?? 0, All?.Apr ?? 0,
-      All?.May ?? 0, All?.June ?? 0, All?.July ?? 0, All?.Aug ?? 0,
-      All?.Sep ?? 0, All?.Oct ?? 0, All?.Nov ?? 0, All?.Dec ?? 0
-    ];
+    if (!All || !Array.isArray(All)) return;
+
+    const values = Array.from({ length: 12 }, (_, i) => {
+      const found = All.find(m => m.month === i + 1);
+      return found ? found.count : 0;
+    });
 
     const allZero = values.every((val) => val === 0);
     const maxValue = Math.max(...values);
 
     const backgroundColors = values.map(value =>
-      value === maxValue && !allZero ? '#730FC9' : '#E8E8EA'
+      value === maxValue && !allZero ? '#091A2E' : '#E8E8EA'
     );
 
     const labels = [
-      'January', 'February', 'March', 'April',
-      'May', 'June', 'July', 'August',
-      'September', 'October', 'November', 'December'
+      'January','February','March','April',
+      'May','June','July','August',
+      'September','October','November','December'
     ];
 
     const data = {
@@ -55,7 +56,7 @@ const BarChart = ({ All }) => {
           legend: { display: false },
           title: {
             display: true,
-            text: allZero ? 'No Data': 'Booking Statistics:',
+            text: allZero ? 'No Data' : 'Booking Statistics:',
             font: { size: 20 },
             color: allZero ? '#999' : '#000'
           }
@@ -81,7 +82,7 @@ const BarChart = ({ All }) => {
         myChartRef.current.destroy();
       }
     };
-  }, [All,]);
+  }, [All]);
 
   return (
     <div className="w-[90%] h-[300px] p-4 bg-[#F7F3FB] rounded-lg shadow-lg flex items-center justify-center">

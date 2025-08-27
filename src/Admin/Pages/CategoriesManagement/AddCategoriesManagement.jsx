@@ -37,7 +37,6 @@ const AddCategoriesManagement = () => {
 
              setLoading(false);
         })  .catch((error) => {
-                toast.error(error);
                 setLoading(false);
               })
           

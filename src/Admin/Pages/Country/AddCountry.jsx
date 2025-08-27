@@ -108,7 +108,8 @@ if(imagePath!==imagePathtwo){
         setimagePathtwo(null)
         setEdit(false);
       })
-      .catch((error) => {
+      .catch((error) => 
+        {
         const err = error?.response?.data?.error;
 
         if (err?.details && Array.isArray(err.details)) {
@@ -121,7 +122,8 @@ if(imagePath!==imagePathtwo){
           toast.error("Something went wrong.");
         }
         setCheckLoading(false);
-      });
+      }
+    );
   };
       if (loading) {
       return (

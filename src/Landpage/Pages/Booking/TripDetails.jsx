@@ -34,16 +34,18 @@ const TripDetails = () => {
   const navigate = useNavigate();
   const [showPicker, setShowPicker] = useState(false);
   const [selectedExtraId, setSelectedExtraId] = useState("");
-  const [selectedExtras, setSelectedExtras] = useState([]); // Array to hold multiple selected extras
+  const [selectedExtras, setSelectedExtras] = useState([]); 
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [open, setOpen] = useState(false); 
-  const [selectedId, setSelectedId] = useState(null); // القيمة المخزنة (id)
-  const [selectedDate, setSelectedDate] = useState(""); // القيمة اللي يشوفها المستخدم
+  const [selectedId, setSelectedId] = useState(null); 
+  const [selectedDate, setSelectedDate] = useState(""); 
 
+  const [availablenumber,setavailablenumber]=useState(0)
   const handleSelect = (schedule) => {
     setSelectedId(schedule.id);       
+setavailablenumber(schedule.availableSeats)
     setSelectedDate(schedule.date);   
     setOpen(false);                   
   };
@@ -108,12 +110,10 @@ const TripDetails = () => {
     }
   };
 
-  // **New function to remove an extra**
   const removeExtra = (extraId) => {
     setSelectedExtras(prevExtras => prevExtras.filter(e => e.id !== extraId));
   };
 
-  // **New function to update extra counts**
   const updateExtraCount = (extraId, type, newCount) => {
     setSelectedExtras(prevExtras =>
       prevExtras.map(extra =>
@@ -148,39 +148,40 @@ const third = images?.[2] ?? null;
     const infantsPrice = (extra.price?.infant || 0) * extra.counts.infants;
     return total + adultsPrice + childrenPrice + infantsPrice;
   }, 0);
+const getDiscount = (group, count) => {
+  const groupDiscount = data.discounts?.find(
+    (d) =>
+      d.targetGroup === group && count >= d.minPeople && count <= d.maxPeople
+  );
 
-  const getDiscount = (group, count) => {
-    const groupDiscount = data.discounts?.find(
-      (d) =>
-        d.targetGroup === group && count >= d.minPeople && count <= d.maxPeople
-    );
+  if (!groupDiscount || count === 0) return 0;
 
-    if (!groupDiscount) return 0;
+  const price =
+    group === "adult"
+      ? pricePerAdult
+      : group === "child"
+      ? pricePerChild
+      : pricePerInfant;
 
-    if (groupDiscount.type === "fixed") {
-      if (groupDiscount.kindBy === "person") {
-        return Number(groupDiscount.value) * count;
-      } else if (groupDiscount.kindBy === "total") {
-        return Number(groupDiscount.value);
-      }
-    } else if (groupDiscount.type === "percentage") {
-      const price =
-        group === "adult"
-          ? pricePerAdult
-          : group === "child"
-          ? pricePerChild
-          : pricePerInfant;
-
-      if (groupDiscount.type === "percentage") {
-        if (groupDiscount.kindBy === "person") {
-          return price * (Number(groupDiscount.value) / 100) * count;
-        } else if (groupDiscount.kindBy === "total") {
-          return price * count * (Number(groupDiscount.value) / 100);
-        }
-      }
+  const discountValue = Number(groupDiscount.value);
+  
+  if (groupDiscount.type === "fixed") {
+    if (groupDiscount.kindBy === "person") {
+      return discountValue * count;
+    } else if (groupDiscount.kindBy === "total") {
+      return discountValue;
     }
-    return 0;
-  };
+  } else if (groupDiscount.type === "percent" || groupDiscount.type === "percentage") {
+    const totalPrice = price * count;
+    if (groupDiscount.kindBy === "person") {
+      return price * (discountValue / 100) * count;
+    } else if (groupDiscount.kindBy === "total") {
+      return totalPrice * (discountValue / 100);
+    }
+  }
+  
+  return 0;
+};
 
   // Calculate totals
   const adultsTotal = adults * pricePerAdult;
@@ -197,6 +198,13 @@ const third = images?.[2] ?? null;
   const total = adultsTotal + childrenTotal + infantsTotal - discountAmount + extrasTotalPrice;
 
   const handleBooking = () => {
+    if (adults + children + infants > availablenumber) {
+  toast.warn(
+    `You are trying to book more seats (${adults + children + infants}) than available (${availablenumber}).`
+  );
+  return;
+}
+
     const bookingData = {
       tour: data,
       adults,
@@ -250,36 +258,38 @@ const third = images?.[2] ?? null;
   {data.title}
 </h4>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-3">
-        <div className="sm:col-span-2">
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-3">
+  <div className="sm:col-span-2">
+    <img
+      src={data.mainImage}
+      alt="Main"
+      className="w-full h-full object-cover rounded-xl aspect-video max-h-[400px]"
+    />
+  </div>
+
+  <div className="flex sm:flex-col gap-3 h-full">
+    {[second, third].map((img, idx) =>
+      img ? (
+        <div key={idx} className="relative flex-1">
           <img
-            src={data.mainImage}
-            alt="Main"
-            className="w-full h-full object-cover rounded-xl aspect-video"
+            src={img}
+            alt={`image-${idx}`}
+            className="w-full h-full object-cover rounded-xl aspect-video max-h-[190px]"
           />
-        </div>
-        <div className="flex sm:flex-col gap-3 h-full">
-          {[second, third].map((img, idx) =>
-            img ? (
-              <div key={idx} className="relative flex-1">
-                <img
-                  src={img}
-                  alt={`image-${idx}`}
-                  className="w-full h-full object-cover rounded-xl"
-                />
-                {idx === 1 && remainingImages.length > 0 && (
-                  <button
-                    onClick={() => setShowAll(true)}
-                    className="absolute inset-0 bg-black/60 text-white text-lg font-semibold flex items-center justify-center rounded-xl"
-                  >
-                    +{remainingImages.length}
-                  </button>
-                )}
-              </div>
-            ) : null
+          {idx === 1 && remainingImages.length > 0 && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="absolute inset-0 bg-black/60 text-white text-lg font-semibold flex items-center justify-center rounded-xl"
+            >
+              +{remainingImages.length}
+            </button>
           )}
         </div>
-      </div>
+      ) : null
+    )}
+  </div>
+</div>
+
       {showAll && (
         <div className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4 overflow-y-auto">
           <button
@@ -405,6 +415,12 @@ const third = images?.[2] ?? null;
               {data.country}, {data.city}
             </span>
           </div>
+          <div className="text-sm text-gray-500 mb-4">
+            Currency:{" "}
+            <span className="text-one font-medium">
+              {data.price.currency}, 
+            </span>
+          </div>
           <div className="mb-4 flex gap-2">
             <div
               className="flex gap-2 cursor-pointer items-center"
@@ -452,19 +468,30 @@ const third = images?.[2] ?? null;
       </button>
 
       {/* اللستة */}
-      {open && (
-        <div className="absolute mt-2 bg-white border rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto w-48">
-          {data?.schedules?.map((s) => (
-            <div
-              key={s.id}
-              onClick={() => handleSelect(s)}
-              className="px-4 py-2 cursor-pointer hover:bg-one hover:text-white"
-            >
-              {s.date}
-            </div>
-          ))}
+ {open && (
+  <div className="absolute mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto w-56">
+    {data?.schedules?.length > 0 ? (
+      data.schedules.map((s) => (
+        <div
+          key={s.id}
+          onClick={() => handleSelect(s)}
+          className="px-4 py-2 cursor-pointer hover:bg-one hover:text-white transition rounded-md"
+        >
+          <p className="font-medium text-gray-800">
+            📅 {s.date}
+          </p>
+          <p className="text-sm text-gray-500">
+            🎟 Available Seats:{" "}
+            <span className="font-semibold text-green-600">{s.availableSeats}</span>
+          </p>
         </div>
-      )}
+      ))
+    ) : (
+      <p className="px-4 py-2 text-sm text-gray-500">No schedules available</p>
+    )}
+  </div>
+)}
+
 
     
     </div>
@@ -601,7 +628,6 @@ const third = images?.[2] ?? null;
       </div>
       {data?.meetingPointLocation && data?.meetingPointAddress && (
   <div className="px-5 lg:px-10 my-15">
-    {/* العنوان والمكان */}
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
       <h2 className="text-xl sm:text-4xl font-bold text-one">
         Tour's Location

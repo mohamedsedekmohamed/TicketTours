@@ -4,16 +4,21 @@ import {
   FaMapMarkerAlt,
   FaHourglassHalf,
 } from "react-icons/fa";
-import { FiLink } from "react-icons/fi";
+import { FaTicketAlt } from "react-icons/fa"; // 🎫 أيقونة التذكرة
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
+import { FaUser } from "react-icons/fa";
+
+import { FiLink } from "react-icons/fi";
 import { FaEarthAsia } from "react-icons/fa6";
 import { BsShieldLockFill } from "react-icons/bs";
 import axios from "axios";
 import BarChart from '../../../ui/BarChart'
 const Home = () => {
    const [stats, setStats] = useState([]);
-      const token = localStorage.getItem("token");
+   const [histroy,setHistroy]=useState([]);
+   const [all,setAll]=useState([]);
 
+      const token = localStorage.getItem("token");
   useEffect(() => {
     axios.get("https://bcknd.tickethub-tours.com/api/admin/home/header", {
         headers: {
@@ -21,31 +26,33 @@ const Home = () => {
         },
       }).then((res) => {
       const data = res.data.data;
+      setAll(data.bookingsByMonth)
+      setHistroy(data.recentBookings||[]);
       const updatedStats = [
         {
           title: "Number of Users",
           icon: <FaUsers />,
-          value: data.userCount,
+          value: data.statistics.userCount,
         },
         {
           title: "Number of Added Tours",
           icon: <MdOutlineAccessTimeFilled />,
-          value: data.tourCount,
+          value: data.statistics.tourCount,
         },
         {
           title: "Current Bookings",
           icon: <FaEarthAsia />,
-          value: data.bookingCount,
+          value: data.statistics.bookingCount,
         },
         {
           title: "Pending Payments",
           icon: <FaHourglassHalf />,
-          value: data.paymnetCount,
+          value: data.statistics.paymnetCount,
         },
         {
           title: "Promo Codes",
           icon: <FaMapMarkerAlt />,
-          value: data.promocodeCount,
+          value: data.statistics.promocodeCount,
         },
       ];
       setStats(updatedStats);
@@ -53,23 +60,23 @@ const Home = () => {
   }, []);
 
 
-  const activities = [
-    {
-      text: "Successful Admin Login: admin@domain.com",
-      time: "July 16, 2025 – 11:30 AM",
-      type: "success",
-    },
-    {
-      text: "Failed Login Attempt — user_try_2025",
-      time: "July 16, 2025 – 10:58 AM",
-      type: "error",
-    },
-    {
-      text: "User Permissions Updated — Ali_Secure",
-      time: "July 15, 2025 – 8:44 PM",
-      type: "update",
-    },
-  ];
+  // const activities = [
+  //   {
+  //     text: "Successful Admin Login: admin@domain.com",
+  //     time: "July 16, 2025 – 11:30 AM",
+  //     type: "success",
+  //   },
+  //   {
+  //     text: "Failed Login Attempt — user_try_2025",
+  //     time: "July 16, 2025 – 10:58 AM",
+  //     type: "error",
+  //   },
+  //   {
+  //     text: "User Permissions Updated — Ali_Secure",
+  //     time: "July 15, 2025 – 8:44 PM",
+  //     type: "update",
+  //   },
+  // ];
 
   const links = [
     { label: "Bookings Management", href: "/admin/bookingsmanagement", icon: "" },
@@ -102,25 +109,42 @@ const Home = () => {
           ))}
         </div>
       </div>
-<BarChart/>
+<BarChart All={all} />
       {/* Latest Security Activities & Quick Links */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Security */}
         <div>
           <h2 className="text-lg font-bold text-one mb-4 flex items-center gap-2">
-            <BsShieldLockFill/> Latest Security Activities:
+            <BsShieldLockFill/> Latest Booking  Activities:
           </h2>
-          <div className="space-y-3">
-            {activities.map((act, i) => (
-              <div
-                key={i}
-                className={`rounded-lg px-4 py-3 `}
-              >
-                <p className="text-sm font-medium">{act.text}</p>
-                <p className="text-xs opacity-70">{act.time}</p>
-              </div>
-            ))}
-          </div>
+         <div className="space-y-3">
+  {histroy.length > 0 ? (
+    histroy.map((item) => (
+      <div
+        key={item.id}
+        className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg shadow-sm"
+      >
+        <div className="text-one text-xl">
+          <FaTicketAlt /> 
+        </div>
+      <div>
+  <p className="flex items-center gap-2 font-semibold text-gray-800">
+    <FaUser className="text-one" /> {item.fullName}
+  </p>
+  <p className="flex items-center gap-2 text-sm text-gray-600">
+    <FaMapMarkerAlt className="text-one" /> {item.tourTitle}
+  </p>
+  <p className="flex items-center gap-2 text-xs text-gray-500">
+    <MdOutlineAccessTimeFilled className="text-one" />{" "}
+    {new Date(item.createdAt).toLocaleString()}
+  </p>
+</div>
+      </div>
+    ))
+  ) : (
+    <p>No bookings found</p>
+  )}
+</div>
         </div>
 
         {/* Quick Links */}

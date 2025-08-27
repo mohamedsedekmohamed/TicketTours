@@ -231,9 +231,20 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
       setTimeout(() => {
         navigate("/");
       }, 2000);
-    } catch (err) {
-      toast.error("Failed to complete booking.");
-    }
+    } catch (error) {
+  const err = error?.response?.data;
+
+  if (err?.details && Array.isArray(err.details)) {
+    err.details.forEach((detail) => {
+      toast.error(`${detail.field}: ${detail.message}`);
+    });
+  } else if (err?.message) {
+    toast.error(err.message);
+  } else {
+    toast.error("Something went wrong.");
+  }
+}
+
   };
 
   const pricePerAdult = data.price?.adult || 0;
@@ -509,12 +520,17 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
           </div>
 
           <div className="mb-4 flex gap-2">
-            <h4 className="font-medium text-gray-800">Date:</h4>
+            <h4 className=" text-gray-500">Date:</h4>
             <p className="text-one">
               {new Date(data.startDate).toISOString().split("T")[0]}
             </p>
           </div>
-
+ <div className="text-sm text-gray-500 mb-4">
+            Currency:{" "}
+            <span className="text-one font-medium">
+              {data.price.currency}, 
+            </span>
+          </div>
           <div className="mt-6 border-t pt-4">
             <h3 className="text-md font-semibold text-one mb-2">
               Pricing Details:

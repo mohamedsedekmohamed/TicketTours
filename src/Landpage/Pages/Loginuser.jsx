@@ -56,10 +56,10 @@ setTimeout(() => {
         });
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href =
-      "https://bcknd.tickethub-tours.com/api/user/auth/google";
-  };
+  // const handleGoogleLogin = () => {
+  //   window.location.href =
+  //     "https://bcknd.tickethub-tours.com/api/user/auth/google";
+  // };
 
   return (
     <div className="w-screen h-screen flex gap-1  bg-white">

@@ -113,13 +113,19 @@ const [updata,setUpdata]=useState(false)
     }
 
     try {
-      await axios.post(
-        "https://bcknd.tickethub-tours.com/api/admin/medical/reject-medical",
-        {
-          medicalId: rejectForm.rowId,
-          reason: rejectForm.reason,
-        }
-      );
+  await axios.post(
+  "https://bcknd.tickethub-tours.com/api/admin/medical/reject-medical",
+  {
+    medicalId: rejectForm.rowId,
+    reason: rejectForm.reason,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
       toast.success("Request rejected successfully!");
             setUpdata(p=>!p)
 

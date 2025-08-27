@@ -206,7 +206,7 @@ const [promocode,setPromocode]=useState([])
                 adult: user.price.adult,
                 child: user.price.child,
                 infant: user.price.infant,
-                currencyId: user.price.currency,
+                currencyId: user.price.currencyId,
               },
             ]);
             setDiscounts(
