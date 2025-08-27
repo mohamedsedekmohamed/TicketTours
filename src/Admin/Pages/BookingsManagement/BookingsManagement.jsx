@@ -548,6 +548,19 @@ import {  MdDiscount } from "react-icons/md";
           </div>
         )}
 
+        {/* promoCode */}
+        {tourData.promoCode?.length > 0 && (
+          <div>
+            <p className="flex items-center gap-2 font-semibold text-orange-600">
+              <MdDiscount /> promoCode
+            </p>
+            {tourData.promoCode.map((d) => (
+              <div key={d.id} className="border p-2 rounded bg-orange-50 mt-1">
+                <p>Code: {d.code}</p>
+              </div>
+            ))}
+          </div>
+        )}
         {/* Discounts */}
         {tourData.discounts?.length > 0 && (
           <div>
