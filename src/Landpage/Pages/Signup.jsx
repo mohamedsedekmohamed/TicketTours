@@ -4,9 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import content from "../../assets/content.png";
-import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { BsArrowRightCircleFill } from "react-icons/bs";
-import { GoogleLogin } from "@react-oauth/google";
 
 const Signup = () => {
   const [phone, setPhone] = useState("");
@@ -21,14 +19,45 @@ const Signup = () => {
   const [step, setStep] = useState(1);
   const [code, setCode] = useState(new Array(CODE_LENGTH).fill(""));
   const inputsRef = useRef([]);
+
+  // ✅ إدخال رقم برقم + Backspace
   const handleChangeCode = (e, index) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
+    const newCode = [...code];
+
     if (value) {
-      const newCode = [...code];
       newCode[index] = value;
       setCode(newCode);
       if (index < CODE_LENGTH - 1) {
         inputsRef.current[index + 1].focus();
+      }
+    } else {
+      newCode[index] = "";
+      setCode(newCode);
+
+      if (
+        e.nativeEvent.inputType === "deleteContentBackward" &&
+        index > 0
+      ) {
+        inputsRef.current[index - 1].focus();
+      }
+    }
+  };
+
+  // ✅ دعم الكوبي-بيست
+  const handlePaste = (e) => {
+    const paste = e.clipboardData.getData("text").slice(0, CODE_LENGTH);
+    if (/^\d+$/.test(paste)) {
+      const newCode = paste.split("");
+      while (newCode.length < CODE_LENGTH) newCode.push("");
+      setCode(newCode);
+      newCode.forEach((digit, idx) => {
+        if (inputsRef.current[idx]) {
+          inputsRef.current[idx].value = digit;
+        }
+      });
+      if (inputsRef.current[CODE_LENGTH - 1]) {
+        inputsRef.current[CODE_LENGTH - 1].focus();
       }
     }
   };
@@ -56,11 +85,6 @@ const Signup = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href =
-      "https://bcknd.tickethub-tours.com/api/user/auth/google";
-  };
-
   const handleLogin = () => {
     if (!name) {
       toast.error("Name is required");
@@ -74,11 +98,11 @@ const Signup = () => {
       toast.error("Email should contain @gmail.com");
       return;
     }
-
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters");
       return;
     }
+
     axios
       .post("https://bcknd.tickethub-tours.com/api/user/auth/local/signup", {
         email: username,
@@ -87,20 +111,14 @@ const Signup = () => {
         phoneNumber: phone,
       })
       .then((response) => {
-        if (
-          response.data.success ===
-         true
-        ) {
+        if (response.data.success === true) {
           setStep(2);
           setUserId(response.data.data.userId);
-          // localStorage.setItem("token", response.data.data.token);
-          // localStorage.setItem("user", JSON.stringify(response.data.data.user));
           toast.success(`Welcome ${name} `);
         }
       })
       .catch((error) => {
         const err = error?.response?.data?.error;
-
         if (err?.details && Array.isArray(err.details)) {
           err.details.forEach((detail) => {
             toast.error(`${detail.field}: ${detail.message}`);
@@ -112,26 +130,6 @@ const Signup = () => {
         }
       });
   };
-  // const handleResendCode = async () => {
-  //   try {
-  //     await axios.post(
-  //       "https://bcknd.tickethub-tours.com/api/user/auth/local/forget-password",
-  //       { email }
-  //     );
-  //     toast.success("Verification code resent!");
-  //     setTimer(60);
-  //     setCode(new Array(CODE_LENGTH).fill(""));
-  //   } catch (error) {
-  //     const err = error?.response?.data?.error;
-  //     if (err?.details) {
-  //       err.details.forEach((detail) =>
-  //         toast.error(`${detail.field}: ${detail.message}`)
-  //       );
-  //     } else {
-  //       toast.error(err?.message || "Something went wrong.");
-  //     }
-  //   }
-  // };
 
   return (
     <div className="w-screen h-screen flex gap-1 bg-white">
@@ -145,7 +143,6 @@ const Signup = () => {
       </div>
 
       {/* Form */}
-      {/* Form Section */}
       <div className="flex flex-col items-center justify-center w-full md:w-1/2 px-4 sm:px-6 lg:px-12 py-8">
         <BsArrowRightCircleFill
           className="absolute top-2 right-2 text-3xl text-one cursor-pointer"
@@ -160,14 +157,10 @@ const Signup = () => {
 
             {/* Full Name */}
             <div className="w-full max-w-md flex flex-col gap-2 mb-2">
-              <label
-                htmlFor="name"
-                className="text-sm font-medium text-gray-700"
-              >
+              <label className="text-sm font-medium text-gray-700">
                 Full Name
               </label>
               <input
-                id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -178,14 +171,10 @@ const Signup = () => {
 
             {/* Phone */}
             <div className="w-full max-w-md flex flex-col gap-2 mb-2">
-              <label
-                htmlFor="phone"
-                className="text-sm font-medium text-gray-700"
-              >
+              <label className="text-sm font-medium text-gray-700">
                 Phone Number
               </label>
               <input
-                id="phone"
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -196,14 +185,10 @@ const Signup = () => {
 
             {/* Email */}
             <div className="w-full max-w-md flex flex-col gap-2 mb-2">
-              <label
-                htmlFor="email"
-                className="text-sm font-medium text-gray-700"
-              >
+              <label className="text-sm font-medium text-gray-700">
                 Email
               </label>
               <input
-                id="email"
                 type="email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -214,27 +199,16 @@ const Signup = () => {
 
             {/* Password */}
             <div className="w-full max-w-md flex flex-col gap-2 mb-2 relative">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium text-gray-700"
-              >
+              <label className="text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
-                id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-12 border border-one rounded-lg px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-one"
                 placeholder="Enter your password"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-[64%] right-4 transform -translate-y-1/2 text-gray-600"
-              >
-                {/* {showPassword ? <FiEyeOff /> : <FiEye />} */}
-              </button>
             </div>
 
             {/* Forgot Password */}
@@ -254,58 +228,9 @@ const Signup = () => {
             >
               Sign Up
             </button>
-
-            {/* Social Buttons */}
-            <div className="w-full max-w-md flex items-center gap-2 mb-4">
-              <div className="flex-1 h-px bg-gray-300" />
-              <span className="text-sm text-gray-500">or continue with</span>
-              <div className="flex-1 h-px bg-gray-300" />
-            </div>
-
-            <div className="w-full justify-center  flex mb-6">
-             <GoogleLogin
-  onSuccess={async (credentialResponse) => {
-    try {
-      const token = credentialResponse.credential; 
-      console.log("Raw Token:", token);
-
-      const res = await fetch("https://bcknd.tickethub-tours.com/api/user/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-
-      if (!res.ok) {
-        throw new Error("فشل تسجيل الدخول في الباك اند");
-      }
-
-      const data = await res.json(); 
-
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
-navigate("/")
-    } catch (err) {
-      console.error("Error:", err.message);
-    }
-  }}
-  onError={() => {
-    console.log("فشل تسجيل الدخول");
-  }}
-/>
-
-            </div>
-
-            <span className="text-sm text-three font-medium">
-              Already have an account?{" "}
-              <button
-                onClick={() => navigate("/login")}
-                className="text-one underline"
-              >
-                Login
-              </button>
-            </span>
           </>
         )}
+
         {step === 2 && (
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold text-one">
@@ -315,7 +240,10 @@ navigate("/")
               Code sent to <span className="text-blue-500">{username}</span>
             </p>
 
-            <div className="flex justify-center gap-3">
+            <div
+              className="flex justify-center gap-3"
+              onPaste={handlePaste} // ✅ لصق الكود
+            >
               {code.map((digit, index) => (
                 <input
                   key={index}
@@ -329,31 +257,15 @@ navigate("/")
               ))}
             </div>
 
-            {/* <p className="text-sm text-gray-400">
-              Retry After {String(Math.floor(timer / 60)).padStart(2, "0")}:
-              {String(timer % 60).padStart(2, "0")}
-            </p> */}
-
             <button
               onClick={handleVerifyCode}
               className="w-full max-w-md h-12 bg-one text-white rounded-lg font-semibold"
             >
               Verify Code
             </button>
-
-            <p className="text-sm text-gray-500">
-              {/* <button
-                className="text-one underline"
-                onClick={handleResendCode}
-                disabled={timer > 0}
-              >
-                Resend
-              </button> */}
-            </p>
           </div>
         )}
       </div>
-
       <ToastContainer />
     </div>
   );

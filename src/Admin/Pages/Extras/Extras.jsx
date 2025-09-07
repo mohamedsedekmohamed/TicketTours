@@ -111,7 +111,7 @@ const Extras = () => {
   }
   return (
     <div>
-      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+      {Privileges.includes("Add") ? (
         <NavAndSearch
           nav="/admin/addextras"
           searchQuery={searchQuery}

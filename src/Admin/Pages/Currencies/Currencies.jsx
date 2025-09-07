@@ -118,7 +118,7 @@ const Currencies = () => {
   return (
     <div>
       {" "}
-      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+      {Privileges.includes("Add") ? (
         <NavAndSearch
           nav="/admin/addcurrencies"
           searchQuery={searchQuery}

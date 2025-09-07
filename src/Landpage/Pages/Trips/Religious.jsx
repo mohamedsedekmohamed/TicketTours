@@ -120,7 +120,7 @@ const uniqueTours = Array.from(
       <Navtwo />
 
       <div className="bg-nine w-[95%] py-4 mx-auto flex justify-between items-center">
-        <span className="text-3xl font-semibold px-5 text-one">Local Tourism</span>
+        <span className="text-3xl font-semibold px-5 text-one">Religious Tourism</span>
         <img src={Religiouss} alt="local" className="w-1/2 max-w-xs" />
       </div>
 

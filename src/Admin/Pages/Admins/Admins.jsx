@@ -144,7 +144,7 @@ const Admins = () => {
   }
   return (
     <div>
-      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+      {Privileges.includes("Add")  ? (
         <NavAndSearch
           nav="/admin/addadmins"
           searchQuery={searchQuery}
@@ -191,6 +191,11 @@ const Admins = () => {
             </div>
           ) : null
         }
+         view={(row) => (
+          <div className="flex gap-10">
+            {row.isSuperAdmin?"SuperAdmin":"Admin"}
+          </div>
+        )}
         // buttonstatus={(row) => (
         //   <td className={`flex gap-1  justify-start `}>
         //     <label className="flex items-center cursor-pointer">

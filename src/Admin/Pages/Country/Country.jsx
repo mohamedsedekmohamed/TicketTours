@@ -115,7 +115,7 @@ const Country = () => {
   }
   return (
     <div>
-      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+      {Privileges.includes("Add")  ? (
         <NavAndSearch
           nav="/admin/addcounty"
           searchQuery={searchQuery}

@@ -146,7 +146,7 @@ const Faq = () => {
   }
   return (
     <div>
-      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+      {Privileges.includes("Add") ? (
         <NavAndSearch
           nav="/admin/addfaq"
           searchQuery={searchQuery}

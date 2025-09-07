@@ -103,6 +103,11 @@ const Roles = () => {
             )}
           </div>
         )}
+        view={(row) => (
+          <div className="flex gap-10">
+            {row.isSuperAdmin?"SuperAdmin":"Admin"}
+          </div>
+        )}
       />
     </div>
   );

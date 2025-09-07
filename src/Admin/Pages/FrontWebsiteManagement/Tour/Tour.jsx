@@ -46,7 +46,7 @@ const Tour = () => {
 
   useEffect(() => {
     axios
-      .get(`https://bcknd.tickethub-tours.com/api/admin/tours`, {
+      .get(`https://bcknd.tickethub-tours.com/api/admin/tourHome`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

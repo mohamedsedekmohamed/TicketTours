@@ -117,7 +117,7 @@ const HomeCover = () => {
   }
   return (
     <div>
-      {Privileges.includes("Add") || Privileges.includes("Edit") ? (
+      {Privileges.includes("Add") ? (
         <NavAndSearch
           stopsearch
           nav="/admin/addhomecover"

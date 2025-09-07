@@ -53,6 +53,10 @@ import {  MdDiscount } from "react-icons/md";
       }
     };
 
+      const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges =
+    groupedPrivileges["Bookings"]?.map((p) => p.action) || [];
       const categorizeBookings = (bookings) => {
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -232,7 +236,8 @@ import {  MdDiscount } from "react-icons/md";
         <ToastContainer />
 
         <DynamicTable
-          data={categorizedData[activeTab]}
+
+          data={Privileges.includes("View")?categorizedData[activeTab]:[]}
           view={(row) => (
             <button
               onClick={() => setViewRow(row)}

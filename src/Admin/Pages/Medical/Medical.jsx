@@ -11,14 +11,17 @@ import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const Medical = () => {
   const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const navigate = useNavigate();
-    const [selectedFilter, setSelectedFilter] = useState("");
-    const [update, setUpdate] = useState(false);
-          const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [update, setUpdate] = useState(false);
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges = groupedPrivileges["Medical"]?.map((p) => p.action) || [];
+  const token = localStorage.getItem("token");
 
-      useEffect(() => {
+  useEffect(() => {
     axios
       .get(`https://bcknd.tickethub-tours.com/api/admin/medical`, {
         headers: {
@@ -35,16 +38,14 @@ const Medical = () => {
         setLoading(false);
       })
       .catch(() => {
-         setLoading(false);
+        setLoading(false);
       });
   }, [update]);
-   const columns = [
-    { key: "name", label: "Name" },
-  ];
-   const handleEdit = (id) => {
+  const columns = [{ key: "name", label: "Name" }];
+  const handleEdit = (id) => {
     navigate("/admin/addmedical", { state: { sendData: id } });
   };
-    const handleDelete = (userId, userName) => {
+  const handleDelete = (userId, userName) => {
     const token = localStorage.getItem("token");
 
     Swal.fire({
@@ -84,7 +85,7 @@ const Medical = () => {
       }
     });
   };
-   const filteredData = data.filter((item) => {
+  const filteredData = data.filter((item) => {
     const query = searchQuery.toLowerCase();
 
     const matchesSearch =
@@ -105,39 +106,50 @@ const Medical = () => {
 
     return matchesSearch;
   });
-   if (loading) {
+  if (loading) {
     return <Loading />;
   }
   return (
     <div>
-         <NavAndSearch
+      {Privileges.includes("Add") ? (
+        <NavAndSearch
           nav="/admin/addmedical"
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-          <DynamicTable
+      ) : (
+        <NavAndSearch
+          nav="/admin/addmedical"
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          like
+        />
+      )}
+
+      <DynamicTable
         data={data}
         columns={columns}
         filteredData={filteredData}
         actions={(row) => (
           <div className="flex gap-1">
-              <CiEdit
-                className="w-[24px] h-[24px] text-green-600 cursor-pointer"
-                onClick={() => handleEdit(row.id)}
-              />
+                          {Privileges.includes("Edit") && (
 
-              <RiDeleteBin6Line
-                className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
-                onClick={() => handleDelete(row.id, row.name)}
-              />
+            <CiEdit
+              className="w-[24px] h-[24px] text-green-600 cursor-pointer"
+              onClick={() => handleEdit(row.id)}
+            />)}
+              {Privileges.includes("Delete") && (
+
+            <RiDeleteBin6Line
+              className="w-[24px] h-[24px] ml-2 text-red-600 cursor-pointer"
+              onClick={() => handleDelete(row.id, row.name)}
+            />)}
           </div>
         )}
-      
       />
-              <ToastContainer />
-        
+      <ToastContainer />
     </div>
-  )
-}
+  );
+};
 
-export default Medical
+export default Medical;

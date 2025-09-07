@@ -19,7 +19,7 @@ const UsersManagement = () => {
 
   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
-  const Privileges = groupedPrivileges["Tour"]?.map((p) => p.action) || [];
+  const Privileges = groupedPrivileges["User"]?.map((p) => p.action) || [];
       const token = localStorage.getItem("token");
 
   useEffect(() => {

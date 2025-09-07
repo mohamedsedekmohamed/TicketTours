@@ -198,13 +198,21 @@ const getDiscount = (group, count) => {
   const total = adultsTotal + childrenTotal + infantsTotal - discountAmount + extrasTotalPrice;
 
   const handleBooking = () => {
-    if (adults + children + infants > availablenumber) {
+
+  if (adults === 0 && children === 0 && infants === 0) {
+      toast.warn("At least one person must be entered.");
+      return; 
+    }
+    if (selectedId ===null ) {
+      toast.warn("Should  Select date");
+      return; 
+    }
+        if (adults + children + infants > availablenumber) {
   toast.warn(
     `You are trying to book more seats (${adults + children + infants}) than available (${availablenumber}).`
   );
   return;
 }
-
     const bookingData = {
       tour: data,
       adults,
@@ -223,14 +231,7 @@ const getDiscount = (group, count) => {
       selectedExtras,
     };
 
-    if (adults === 0 && children === 0 && infants === 0) {
-      toast.warn("At least one person must be entered.");
-      return; // stop navigation
-    }
-    if (selectedId ===null ) {
-      toast.warn("Should  Select date");
-      return; // stop navigation
-    }
+  
     localStorage.setItem("bookingData", JSON.stringify(bookingData));
 
     navigate(`/completebooking/${data.id}`);

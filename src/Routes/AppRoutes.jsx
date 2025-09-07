@@ -12,6 +12,7 @@ import AddPromoCode from "../Admin/Pages/PromoCodes/AddPromoCode.jsx";
 import BookingsManagement from "../Admin/Pages/BookingsManagement/BookingsManagement.jsx";
 import AddCategoriesManagement from "../Admin/Pages/CategoriesManagement/AddCategoriesManagement.jsx";
 import Currencies from "../Admin/Pages/Currencies/Currencies.jsx";
+import AddCurrencies from '../Admin/Pages/Currencies/AddCurrencies.jsx'
 import Extras from "../Admin/Pages/Extras/Extras.jsx";
 import AddExtras from "../Admin/Pages/Extras/AddExtras.jsx";
 import Admins from "../Admin/Pages/Admins/Admins.jsx";
@@ -130,7 +131,7 @@ const AppRoutes = ({ setIsLoggedIn }) => {
           path="currencies"
           element={
             <ProtectedRoute moduleName="Currency" requiredAction={["View"]}>
-              <PromoCodes />
+              <Currencies />
             </ProtectedRoute>
           }
         />
@@ -142,7 +143,7 @@ const AppRoutes = ({ setIsLoggedIn }) => {
               moduleName="Currency"
               requiredAction={["Add", "Edit"]}
             >
-              <Currencies />
+              <AddCurrencies />
             </ProtectedRoute>
           }
         />
@@ -312,11 +313,43 @@ const AppRoutes = ({ setIsLoggedIn }) => {
           element={<FrontWebsiteManagement />}
         />
 
-        <Route path="payment" element={<Payment />} />
+         <Route
+          path="payment"
+          element={
+            <ProtectedRoute moduleName="Pending Payment" requiredAction={["View"]}>
+              <Payment />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="medical" element={<Medical />} />
-        <Route path="addmedical" element={<AddMedical />} />
-        <Route path="medicalreqest" element={<MedicalReqest />} />
+
+            <Route
+          path="medicalreqest"
+          element={
+            <ProtectedRoute moduleName="Request" requiredAction={["View"]}>
+              <MedicalReqest />
+            </ProtectedRoute>
+          }
+        />
+   
+
+            <Route
+          path="medical"
+          element={
+            <ProtectedRoute moduleName="Medical" requiredAction={["View"]}>
+              <Medical />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="addmedical"
+          element={
+            <ProtectedRoute moduleName="Medical" requiredAction={["Add", "Edit"]}>
+              <AddMedical />
+            </ProtectedRoute>
+          }
+        />
+
       </Route>
     </Routes>
   );

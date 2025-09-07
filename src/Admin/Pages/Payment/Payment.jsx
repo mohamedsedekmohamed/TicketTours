@@ -44,6 +44,11 @@ const Payment = () => {
   const [activeTabcard, setActiveTabcard] = useState("booking");
   const [tourData, setTourData] = useState(null);
   const [loadingTour, setLoadingTour] = useState(false);
+
+  const groupedPrivileges =
+    JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
+  const Privileges =
+    groupedPrivileges["Pending Payment"]?.map((p) => p.action) || [];
           const token = localStorage.getItem("token");
 
   // جلب البيانات
@@ -278,7 +283,7 @@ const Payment = () => {
         data={data}
         columns={columns}
         filteredData={filteredData}
-        Seen={
+        rejection={
           activeTab === "cancelled"
             ? (row) =>
                 row.status === "cancelled" && (
@@ -305,7 +310,7 @@ const Payment = () => {
             ? (row) =>
                 row.status === "pending" && (
                   <td>
-                    <select
+                    {Privileges.includes("Status")?( <select
                       defaultValue=""
                       onChange={(e) => handleStatusChange(row, e.target.value)}
                       className="border border-gray-400 bg-one text-white rounded-3xl px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-one"
@@ -315,7 +320,8 @@ const Payment = () => {
                       </option>
                       <option value="confirmed">Confirmed</option>
                       <option value="cancelled">Rejected</option>
-                    </select>
+                    </select>):(null)}
+                   
                   </td>
                 )
             : undefined

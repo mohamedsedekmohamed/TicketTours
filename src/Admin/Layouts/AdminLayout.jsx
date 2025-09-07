@@ -3,7 +3,7 @@ import AdminSidebar from "../component/AdminSidebar";
 import AdminNavbar from "../component/AdminNavbar";
 import { Outlet, useLocation } from "react-router-dom";
 
-const AdminLayout = ({setIsLoggedIn}) => {
+const   AdminLayout = ({setIsLoggedIn}) => {
   const [isOpen, setIsOpen] = useState(false);
 
 
