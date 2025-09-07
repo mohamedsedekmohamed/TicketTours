@@ -17,44 +17,46 @@ function Loginuser() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
  
-  const handleLogin = () => {
+ const handleLogin = () => {
+  axios
+    .post("https://bcknd.tickethub-tours.com/api/user/auth/local/login", {
+      email: username,
+      password: password,
+    })
+    .then((response) => {
+      if (response.data.data.message === "login Successful") {
+        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data.user));
+        toast.success("Welcome ");
+        setTimeout(() => {
+          navigate(-1);
+        }, 1000);
+      }
+    })
+    .catch((error) => {
+      const err = error?.response?.data?.error;
+      const status = error?.response?.data?.error?.message;
 
-    axios
-      .post("https://bcknd.tickethub-tours.com/api/user/auth/local/login", {
-        email: username,
-        password: password,
-      })
-      .then((response) => {
-        if (response.data.data.message === "login Successful") {
-          localStorage.setItem("token", response.data.data.token);
-          localStorage.setItem("user", JSON.stringify(response.data.data.user));
-          toast.success("Welcome ");
-          setTimeout(() => {
-            navigate(-1);
-          }, 1000);
-        }
-      })
-   .catch((error) => {
-          const err = error?.response?.data?.error;
-                  const status = error?.response?.status;
- if (status === 401) {
-  toast.warn("Please verify your email")
-setTimeout(() => {
-            navigate("/signup");
+     if (status === "Please verify your email") {
+        toast.warn("Please verify your email");
+        setTimeout(() => {
+          navigate("/signup");
+        }, 2000);
+        return;
+      }
 
-}, 2000);     
-     return;
-        }          if (err?.details && Array.isArray(err.details)) {
-            err.details.forEach((detail) => {
-              toast.error(`${detail.field}: ${detail.message}`);
-            });
-          } else if (err?.message) {
-            toast.error(err.message);
-          } else {
-            toast.error("Something went wrong.");
-          }
+      if (err?.details && Array.isArray(err.details)) {
+        err.details.forEach((detail) => {
+          toast.error(`${detail.field}: ${detail.message}`);
         });
-  };
+      } else if (err?.message) {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong.");
+      }
+    });
+};
+
 
   // const handleGoogleLogin = () => {
   //   window.location.href =
