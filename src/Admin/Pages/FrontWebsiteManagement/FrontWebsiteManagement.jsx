@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import HomeCover from "./HomeCover/HomeCover";
 import Faq from "./Faq/Faq";
 import { useLocation } from "react-router-dom";
-import ProtectedRoute from "../../ProtectedRoute/ProtectedRoute"; // نفس اللي عملناه قبل
+import ProtectedRoute from "../../ProtectedRoute/ProtectedRoute";
 import Tour from "./Tour/Tour";
+import Contact from "./contact/Contact";
+
 const FrontWebsiteManagement = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const location = useLocation();
@@ -13,41 +15,35 @@ const FrontWebsiteManagement = () => {
       setActiveTab("tab2");
     } else if (location?.state?.kind === "cover") {
       setActiveTab("tab1");
-    } 
-    // else if (location?.state?.kind === "other") {
-    //   setActiveTab("tab3");
-    // }
+    }
   }, [location?.state?.kind]);
+
+  const tabClasses = (tab) =>
+    `flex-1 py-2 text-center rounded-2xl transition-all duration-300 ${
+      activeTab === tab
+        ? "bg-eight font-semibold text-xl sm:text-2xl"
+        : "hover:bg-gray-100"
+    }`;
 
   return (
     <div className="w-full mx-auto">
-      <div className="flex text-one text-[20px]">
-        <button
-          className={`flex-1 py-2 text-center ${
-            activeTab === "tab1" ? "bg-eight rounded-2xl font-normal text-2xl" : ""
-          }`}
-          onClick={() => setActiveTab("tab1")}
-        >
+      {/* Tabs Header */}
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-one text-lg sm:text-[20px] mb-4">
+        <button className={tabClasses("tab1")} onClick={() => setActiveTab("tab1")}>
           Cover Page
         </button>
-        <button
-          className={`flex-1 py-2 text-center ${
-            activeTab === "tab2" ? "bg-eight rounded-2xl text-2xl font-normal" : ""
-          }`}
-          onClick={() => setActiveTab("tab2")}
-        >
+        <button className={tabClasses("tab2")} onClick={() => setActiveTab("tab2")}>
           FAQ
         </button>
-        <button
-          className={`flex-1 py-2 text-center ${
-            activeTab === "tab3" ? "bg-eight rounded-2xl text-2xl font-normal" : ""
-          }`}
-          onClick={() => setActiveTab("tab3")}
-        >
-Tour 
+        <button className={tabClasses("tab3")} onClick={() => setActiveTab("tab3")}>
+          Tour
+        </button>
+        <button className={tabClasses("tab4")} onClick={() => setActiveTab("tab4")}>
+          Contact Us
         </button>
       </div>
 
+      {/* Tabs Content */}
       <div>
         {activeTab === "tab1" && (
           <ProtectedRoute moduleName="Home Page Cover" requiredAction={["View"]}>
@@ -61,7 +57,12 @@ Tour
         )}
         {activeTab === "tab3" && (
           <ProtectedRoute moduleName="TourinHome" requiredAction={["View"]}>
-<Tour/>
+            <Tour />
+          </ProtectedRoute>
+        )}
+        {activeTab === "tab4" && (
+          <ProtectedRoute moduleName="contactus" requiredAction={["View"]}>
+            <Contact />
           </ProtectedRoute>
         )}
       </div>

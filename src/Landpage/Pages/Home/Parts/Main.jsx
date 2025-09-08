@@ -6,10 +6,26 @@ import Nav from '../../../component/Nav';
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IoMdSearch } from "react-icons/io";
-import Loading from '../../../../ui/Loading'
+import Loading from '../../../../ui/Loading';
+import { useNavigate } from "react-router-dom"; // ✅ import
+
 const Main = ({ data }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const navigate = useNavigate(); // ✅ init navigator
 
+  // states
+  const [trips, setTrips] = useState([]);
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [date, setDate] = useState("");
+  const [results, setResults] = useState([]);
+  const [loadingTrips, setLoadingTrips] = useState(false);
+
+  // dropdown lists
+  const [countries, setCountries] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  // AOS animation
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -17,6 +33,7 @@ const Main = ({ data }) => {
     });
   }, []);
 
+  // تحميل صورة الخلفية
   useEffect(() => {
     if (data?.cover?.imagePath) {
       const img = new Image();
@@ -25,11 +42,62 @@ const Main = ({ data }) => {
     }
   }, [data]);
 
+  // جلب البيانات من الـ API
+  useEffect(() => {
+    const fetchTrips = async () => {
+      setLoadingTrips(true);
+      try {
+        const res = await fetch("http://bcknd.tickethub-tours.com/api/user/landpage/tours-with-essential-info");
+        const response = await res.json();
+        setTrips(response.data || []);
+
+        // استخرج الدول من الرحلات
+        const uniqueCountries = [...new Set((response.data || []).map((t) => t.country))];
+        setCountries(uniqueCountries);
+      } catch (err) {
+        console.error("Error fetching trips:", err);
+      } finally {
+        setLoadingTrips(false);
+      }
+    };
+    fetchTrips();
+  }, []);
+
+  // تحديث قائمة المدن لما يختار دولة
+  useEffect(() => {
+    if (country) {
+      const filteredCities = [
+        ...new Set(trips.filter((t) => t.country === country).map((t) => t.city)),
+      ];
+      setCities(filteredCities);
+      setCity(""); // reset city
+    } else {
+      setCities([]);
+      setCity("");
+    }
+  }, [country, trips]);
+// فلترة البحث دايناميك
+useEffect(() => {
+  const filtered = trips.filter((trip) => {
+    const matchCountry = country ? trip.country === country : true;
+    const matchCity = city ? trip.city === city : true;
+
+    // ✅ الفلترة من schedules.date
+    const matchDate = date
+      ? trip.schedules.some((s) => s.date.slice(0, 10) === date)
+      : true;
+
+    return matchCountry && matchCity && matchDate;
+  });
+
+  setResults(filtered);
+}, [country, city, date, trips]);
+
   if (!isImageLoaded) {
     return (
       <div className=" max-w-screen flex flex-col gap-3 h-screen  bg-gray-100">
-          <Navtwo />
-<Loading/>
+        <Navtwo />
+        <Loading />
       </div>
     );
   }
@@ -40,12 +108,10 @@ const Main = ({ data }) => {
         className="w-screen h-screen bg-cover bg-center relative flex flex-col items-center"
         style={{ backgroundImage: `url(${data.cover.imagePath})` }}
       >
-        {/* Navbar */}
         <div className='absolute top-7 lg:top-5 z-10 w-full'>
           <Nav />
         </div>
 
-        {/* Content */}
         <div className='flex flex-col gap-20 lg:gap-10 justify-center items-center px-4 mt-50 sm:mt-65 text-center'>
           <h1
             data-aos="fade-down"
@@ -62,8 +128,7 @@ const Main = ({ data }) => {
             Book unforgettable journeys tailored to your style, budget, and destination dreams.
           </p>
 
-          {/* Search Box */}
-          {/* <div
+          <div
             data-aos="zoom-in"
             data-aos-delay="400"
             className="flex flex-col sm:flex-row gap-3 backdrop-blur-2xl bg-white/30 rounded-xl p-4 shadow-md items-stretch sm:items-end w-full max-w-md sm:max-w-2xl md:max-w-3xl lg:max-w-4xl"
@@ -71,37 +136,120 @@ const Main = ({ data }) => {
             <div className="flex flex-col w-full">
               <div className="flex items-center gap-2 border-b border-white pb-1">
                 <FaLocationDot className="text-md text-white" />
-                <input
-                  type="text"
-                  placeholder="Location"
-                  className="w-full bg-transparent text-sm outline-none placeholder-white text-white"
-                />
+                <select
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="w-full bg-transparent text-sm outline-none text-white"
+                >
+                  <option className="text-black" value="">All Countries</option>
+                  {countries.map((c, i) => (
+                    <option key={i} value={c} className="text-black">
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-
-            <div className="flex flex-col w-full">
+{country&&(
+<div className="flex flex-col w-full">
               <div className="flex items-center gap-2 border-b border-white pb-1">
-                <MdOutlineDateRange className="text-md text-white" />
-                <input
-                  type="text"
-                  placeholder="Date"
-                  className="w-full bg-transparent text-sm outline-none placeholder-white text-white"
-                />
+                <FaLocationDot className="text-md text-white" />
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  disabled={!country}
+                  className="w-full bg-transparent text-sm outline-none text-white"
+                >
+                  <option className="text-black"  value="">All Cities</option>
+                  {cities.map((c, i) => (
+                    <option key={i} value={c} className="text-black">
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </div>
+            </div>  
+)}
+            
+
+        <div className="flex flex-col w-full">
+  <div className="flex items-center gap-2 border-b border-white pb-1">
+  <input
+    type="date"
+    value={date}
+    onChange={(e) => setDate(e.target.value)}
+    className="w-full bg-transparent text-sm outline-none text-white cursor-pointer
+      [&::-webkit-calendar-picker-indicator]:invert
+      [&::-webkit-calendar-picker-indicator]:cursor-pointer
+      [&::-moz-calendar-picker-indicator]:invert
+      [&::-moz-calendar-picker-indicator]:cursor-pointer"
+  />
+</div>
+
+</div>
 
             <button
-              data-aos="flip-left"
-              data-aos-delay="600"
-              className="flex items-center justify-center gap-1 bg-one hover:bg-one/90 text-white text-sm px-5 py-2 rounded-lg transition-all h-[42px]"
+              disabled
+              className="flex items-center justify-center gap-1 bg-one/70 text-white text-sm px-5 py-2 rounded-lg h-[42px] cursor-not-allowed"
             >
-              <IoMdSearch className="text-lg" />
+              <IoMdSearch className="text-lg " />
               Search
             </button>
-            
-          </div> */}
+          </div>
         </div>
       </div>
+
+    <div className="p-6 max-w-6xl mx-auto">
+      {loadingTrips ? (
+        <p className="text-center">Loading trips...</p>
+      ) : (country || city || date) ? (
+        results.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {results.map((trip, i) => (
+              <div
+                key={i}
+                onClick={() => navigate(`/tripdetails/${trip.id}`)} 
+                className="bg-white rounded-2xl shadow-lg overflow-hidden 
+                           hover:shadow-2xl hover:scale-[1.02] 
+                           transition duration-300 cursor-pointer"
+              >
+                {/* صورة الرحلة */}
+                <div className="h-48 w-full overflow-hidden">
+                  <img
+                    src={trip.mainImage || "/default-trip.jpg"}
+                    alt={trip.title}
+                    className="w-full h-full object-cover hover:scale-110 transition duration-300"
+                  />
+                </div>
+
+                <div className="p-4 flex flex-col gap-2">
+                  <h2 className="font-bold text-lg text-gray-800">{trip.title}</h2>
+                  <p className="text-gray-600 text-sm">
+                    📍 {trip.country}, {trip.city}
+                  </p>
+                  <p className="text-gray-700 font-semibold">
+                    💵 {trip.price.adult} {trip.price.currency}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    {/* 🗓{" "}
+                    {trip.schedules.map((s) => (
+                      <span key={s.id} className="mr-2">
+                        {new Date(s.startDate).toLocaleDateString()}
+                      </span>
+                    ))} */}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-red-500">No trips found</p>
+        )
+      ) : (
+     null
+      )}
+    </div>
+
     </div>
   );
 };

@@ -47,7 +47,7 @@ const Home = () => {
         {
           title: "Pending Payments",
           icon: <FaHourglassHalf />,
-          value: data.statistics.paymnetCount,
+          value: data.statistics.paymentCount,
         },
         {
           title: "Promo Codes",
@@ -80,7 +80,7 @@ const Home = () => {
 
   const links = [
     { label: "Bookings Management", href: "/admin/bookingsmanagement", icon: "" },
-    { label: "Financial Section", href: "/admin/financialsection", icon: "" },
+    { label: " Payment", href: "/admin/payment", icon: "" },
     { label: "Tours Management", href: "/admin/toursmanagement", icon: "" },
     { label: "Users Management", href: "/admin/usersmanagement", icon: "" },
   ];

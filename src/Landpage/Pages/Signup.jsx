@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import content from "../../assets/content.png";
 import { BsArrowRightCircleFill } from "react-icons/bs";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Signup = () => {
   const [phone, setPhone] = useState("");
@@ -228,6 +229,39 @@ const Signup = () => {
             >
               Sign Up
             </button>
+            <div className="w-full max-w-md flex flex-col md:flex-row gap-4">
+         <div className="  w-full">
+  <GoogleLogin
+  onSuccess={async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential; 
+      console.log("Raw Token:", token);
+
+      const res = await fetch("https://bcknd.tickethub-tours.com/api/user/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!res.ok) {
+        throw new Error("فشل تسجيل الدخول في الباك اند");
+      }
+
+      const data = await res.json(); 
+         localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+navigate("/")
+    } catch (err) {
+      console.error("Error:", err.message);
+    }
+  }}
+  onError={() => {
+    console.log("فشل تسجيل الدخول");
+  }}
+/>
+
+    </div>
+        </div>
           </>
         )}
 

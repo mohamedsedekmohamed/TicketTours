@@ -316,7 +316,7 @@ const AppRoutes = ({ setIsLoggedIn }) => {
          <Route
           path="payment"
           element={
-            <ProtectedRoute moduleName="Pending Payment" requiredAction={["View"]}>
+            <ProtectedRoute moduleName="All Payments" requiredAction={["View"]}>
               <Payment />
             </ProtectedRoute>
           }

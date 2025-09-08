@@ -48,10 +48,9 @@ const Payment = () => {
   const groupedPrivileges =
     JSON.parse(localStorage.getItem("groupedPrivileges")) || {};
   const Privileges =
-    groupedPrivileges["Pending Payment"]?.map((p) => p.action) || [];
+    groupedPrivileges["All Payments"]?.map((p) => p.action) || [];
           const token = localStorage.getItem("token");
 
-  // جلب البيانات
   useEffect(() => {
     setLoading(true);
     axios

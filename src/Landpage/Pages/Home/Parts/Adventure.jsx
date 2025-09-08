@@ -4,7 +4,8 @@ import 'aos/dist/aos.css';
 
 import Exploreone from "../../../../assets/Exploreone.jpg";
 import Exploretwo from '../../../../assets/Exploretwo.jpg';
-import Explorethree from '../../../../assets/Explorethree.jpg';
+// import Explorethree from '../../../../assets/Explorethree.jpg';
+import vatcan from '../../../../assets/vatcan.webp';
 import { MdArrowOutward } from "react-icons/md";
 
 const Adventure = () => {
@@ -14,22 +15,27 @@ const Adventure = () => {
 
   const explore = [
     {
-      title: "Beach Getaways",
+      title: "Local tourism",
       image: Exploreone,
       description:
         "Relax by the sea, enjoy sunny weather, and indulge in coastal cuisines in beautiful beach resorts.",
+        hrf:"/localtourism"
     },
     {
-      title: "Mountain Adventures",
+      title: "International tourism",
       image: Exploretwo,
       description:
         "Hike, climb, and discover the magic of nature in breathtaking mountains and charming valleys.",
+                hrf:"/internationaltourism"
+
     },
     {
-      title: "Cultural Journeys",
-      image: Explorethree,
+      title: "Religious tourism",
+      image: vatcan,
       description:
         "Dive deep into history and explore ancient cities, vibrant markets, and civilizations with professional guides.",
+                hrf:"/religioustourism"
+
     },
   ];
 
@@ -56,7 +62,7 @@ const Adventure = () => {
 
           return (
             <a
-              href="#"
+              href={dev.hrf}
               key={index}
               className="group relative block w-full sm:w-[48%] lg:w-1/4 h-[440px] bg-black rounded-lg overflow-hidden"
               data-aos={animation}

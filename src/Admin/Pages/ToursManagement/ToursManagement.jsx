@@ -262,17 +262,22 @@ const ToursManagement = () => {
           </button>
         )}
               buttonstatus={(row) => (
-          <td className={`flex gap-1  justify-start `}>
+                <>
+            {Privileges.includes("Status") && (
+              <td className={`flex gap-1  justify-start `}>
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 checked={row.status}
                 onChange={() => handleToggleStatus(row)}
                 className="sr-only peer"
-              />
+                />
               <div className="w-11 h-6 bg-gray-300 peer-checked:bg-one rounded-full peer relative after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:left-0.5 after:top-0.5 after:transition-all peer-checked:after:translate-x-full" />
             </label>
           </td>
+            )}
+            </>
+
         )}
         Start={(row) => (
           <span

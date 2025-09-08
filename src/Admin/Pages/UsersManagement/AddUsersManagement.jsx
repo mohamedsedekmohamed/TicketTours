@@ -142,14 +142,19 @@ if (edit && password && password.length >= 8) {
       })
       .catch((error) => {
         const err = error?.response?.data?.error;
-
+        const erremail = error?.response?.error?.message;
         if (err?.details && Array.isArray(err.details)) {
           err.details.forEach((detail) => {
             toast.error(`${detail.field}: ${detail.message}`);
           });
-        } else if (err?.message) {
+        } 
+        else if (err?.message) {
           toast.error(err.message);
-        } else {
+        } 
+        else if (erremail) {
+          toast.error(erremail);
+        } 
+        else {
           toast.error("Something went wrong.");
         }
         setCheckLoading(false);

@@ -48,7 +48,7 @@ useEffect(()=>{
     })
     .catch(() => {
       setcheck(false)
-      toast.error("Connection failed");
+      toast.error("There might something  wrong ");
     });
 };
 

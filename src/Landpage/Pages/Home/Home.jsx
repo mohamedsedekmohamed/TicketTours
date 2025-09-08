@@ -9,7 +9,6 @@ import Adventure from './Parts/Adventure';
 import Say from './Parts/Say';
 import Loading from '../../../ui/Loading'
 import axios from 'axios';
-import Nav from '../../component/Nav';
 
 const Home = () => {
    const [data, setData] = useState([]);
@@ -18,7 +17,7 @@ const Home = () => {
    useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://bcknd.tickethub-tours.com/api/user/landpage/images'); // غير الرابط حسب احتياجك
+        const response = await axios.get('https://bcknd.tickethub-tours.com/api/user/landpage/images'); 
         setData(response.data.data);
       } catch (err) {
         console.error('Error fetching data:', err);

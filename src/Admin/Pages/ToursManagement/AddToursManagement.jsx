@@ -266,7 +266,7 @@ const [promocode,setPromocode]=useState([])
     }
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timeout);
   }, [location.state]);
 
