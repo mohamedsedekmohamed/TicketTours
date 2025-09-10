@@ -49,7 +49,7 @@ const Main = ({ data }) => {
       try {
        
         const res = await axios.get(
-          "http://bcknd.tickethub-tours.com/api/user/landpage/tours-with-essential-info",{
+          "http://bcknd.tickethub-tours.com/api/user/landpage/toursEssential",{
     headers: {
 
       
