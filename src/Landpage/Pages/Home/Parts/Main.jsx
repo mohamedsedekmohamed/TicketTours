@@ -8,6 +8,7 @@ import { MdOutlineDateRange } from "react-icons/md";
 import { IoMdSearch } from "react-icons/io";
 import Loading from '../../../../ui/Loading';
 import { useNavigate } from "react-router-dom"; // ✅ import
+import axios from "axios";
 
 const Main = ({ data }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -42,15 +43,19 @@ const Main = ({ data }) => {
     }
   }, [data]);
 
-  useEffect(() => {
+   useEffect(() => {
     const fetchTrips = async () => {
       setLoadingTrips(true);
       try {
-        const res = await fetch("http://bcknd.tickethub-tours.com/api/user/landpage/tours-with-essential-info");
-        const response = await res.json();
-        setTrips(response.data || []);
+        const res = await axios.get(
+          "http://bcknd.tickethub-tours.com/api/user/landpage/tours-with-essential-info"
+        );
 
-        const uniqueCountries = [...new Set((response.data || []).map((t) => t.country))];
+        setTrips(res.data?.data || []);
+
+        const uniqueCountries = [
+          ...new Set((res.data?.data || []).map((t) => t.country)),
+        ];
         setCountries(uniqueCountries);
       } catch (err) {
         console.error("Error fetching trips:", err);
@@ -58,6 +63,7 @@ const Main = ({ data }) => {
         setLoadingTrips(false);
       }
     };
+
     fetchTrips();
   }, []);
 
