@@ -42,7 +42,6 @@ const Main = ({ data }) => {
     }
   }, [data]);
 
-  // جلب البيانات من الـ API
   useEffect(() => {
     const fetchTrips = async () => {
       setLoadingTrips(true);
@@ -51,7 +50,6 @@ const Main = ({ data }) => {
         const response = await res.json();
         setTrips(response.data || []);
 
-        // استخرج الدول من الرحلات
         const uniqueCountries = [...new Set((response.data || []).map((t) => t.country))];
         setCountries(uniqueCountries);
       } catch (err) {
@@ -63,7 +61,6 @@ const Main = ({ data }) => {
     fetchTrips();
   }, []);
 
-  // تحديث قائمة المدن لما يختار دولة
   useEffect(() => {
     if (country) {
       const filteredCities = [
