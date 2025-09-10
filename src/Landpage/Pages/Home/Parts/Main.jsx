@@ -48,7 +48,7 @@ const Main = ({ data }) => {
       setLoadingTrips(true);
       try {
         const res = await axios.get(
-          "http://bcknd.tickethub-tours.com/api/user/landpage/tours-with-essential-info"
+          "http://bcknd.tickethub-tours.com/api/user/landpage/tourswithessentialinfo"
         );
 
         setTrips(res.data?.data || []);
