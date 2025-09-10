@@ -44,35 +44,30 @@ const Main = ({ data }) => {
   }, [data]);
 
    useEffect(() => {
-    const fetchTrips = async () => {
-      setLoadingTrips(true);
-      try {
-       
-        const res = await axios.get(
-          "http://bcknd.tickethub-tours.com/api/user/landpage/toursEssential",{
-    headers: {
+  setLoadingTrips(true);
 
-      
-      Accept: "application/json",
-    },
-  }
-        );
+  axios
+    .get("http://bcknd.tickethub-tours.com/api/user/landpage/toursEssential", {
+      headers: {
+        Accept: "application/json",
+      },
+    })
+    .then((res) => {
+      setTrips(res.data?.data || []);
 
-        setTrips(res.data?.data || []);
+      const uniqueCountries = [
+        ...new Set((res.data?.data || []).map((t) => t.country)),
+      ];
+      setCountries(uniqueCountries);
+    })
+    .catch((err) => {
+      console.error("Error fetching trips:", err);
+    })
+    .finally(() => {
+      setLoadingTrips(false);
+    });
+}, []);
 
-        const uniqueCountries = [
-          ...new Set((res.data?.data || []).map((t) => t.country)),
-        ];
-        setCountries(uniqueCountries);
-      } catch (err) {
-        console.error("Error fetching trips:", err);
-      } finally {
-        setLoadingTrips(false);
-      }
-    };
-
-    fetchTrips();
-  }, []);
 
   useEffect(() => {
     if (country) {
