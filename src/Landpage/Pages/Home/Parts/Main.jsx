@@ -47,9 +47,12 @@ const Main = ({ data }) => {
     const fetchTrips = async () => {
       setLoadingTrips(true);
       try {
+       
         const res = await axios.get(
           "http://bcknd.tickethub-tours.com/api/user/landpage/tours-with-essential-info",{
     headers: {
+
+      
       Accept: "application/json",
     },
   }
