@@ -4,6 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../../../../ui/Loading";
 import Swal from "sweetalert2";
+import { ToastContainer, toast } from "react-toastify";
+
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin6Line } from "react-icons/ri";
 const Contact = () => {
@@ -36,8 +38,9 @@ const Contact = () => {
         );
         setLoading(false);
       })
-      .catch(() => {
-         setLoading(false);
+.catch((error) => {
+               toast.error(error.response?.data?.error);
+                   setLoading(false);
       });
   }, []);
   const columns = [
@@ -78,7 +81,7 @@ const Contact = () => {
   }
   return (
     <div>
-
+<ToastContainer/>
       <DynamicTable
         data={data}
         columns={columns}

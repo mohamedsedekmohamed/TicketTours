@@ -45,7 +45,8 @@ const PromoCodes = () => {
         );
         setLoading(false);
       })
-      .catch(() => {
+     .catch((error) => {
+               toast.error(error.response?.data?.error);
          setLoading(false);
       });
   }, [update]);
@@ -129,6 +130,7 @@ const PromoCodes = () => {
   }
   return (
     <div>
+      <ToastContainer />
       {Privileges.includes("Add") || Privileges.includes("Edit") ? (
         <NavAndSearch
           nav="/admin/addpromocodes"

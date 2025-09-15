@@ -76,7 +76,8 @@ const ToursManagement = () => {
         );
         setLoading(false);
       })
-      .catch(() => {
+     .catch((error) => {
+               toast.error(error.response?.data?.error);
         setLoading(false);
       });
   }, [update]);

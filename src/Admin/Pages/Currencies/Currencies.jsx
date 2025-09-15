@@ -39,8 +39,9 @@ const Currencies = () => {
         );
         setLoading(false);
       })
-      .catch(() => {
-         setLoading(false);
+ .catch((error) => {
+               toast.error(error.response?.data?.error);
+              setLoading(false);
       });
   }, [update]);
   const handleEdit = (id) => {
@@ -117,6 +118,7 @@ const Currencies = () => {
 
   return (
     <div>
+      <ToastContainer />
       {" "}
       {Privileges.includes("Add") ? (
         <NavAndSearch

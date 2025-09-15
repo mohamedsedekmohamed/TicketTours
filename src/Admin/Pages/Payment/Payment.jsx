@@ -86,7 +86,9 @@ const Payment = () => {
         setData(payments);
         setLoading(false);
       })
-      .catch((error) => {
+       .catch((error) => {
+                     toast.error(error.response?.data?.error);
+           
         setLoading(false);
       });
   }, [update]);

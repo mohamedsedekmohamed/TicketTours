@@ -70,8 +70,9 @@ const Tour = () => {
         );
         setLoading(false);
       })
-      .catch(() => {
-        setLoading(false);
+.catch((error) => {
+               toast.error(error.response?.data?.error);
+                      setLoading(false);
       });
   }, [update]);
 
