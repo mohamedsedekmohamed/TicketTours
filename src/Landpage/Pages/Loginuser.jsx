@@ -145,7 +145,6 @@ function Loginuser() {
   onSuccess={async (credentialResponse) => {
     try {
       const token = credentialResponse.credential; 
-      console.log("Raw Token:", token);
 
       const res = await fetch("https://bcknd.tickethub-tours.com/api/user/auth/google", {
         method: "POST",
