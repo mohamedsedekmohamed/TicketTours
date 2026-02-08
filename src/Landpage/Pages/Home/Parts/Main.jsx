@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom"; // ✅ import
 import axios from "axios";
 
 const Main = ({ data }) => {
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const navigate = useNavigate(); // ✅ init navigator
 
   // states
@@ -34,14 +33,7 @@ const Main = ({ data }) => {
     });
   }, []);
 
-  // تحميل صورة الخلفية
-  useEffect(() => {
-    if (data?.cover?.imagePath) {
-      const img = new Image();
-      img.src = data.cover.imagePath;
-      img.onload = () => setIsImageLoaded(true);
-    }
-  }, [data]);
+
 
    useEffect(() => {
   setLoadingTrips(true);
@@ -98,24 +90,27 @@ useEffect(() => {
   setResults(filtered);
 }, [country, city, date, trips]);
 
-  if (!isImageLoaded) {
-    return (
-      <div className=" max-w-screen flex flex-col gap-3 h-screen  bg-gray-100">
-        <Navtwo />
-        <Loading />
-      </div>
-    );
-  }
+  // if (!isImageLoaded) {
+  //   return (
+  //     <div className=" max-w-screen flex flex-col gap-3 h-screen  bg-gray-100">
+  //       <Navtwo />
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>
-      <div
-        className="w-screen h-screen bg-cover bg-center relative flex flex-col items-center"
-        style={{ backgroundImage: `url(${data.cover.imagePath})` }}
-      >
-        <div className='absolute top-7 lg:top-5 z-10 w-full'>
-          <Nav />
-        </div>
+<div className="w-screen h-screen relative flex flex-col items-center">
+  <img
+    src={data.cover.imagePath}
+    alt="cover"
+    className="absolute inset-0 w-full h-full object-cover"
+    loading="lazy"
+  />
+  <div className='absolute top-7 lg:top-5 z-10 w-full'>
+    <Nav />
+  </div>
 
         <div className='flex flex-col gap-20 lg:gap-10 justify-center items-center px-4 mt-50 sm:mt-65 text-center'>
           <h1
@@ -223,6 +218,7 @@ useEffect(() => {
                   <img
                     src={trip.mainImage || "/default-trip.jpg"}
                     alt={trip.title}
+                      loading="lazy"
                     className="w-full h-full object-cover hover:scale-110 transition duration-300"
                   />
                 </div>
