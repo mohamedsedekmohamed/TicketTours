@@ -1253,7 +1253,7 @@ currencyId: parseInt(prices[0].currencyId)
                     }
                     className="w-full p-2 rounded border border-gray-300 resize-none leading-5 overflow-hidden"
                     rows={3}
-                    maxLength={300}
+                    maxLength={3000}
                     onInput={(e) => {
                       const el = e.target;
                       el.style.height = "auto";
