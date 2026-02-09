@@ -19,7 +19,7 @@ const Medical = () => {
   const [options, setOptions] = useState([]);
   const [describtion, setDescribtion] = useState("");
   const [images, setImages] = useState([]);
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("tokenuser");
 const storedUser = localStorage.getItem("user");
 const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
 //   useEffect(() => {
@@ -54,7 +54,7 @@ const [username, setUsername] = useState("");
     })
     .then((response) => {
       if (response.data.data.message === "login Successful") {
-        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("tokenuser", response.data.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.data.user));
         toast.success("Welcome ");
 
@@ -346,7 +346,7 @@ You must log in to book.       </h2>
 
       const data = await res.json(); 
          localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("tokenuser", data.token);
 navigate("/")
     } catch (err) {
       console.error("Error:", err.message);

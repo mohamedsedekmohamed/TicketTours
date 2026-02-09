@@ -13,7 +13,7 @@ const Navtwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("tokenuser");
 
   const location = useLocation();
   const navigate = useNavigate();

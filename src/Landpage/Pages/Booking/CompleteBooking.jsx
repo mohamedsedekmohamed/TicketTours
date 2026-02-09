@@ -155,7 +155,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("tokenuser");
 
   const handleSubmit = async (e) => {
     e.preventDefault();

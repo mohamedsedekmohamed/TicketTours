@@ -11,14 +11,14 @@ const Dashboard = () => {
   useEffect(() => {
     // استخرج التوكن + البيانات من الـ URL
     const params = new URLSearchParams(location.search);
-    const token = params.get("token");
+    const token = params.get("tokenuser");
     const email = decodeURIComponent(params.get("email") || "");
     const name = decodeURIComponent(params.get("name") || "");
 
     if (token) {
       try {
         // حفظ التوكن واليوزر
-        localStorage.setItem("token", token);
+        localStorage.setItem("tokenuser", token);
         localStorage.setItem("user", JSON.stringify({ email, name }));
 
         setUser({ email, name });
@@ -34,7 +34,7 @@ const Dashboard = () => {
       }
     } else {
       // لو مفيش توكن في الـ URL، شوف localStorage
-      const savedToken = localStorage.getItem("token");
+      const savedToken = localStorage.getItem("tokenuser");
       const savedUser = localStorage.getItem("user");
 
       if (savedToken && savedUser) {

@@ -235,7 +235,6 @@ const Signup = () => {
   onSuccess={async (credentialResponse) => {
     try {
       const token = credentialResponse.credential; 
-      console.log("Raw Token:", token);
 
       const res = await fetch("https://bcknd.tickethub-tours.com/api/user/auth/google", {
         method: "POST",
@@ -249,7 +248,7 @@ const Signup = () => {
 
       const data = await res.json(); 
          localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("tokenuser", data.token);
 navigate("/")
     } catch (err) {
       console.error("Error:", err.message);

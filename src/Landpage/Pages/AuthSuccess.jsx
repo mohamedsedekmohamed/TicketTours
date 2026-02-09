@@ -7,10 +7,10 @@ function AuthSuccess() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+    const token = params.get("tokenuser");
 
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem("tokenuser", token);
 
       // (اختياري) ممكن تجيب بيانات اليوزر من API بالـ token
       // axios.get("/api/user/me", { headers: { Authorization: `Bearer ${token}` } })

@@ -13,7 +13,7 @@ const Nav = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("tokenuser");
 
   useEffect(() => {
     AOS.init({

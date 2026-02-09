@@ -6,7 +6,7 @@ const GoogleAuthHandler = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = searchParams.get("token");
+    const token = searchParams.get("tokenuser");
     const email = searchParams.get("email");
     const name = searchParams.get("name");
 

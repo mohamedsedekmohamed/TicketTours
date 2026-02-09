@@ -90,14 +90,6 @@ useEffect(() => {
   setResults(filtered);
 }, [country, city, date, trips]);
 
-  // if (!isImageLoaded) {
-  //   return (
-  //     <div className=" max-w-screen flex flex-col gap-3 h-screen  bg-gray-100">
-  //       <Navtwo />
-  //       <Loading />
-  //     </div>
-  //   );
-  // }
 
   return (
     <div>

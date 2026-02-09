@@ -35,7 +35,7 @@ const [medical, setMedical] = useState({
 });
 
  useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("tokenuser");
     setLoading(true);
 
     Promise.all([
@@ -60,7 +60,7 @@ const [medical, setMedical] = useState({
 
 
     useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("tokenuser");
     setLoading(true);
     axios
       .get("https://bcknd.tickethub-tours.com/api/bookings", {
@@ -82,7 +82,7 @@ const [medical, setMedical] = useState({
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("tokenuser");
     setLoading(true);
     axios
       .get("https://bcknd.tickethub-tours.com/api/payments", {
@@ -115,7 +115,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
   };
 const handleLogout = () => {
   localStorage.removeItem("user");
-  localStorage.removeItem("token");
+  localStorage.removeItem("tokenuser");
   nav("/"); 
 };
 

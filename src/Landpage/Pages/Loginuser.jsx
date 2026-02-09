@@ -25,7 +25,7 @@ function Loginuser() {
     })
     .then((response) => {
       if (response.data.data.message === "login Successful") {
-        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("tokenuser", response.data.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.data.user));
         toast.success("Welcome ");
         setTimeout(() => {
@@ -158,7 +158,7 @@ function Loginuser() {
 
       const data = await res.json(); 
          localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("tokenuser", data.token);
 navigate("/")
     } catch (err) {
       console.error("Error:", err.message);
