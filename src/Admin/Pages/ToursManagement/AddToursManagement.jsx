@@ -1013,14 +1013,16 @@ currencyId: parseInt(prices[0].currencyId)
            
              <div className="flex flex-col">
               <label className="mb-2 font-medium text-one">Select Days</label>
-              <Select
-                isMulti
-                options={days}
-                value={selectedDays} // Now this will work correctly
-                onChange={handleSelectChange}
-                className="basic-multi-select w-75 h-[80px] rounded-2xl"
-                classNamePrefix="select"
-              />
+             <Select
+  isMulti
+  options={days}
+  value={selectedDays} 
+  onChange={handleSelectChange}
+  // السطر ده هو اللي هيمنع التكرار ويخفي العنصر المختار
+  isOptionSelected={(option) => selectedDays.some((v) => v.value === option.value)}
+  className="basic-multi-select w-75 h-[80px] rounded-2xl"
+  classNamePrefix="select"
+/>
             </div>
             {meetingPoint ? (
               <div className=" flex   w-full flex-col gap-3">
@@ -1481,19 +1483,21 @@ currencyId: parseInt(prices[0].currencyId)
 
             <button
               onClick={addTitle}
-              className="bg-one text-white p-3 mt-2 rounded"
+              className="bg-one text-white  p-3  rounded"
             >
               Add
             </button>
           </div>
         </div>
       )}
+<div className="pt-10 ">
 
       <ButtonDone
         checkLoading={checkLoading}
         handleSave={handleSave}
         edit={edit}
-      />
+        />
+        </div>
     </div>
   );
 };

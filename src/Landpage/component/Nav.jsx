@@ -21,7 +21,7 @@ const Nav = () => {
       once: true,
     });
   }, []);
-
+const user = JSON.parse(localStorage.getItem("user")) || null;
   const navLinks = [
     { name: "Home ", path: "/" },
     { name: "Trips ", subLinks: true },
@@ -126,14 +126,28 @@ const Nav = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex gap-2">
+
             {token && (
-              <TbUserHexagon
-                onClick={() => {
-                  navigate("/profileuser");
-                }}
-                className="w-[110px] h-[40px]  text-one hover:text-one/70    rounded-[24px] md:text-[18px] lg:text-[20px]  font-medium "
-              ></TbUserHexagon>
-            )}
+    <div 
+      onClick={() => navigate("/profileuser")}
+      className="flex items-center gap-2 p-1 pr-4 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-full cursor-pointer transition-all duration-300 shadow-sm"
+    >
+      {/* دائرة الأيقونة */}
+      <div className="bg-one/10 p-2 rounded-full">
+        <TbUserHexagon className="text-one w-6 h-6" />
+      </div>
+      
+      {/* معلومات المستخدم */}
+      <div className="flex flex-col">
+        <span className="text-[10px] font-semibold text-gray-800 leading-tight">
+          {user?.name || "User"}
+        </span>
+        <span className="text-[8px] text-gray-500 truncate max-w-[120px]">
+          {user?.email || "No Email"}
+        </span>
+      </div>
+    </div>
+  )}
             {!token && (
               <>
                 <button
@@ -156,14 +170,27 @@ const Nav = () => {
             )}
           </div>
           <div className="flex md:hidden gap-2">
-            {token && (
-              <TbUserHexagon
-                onClick={() => {
-                  navigate("/profileuser");
-                }}
-                className="w-[50px] h-[40px] text-one   rounded-[24px] text-[10px] font-medium"
-              ></TbUserHexagon>
-            )}
+           {token && (
+  <div 
+    onClick={() => navigate("/profileuser")}
+    className="flex items-center gap-2 p-1.5 bg-one/5 rounded-full border border-one/10 active:scale-95 transition-transform"
+  >
+    {/* أيقونة المستخدم بخلفية دائرية */}
+    <div className="bg-one text-white p-2 rounded-full shadow-md">
+      <TbUserHexagon className="w-5 h-5" />
+    </div>
+
+    {/* إظهار أول جزء من الإيميل فقط عشان ميزحمش الشاشة */}
+    <div className="flex flex-col pr-3">
+      <span className="text-[12px] font-bold text-gray-800 leading-none">
+        My Profile
+      </span>
+      <span className="text-[10px] text-one font-medium truncate max-w-[80px]">
+        {user?.email?.split('@')[0] || "User"}
+      </span>
+    </div>
+  </div>
+)}
             {!token && (
               <>
                 <button

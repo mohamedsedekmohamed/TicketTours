@@ -24,6 +24,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const TripDetails = () => {
+      const token = localStorage.getItem("tokenuser");
+
+  useEffect(() => {
+    if (!token) {
+      toast.warn("You need to log in first.");
+    }
+  }, [token]);
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -198,7 +205,10 @@ const getDiscount = (group, count) => {
   const total = adultsTotal + childrenTotal + infantsTotal - discountAmount + extrasTotalPrice;
 
   const handleBooking = () => {
-
+ if (!token) {
+      toast.warn("You need to log in before booking.");
+      return;
+    }
   if (adults === 0 && children === 0 && infants === 0) {
       toast.warn("At least one person must be entered.");
       return; 
@@ -320,7 +330,7 @@ const getDiscount = (group, count) => {
                 title: "Duration",
                 value: data.durationHours,
               },
-              { icon: <IoFootsteps />, title: "Tour Type", value: " Tour" },
+              { icon: <IoFootsteps />, title: "Tour Type", value: data.category },
               {
                 icon: <FaUserFriends />,
                 title: "Group Size",

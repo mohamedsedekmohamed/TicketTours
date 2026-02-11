@@ -11,6 +11,8 @@ import { FaCheckCircle, FaTimesCircle, FaPercent, FaTag } from "react-icons/fa";
 import { MdLocalOffer } from "react-icons/md";
 
 const CompleteBooking = () => {
+    const token = localStorage.getItem("tokenuser");
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -155,7 +157,6 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
-  const token = localStorage.getItem("tokenuser");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -295,7 +296,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
       setDiscountType("");
     }
   };
-
+const startDayName = new Date(data.startDate).toLocaleDateString('en-US', { weekday: 'long' });
   return (
     <div>
       <ToastContainer />
@@ -509,22 +510,36 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
               {data.country}, {data.city}
             </span>
           </div>
+<div className="text-sm text-gray-500 mb-4">
+  Days:
+  {data?.daysOfWeek?.map((item, index) => {
+    // 2. مقارنة اليوم الحالي في الـ Map مع يوم البداية
+    const isStartDay = item.toLowerCase() === startDayName.toLowerCase();
+    
+    return (
+      <span 
+        key={index} 
+        className={`ml-1 px-2 py-0.5 rounded-md transition-colors ${
+          isStartDay 
+            ? "bg-one text-white font-bold shadow-sm" // لون مميز ليوم البداية
+            : "text-one font-medium" // الشكل العادي لباقي الأيام
+        }`}
+      >
+        {item}
+      </span>
+    );
+  })}
+</div>
 
-          <div className="text-sm text-gray-500 mb-4">
-            Days:
-            {data?.daysOfWeek?.map((item, index) => (
-              <span key={index} className="text-one font-medium ml-1">
-                {item}
-              </span>
-            ))}
-          </div>
+<div className="mb-4 flex gap-2 items-center">
+  <h4 className="text-gray-500">Start Date:</h4>
+  <p className="text-one font-bold bg-one/10 px-2 rounded">
+    {new Date(data.startDate).toISOString().split("T")[0]} 
+    <span className="text-xs ml-1">({startDayName})</span>
+  </p>
+</div>
 
-          <div className="mb-4 flex gap-2">
-            <h4 className=" text-gray-500">Date:</h4>
-            <p className="text-one">
-              {new Date(data.startDate).toISOString().split("T")[0]}
-            </p>
-          </div>
+
  <div className="text-sm text-gray-500 mb-4">
             Currency:{" "}
             <span className="text-one font-medium">
