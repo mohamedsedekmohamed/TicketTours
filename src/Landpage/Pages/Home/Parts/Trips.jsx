@@ -4,7 +4,7 @@ import "aos/dist/aos.css";
 import Loading from "../../../../ui/Loading";
 import axios from "axios";
 import { Link } from "react-router-dom";
-
+import TripCard from "../../../../ui/TripCard";
 const Trips = () => {
   useEffect(() => {
     AOS.init({ duration: 1000 });
@@ -17,7 +17,7 @@ const Trips = () => {
         const response = await axios.get(
           "https://bcknd.tickethub-tours.com/api/user/landpage/featured-tours"
         );
-        setData(response.data.data.tours);
+        setData(response.data.data);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -37,7 +37,7 @@ const Trips = () => {
 
   return (
     <div>
-      <div className="w-screen h-fit py-20 flex flex-col px-4 gap-5 justify-center items-center">
+      <div className="w-screen h-screen py-20 flex flex-col px-4 gap-5 justify-center items-center">
         <span className="text-[32px] font-semibold text-one">
           Top Picks for Your Next Getaway
         </span>
@@ -46,57 +46,16 @@ const Trips = () => {
           promise unforgettable memories.
         </span>
 
-        <div className="w-full overflow-x-auto">
-          <div className="flex gap-4 w-max px-4  relative py-10">
-            {data.map((item, index) => (
-              <Link
-                key={index}
-                to={`/tripdetails/${item.id}`}
-                data-aos={
-                  index % 3 === 0
-                    ? "fade-up"
-                    : index % 3 === 1
-                    ? "zoom-in"
-                    : "fade-down"
-                }
-                className="min-w-[250px] max-w-[300px] bg-white rounded-xl shadow-md"
-              >
-                <img
-                  src={item.imagePath}
-                  alt={item.title}
-                  className="h-56 w-full object-cover rounded-t-xl"
-                />
-                <div className="p-2 pb-10">
-                  <h3 className="text-lg font-bold text-one">
-                     {item.title.length > 16
-                      ? item.title.slice(0, 16) + "..."
-                      : item.title}
-                  </h3>
+      <div className="w-full ">
+  <div className="flex flex-wrap gap-4 px-4 py-10 justify-start">
+    {data.map((item, index) => (
+      <div key={index} className="flex-1 min-w-[calc((100%/3)-1rem)] max-w-[calc((100%/3)-1rem)]">
+        <TripCard trip={item} />
+      </div>
+    ))}
+  </div>
+</div>
 
-                  <p className="mt-2 text-sm text-three">
-                    {item.discribtion.length > 50
-                      ? item.discribtion.slice(0, 50) + "..."
-                      : item.discribtion}
-                  </p>
-
-                  <span className="text-sm text-three">
-                    <span className="font-bold"> Country:</span> {item.country}
-                  </span>
-
-                  <div className="flex absolute bottom-2 gap-2 items-center mt-4">
-                    <span className="text-four font-bold">
-                      {" "}
-                      ${item.price - item.discount}
-                    </span>
-                    <span className="text-sm text-three line-through">
-                      ${item.price}{" "}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
 
         {/* <div
           className="flex gap-3 items-center rounded-3xl bg-one py-2 px-5 hover:bg-one/80"

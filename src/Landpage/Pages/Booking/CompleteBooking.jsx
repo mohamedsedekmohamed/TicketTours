@@ -55,6 +55,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
     childrenDiscount = 0,
     infantsDiscount = 0,
     tourScheduleId = 0,
+    tourScheduldate = "",
     selectedExtras = [],
   } = bookingData;
 
@@ -62,7 +63,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
 
   // Fetch tour data
   useEffect(() => {
-  
+  console.log("BookingData in CompleteBooking:", tourScheduldate);
     const fetchData = async () => {
       try {
         const res = await axios.get(
@@ -162,7 +163,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
     e.preventDefault();
 
     if (!token) {
-      toast.warn("You need to log in first.");
+      toast.warn("You need to login in first.");
       return;
     }
 
@@ -254,7 +255,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
 
   const handleApply = async () => {
     if (!token) {
-      toast.warn("You need to log in first.");
+      toast.warn("You need to login in first.");
       return;
     }
     if (!code) {
@@ -296,7 +297,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
       setDiscountType("");
     }
   };
-const startDayName = new Date(data.startDate).toLocaleDateString('en-US', { weekday: 'long' });
+const startDayName = new Date(tourScheduldate).toLocaleDateString('en-US', { weekday: 'long' });
   return (
     <div>
       <ToastContainer />
@@ -492,9 +493,23 @@ const startDayName = new Date(data.startDate).toLocaleDateString('en-US', { week
 
           <button
             type="submit"
-            className="mt-4 w-full bg-one hover:bg-one/95 hover:scale-105 text-white py-2 px-4 rounded-xl font-semibold"
+className="
+  mt-4 w-full 
+  bg-one 
+  text-white 
+  py-2.5 px-4 
+  rounded-2xl 
+  font-semibold 
+  shadow-lg shadow-black/20
+  transition-all duration-200 ease-out
+  hover:bg-one/95 
+  hover:-translate-y-0.5 
+  hover:shadow-xl hover:shadow-black/30
+  active:scale-[0.98]
+  focus:outline-none focus:ring-2 focus:ring-one/50 focus:ring-offset-2
+"
           >
-            Confirm & Pay
+            Confirm Booking
           </button>
         </form>
 
@@ -534,7 +549,7 @@ const startDayName = new Date(data.startDate).toLocaleDateString('en-US', { week
 <div className="mb-4 flex gap-2 items-center">
   <h4 className="text-gray-500">Start Date:</h4>
   <p className="text-one font-bold bg-one/10 px-2 rounded">
-    {new Date(data.startDate).toISOString().split("T")[0]} 
+    {new Date(tourScheduldate).toISOString().split("T")[0]} 
     <span className="text-xs ml-1">({startDayName})</span>
   </p>
 </div>

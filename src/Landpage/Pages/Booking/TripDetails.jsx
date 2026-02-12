@@ -22,13 +22,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { useLocation } from "react-router-dom";
 const TripDetails = () => {
       const token = localStorage.getItem("tokenuser");
-
+const location = useLocation();
+const state=location.state.scheduleId
   useEffect(() => {
+    console.log("Received scheduleId from TripCard:", state);
     if (!token) {
-      toast.warn("You need to log in first.");
+      toast.warn("You need to login in first.");
     }
   }, [token]);
   const { id } = useParams();
@@ -46,16 +48,16 @@ const TripDetails = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [open, setOpen] = useState(false); 
-  const [selectedId, setSelectedId] = useState(null); 
-  const [selectedDate, setSelectedDate] = useState(""); 
 
-  const [availablenumber,setavailablenumber]=useState(0)
-  const handleSelect = (schedule) => {
-    setSelectedId(schedule.id);       
-setavailablenumber(schedule.availableSeats)
-    setSelectedDate(schedule.date);   
-    setOpen(false);                   
-  };
+  const [selectedId, setSelectedId] = useState(state.id || null); 
+  const [selectedDate, setSelectedDate] = useState(state.date || ""); 
+  const [availablenumber,setavailablenumber]=useState(state.availableSeats || 0)
+//   const handleSelect = (schedule) => {
+//     setSelectedId(schedule.id);       
+// setavailablenumber(schedule.availableSeats)
+//     setSelectedDate(schedule.date);   
+//     setOpen(false);                   
+//   };
 
   useEffect(() => {
     const storedBooking = JSON.parse(localStorage.getItem("bookingData"));
@@ -236,7 +238,8 @@ const getDiscount = (group, count) => {
       infantsDiscount,
       discountAmount,
       total,    
-      tourScheduleId:selectedId,
+      tourScheduleId:state.id,
+      tourScheduldate: state.date,
       // Store the array of selected extras
       selectedExtras,
     };
@@ -354,6 +357,19 @@ const getDiscount = (group, count) => {
               </div>
             ))}
           </div>
+{data.files && (
+  <a
+    href={data.files}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex justify-center w-full my-3   px-4 py-4 rounded-lg bg-one text-white font-semibold hover:bg-one transition"
+  >
+    <p>    Details  Trip Pdf
+</p>
+  </a>
+)}
+
+
           <div className="space-y-10">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-one mb-2">
@@ -432,7 +448,7 @@ const getDiscount = (group, count) => {
               {data.price.currency}, 
             </span>
           </div>
-          <div className="mb-4 flex gap-2">
+          {/* <div className="mb-4 flex gap-2">
             <div
               className="flex gap-2 cursor-pointer items-center"
               onClick={() => setShowPicker(!showPicker)}
@@ -469,8 +485,8 @@ const getDiscount = (group, count) => {
                 </div>
               </div>
             )}
-          </div>
- <div className="relative inline-block py-2">
+          </div> */}
+ {/* <div className="relative inline-block py-2">
       <button
         onClick={() => setOpen(!open)}
         className="mt-3 px-4 py-2 border rounded-lg bg-white text-one hover:bg-one hover:text-white transition"
@@ -478,7 +494,7 @@ const getDiscount = (group, count) => {
         {selectedDate || "Select date"}
       </button>
 
-      {/* اللستة */}
+   
  {open && (
   <div className="absolute mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto w-56">
     {data?.schedules?.length > 0 ? (
@@ -505,39 +521,74 @@ const getDiscount = (group, count) => {
 
 
     
-    </div>
-          {[
-            ["Adults", "Over 18", pricePerAdult, adults, setAdults],
-            ["Children", "Under 12", pricePerChild, children, setChildren],
-            ["Infant", "Under 3", pricePerInfant, infants, setInfants],
-          ].map(([label, desc, price, count, setFn]) => (
-            <div
-              key={label}
-              className="flex justify-between items-center border-t border-gray-500 py-3"
-            >
-              <div>
-                <p className="font-bold text-one">{label}</p>
-                <p className="font-semibold text-one">{price}$</p>
-                <p className="text-sm text-gray-500">{desc}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setFn(count > 0 ? count - 1 : 0)}
-                  className="w-8 h-8 bg-one text-white rounded-full"
-                >
-                  -
-                </button>
-                <span className="w-6 text-center">{count}</span>
-                <button
-                  onClick={() => setFn(count + 1)}
-                  className="w-8 h-8 bg-one text-white rounded-full"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          ))}
+    </div> */}
 
+    <div className="mb-4">
+      <h3 className="font-bold text-lg text-gray-800">Select Date</h3>
+<p className="text-xs text-gray-500">
+  {new Date(state.date).toDateString()}
+</p> 
+      <h3 className="font-bold text-lg text-gray-800 mt-2"> Available Seats</h3>
+<p className="text-xs text-gray-600">
+ {state.availableSeats}
+</p> 
+
+
+   </div>
+   {[
+  ["Adults", "Over 18", pricePerAdult, adults, setAdults],
+  ["Children", "Under 12", pricePerChild, children, setChildren],
+  ["Infant", "Under 3", pricePerInfant, infants, setInfants],
+].map(([label, desc, price, count, setFn]) => (
+  <div
+    key={label}
+    className="flex justify-between items-center border-t border-gray-500 py-3"
+  >
+    {/* النصوص والوصف */}
+    <div>
+      <p className="font-bold text-one">{label}</p>
+      <p className="font-semibold text-one">{price}</p>
+      <p className="text-sm text-gray-500">{desc}</p>
+    </div>
+
+    {/* أزرار التحكم والإدخال */}
+    <div className="flex items-center gap-2">
+      {/* زر الطرح */}
+      <button
+        onClick={() => setFn(count > 0 ? count - 1 : 0)}
+        className="w-8 h-8 bg-one text-white rounded-full flex items-center justify-center text-lg hover:bg-opacity-90 transition"
+      >
+        -
+      </button>
+
+      {/* حقل الإدخال (تم التعديل هنا) */}
+      <input
+        type="number"
+        min="0"
+        value={count}
+        onChange={(e) => {
+          const val = parseInt(e.target.value);
+          // التأكد أن القيمة رقم وأكبر من أو يساوي صفر
+          if (!isNaN(val) && val >= 0) {
+            setFn(val);
+          } else if (e.target.value === "") {
+            setFn(0); // إعادة تعيين للصفر إذا مسح الرقم
+          }
+          
+        }}
+        
+className="w-12 text-center border-b-2 border-gray-300 focus:border-one outline-none font-semibold text-lg appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"      />
+
+      {/* زر الجمع */}
+      <button
+        onClick={() => setFn(count + 1)}
+        className="w-8 h-8 bg-one text-white rounded-full flex items-center justify-center text-lg hover:bg-opacity-90 transition"
+      >
+        +
+      </button>
+    </div>
+  </div>
+))}
           {/* **Multiple extras section** */}
           <label className="block mt-4 mb-2 font-medium">Extra Add-ons</label>
           <div className="flex items-center gap-2">
@@ -581,7 +632,7 @@ const getDiscount = (group, count) => {
                     <div>
                       <p className="font-medium text-gray-800">{label}</p>
                       <p className="font-medium text-gray-800">{desc}</p>
-                      <p className="font-medium text-gray-800">{price}$</p>
+                      <p className="font-medium text-gray-800">{price} {data.price.currencySymbol},</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -609,7 +660,7 @@ const getDiscount = (group, count) => {
             <div className="flex justify-between text-base">
               <span>Subtotal:</span>
               <span>
-                $
+                {data.price.currencySymbol}
                 {(
                   adultsTotal +
                   childrenTotal +
@@ -621,12 +672,12 @@ const getDiscount = (group, count) => {
             {discountAmount > 0 && (
               <div className="flex justify-between text-sm text-red-500">
                 <span>Discount:</span>
-                <span>- ${discountAmount.toFixed(2)}</span>
+                <span>- {data.price.currencySymbol}{discountAmount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-base font-semibold mt-2">
-              <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{data.price.currencySymbol}Total:</span>
+              <span>{total.toFixed(2)}</span>
             </div>
           </div>
           <button

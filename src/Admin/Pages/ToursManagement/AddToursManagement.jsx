@@ -41,6 +41,22 @@ const [promocode,setPromocode]=useState([])
   const [startDate, setStartDate] = useState("");
   const [endDate, SetEndDate] = useState("");
   const [points, setPoints] = useState("");
+
+
+  const [file, setFile] = useState("");
+  const [fileactive, setFileactive] = useState("");
+ const convertToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
   const [prices, setPrices] = useState([
     { adult: "", child: "", infant: "", currencyId: "" },
   ]);
@@ -141,7 +157,8 @@ const [promocode,setPromocode]=useState([])
         .then((response) => {
           const user = response.data.data;
           if (user) {
-      
+           setFile(user.file ||"");
+           setFileactive(user.file ||"");
             setTitle(user.title || "");
             setDescribtion(user.description || "");
             setCategory(user.category || "");
@@ -687,9 +704,15 @@ const [promocode,setPromocode]=useState([])
   const handleSave = async () => {
     if (!validateForm()) return;
     setCheckLoading(true);
-
+           let base64File = null
+    if (file !== fileactive) {
+      
+       base64File = await convertToBase64(file);
+    }
+    
     const payload = {
       title,
+      file:file ? base64File : null,
       description: describtion,
       startDate: String(startDate),
       endDate: String(endDate),
@@ -752,6 +775,7 @@ currencyId: parseInt(prices[0].currencyId)
     const itineraryupdata = buildItineraryPayload(faq, faqor);
     const payloadtwo = {
       title,
+            // file:file ? file : null,
      promoCodeIds: promocode,
       description: describtion,
       startDate: String(startDate),
@@ -804,12 +828,12 @@ currencyId: parseInt(prices[0].currencyId)
       status,
       featured,
     };
+    if (file !== fileactive) {payloadtwo.file = await convertToBase64(file); }
     if (mainImage !== mainImagecheck) {
       payloadtwo.mainImage = mainImage;
     }
     setCheckLoading(true);
 
-    console.log(payloadtwo);
     const request = edit
       ? axios.put(
           `https://bcknd.tickethub-tours.com/api/admin/tours/${sendData}`,
@@ -1062,6 +1086,58 @@ currencyId: parseInt(prices[0].currencyId)
               flag={arrayimage}
               onFileChange={handleIamgesChange}
             />
+      <div className="flex flex-col gap-2 pl-4">
+  <label className="block mb-2 text-sm font-medium text-gray-900">Upload file</label>
+  
+  <input
+    type="file"
+accept="application/pdf"
+    onChange={(e) => setFile(e.target.files[0])}
+    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none
+      file:mr-4 file:py-2 file:px-4
+      file:rounded-l-lg file:border-0
+      file:text-sm file:font-semibold
+      file:bg-one file:text-white
+      hover:file:bg-blue-700"
+  />
+
+  {/* إذا كنت تريد عرض صورة مصغرة (Preview) إذا كان الملف صورة */}
+ {file && (
+  <div className="mt-2 p-2 border rounded bg-gray-50">
+    
+    {/* الحالة الأولى: الملف عبارة عن رابط نصي جاي من الباك اند */}
+    {typeof file === 'string' ? (
+      <div className="flex items-center gap-2">
+        <span className="text-green-600 font-bold">Current File:</span>
+        <a 
+          href={file} 
+          target="_blank" 
+          rel="noreferrer" 
+          className="text-blue-600 underline break-all"
+        >
+          {file.split('/').pop()} {/* عرض اسم الملف فقط من الرابط */}
+        </a>
+      </div>
+    ) : (
+      /* الحالة الثانية: الملف عبارة عن File Object جديد تم اختياره الآن */
+      <div className="flex items-center gap-2">
+        <span className="text-orange-600 font-bold">New File Selected:</span>
+        <span className="text-gray-700">{file.name}</span>
+        
+        {/* التحقق الآمن من النوع */}
+        {file.type && file.type.startsWith("image/") && (
+           <img 
+             src={URL.createObjectURL(file)} 
+             alt="preview" 
+             className="h-10 w-10 object-cover rounded ml-2" 
+           />
+        )}
+      </div>
+    )}
+    
+  </div>
+)}
+</div>
           </div>
         )}
 
@@ -1288,6 +1364,7 @@ currencyId: parseInt(prices[0].currencyId)
                 Add
               </button>
             </div>
+            
           </div>
         )}
 

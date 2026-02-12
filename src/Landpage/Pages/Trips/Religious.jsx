@@ -5,19 +5,21 @@ import Card from "../../../ui/Card";
 import Loading from "../../../ui/Loading";
 import Footer from "../Footer";
 import Religiouss from "../../../assets/Religious.png";
+import TripCard from '../../../ui/TripCard'; 
 const Religious = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(true);
-const [filterDate, setFilterDate] = useState("");
-
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [selectedDurations, setSelectedDurations] = useState([]);
-  const [selectedCities, setSelectedCities] = useState([]);
-
-  const [uniqueCities, setUniqueCities] = useState([]);
-  const [uniqueDurations, setUniqueDurations] = useState([]);
+ const [data, setData] = useState([]);
+   const [filteredData, setFilteredData] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [filterDate, setFilterDate] = useState("");
+ 
+   const [minPrice, setMinPrice] = useState('');
+   const [maxPrice, setMaxPrice] = useState('');
+   const [selectedDurations, setSelectedDurations] = useState([]);
+   const [selectedCities, setSelectedCities] = useState([]);
+ 
+   const [uniqueCities, setUniqueCities] = useState([]);
+   const [uniqueDurations, setUniqueDurations] = useState([]);
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,40 +27,92 @@ const [filterDate, setFilterDate] = useState("");
           "https://bcknd.tickethub-tours.com/api/user/landpage/category-tours/Religious%20Tourism"
         );
 
-      const toursData = response.data.data.tours.map((item) => ({
-        id: item.id,
-        title: item.title,
-        country: item.country,
-        city: item.city,
-        startDate: item.startDate,
-        image: item.imagePath,
-        price: parseFloat(item.price),
-        discount: parseFloat(item.discount),
-        description: item.discribtion,
-        duration: parseInt(item.duration),
-      }));
+        const toursData = response.data.data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          country: item.country,
+          city: item.city,
+          startDate: item.startDate,
+          endDate: item.endDate,
 
-const uniqueTours = Array.from(
-  new Map(
-    toursData.map(tour => [tour.id, tour])
-  ).values()
-);
+          mainImage: item.mainImage, 
+         
+          price: { 
+            adult:item.price.adult, 
+            currencySymbol: item.currencySymbol // أو جلبه من الـ API لو متاح
+          },
+          discount: parseFloat(item.discount),
+          description: item.discribtion,
+          duration: parseInt(item.duration),
+          // أضفنا البيانات المطلوبة للـ Popup
+          schedules: item.schedules || [], 
+          daysOfWeek: item.daysOfWeek || []
+        }));
 
+        const uniqueTours = Array.from(
+          new Map(
+            toursData.map(tour => [tour.id, tour])
+          ).values()
+        );
 
-      setData(uniqueTours);
-      setFilteredData(uniqueTours);
+        setData(uniqueTours);
+        setFilteredData(uniqueTours);
 
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+useEffect(() => {
+    const filtered = data.filter((tour) => {
+      // 1. Price Filter
+      const price = tour.price.adult; 
+      const min = parseFloat(minPrice);
+      const max = parseFloat(maxPrice);
+      const priceMatch =
+        (isNaN(min) || price >= min) &&
+        (isNaN(max) || price <= max);
+
+      // 2. Duration Filter
+      const duration = tour.duration;
+      const durationMatch =
+        selectedDurations.length === 0 || selectedDurations.includes(duration);
+
+      // 3. City Filter
+      const city = tour.city;
+      const cityMatch =
+        selectedCities.length === 0 || selectedCities.includes(city);
+
+      // 4. Date Filter (✅ تم التعديل هنا)
+// 4. Date Filter
+      const dateMatch =
+        !filterDate ||
+        (tour.schedules &&
+          tour.schedules.some((schedule) => {
+             // toDateString() يحول التاريخ لنص مقروء (مثلا: "Mon Oct 25 2023")
+             // ويقارن التاريخين بناءً على توقيت جهاز المستخدم المحلي
+             return new Date(schedule.startDate).toDateString() === new Date(filterDate).toDateString();
+          }));
+
+      return priceMatch && durationMatch && cityMatch && dateMatch;
+    });
+
+    setFilteredData(filtered);
+
+    const citiesSet = new Set(filtered.map((item) => item.city));
+    setUniqueCities([...citiesSet]);
+
+    const durationsSet = new Set(filtered.map((item) => item.duration));
+    setUniqueDurations([...durationsSet].sort((a, b) => a - b));
     
+  }, [data, minPrice, maxPrice, selectedDurations, selectedCities, filterDate]);
 
-    } catch (err) {
-      console.error('Error fetching data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, []);
+ 
 
  useEffect(() => {
   const filtered = data.filter((tour) => {
@@ -124,7 +178,8 @@ const uniqueTours = Array.from(
         <img src={Religiouss} alt="local" className="w-1/2 max-w-xs" />
       </div>
 
-        <span className='p-10 font-semibold text-2xl text-one '>Found {data.length} results</span>
+       <span className='p-10 font-semibold text-2xl text-one '>Found {filteredData.length} results</span>
+      
       <div className="flex flex-col md:flex-row gap-8 p-4">
         {/* Filters Section */}
         <div className="w-full md:w-1/4 bg-white border-r shadow-md rounded-lg p-4 sticky top-24 h-fit max-h-[80vh] overflow-y-auto">
@@ -158,16 +213,15 @@ const uniqueTours = Array.from(
                 {`${d} day${d > 1 ? 's' : ''}`}
               </label>
             ))}
-                            <h2 className="font-semibold mb-2">Date</h2>
-
-            <input
-  type="date"
-  value={filterDate}
-  onChange={(e) => setFilterDate(e.target.value)}
-  className="border p-2 rounded mb-4"
-/>
-
           </div>
+            
+          <h2 className="font-semibold mb-2">Date</h2>
+          <input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="border p-2 rounded mb-4 w-full"
+          />
 
           <h2 className="font-semibold mb-2">Governorate / Location</h2>
           <div className="flex flex-col gap-2">
@@ -184,23 +238,20 @@ const uniqueTours = Array.from(
           </div>
         </div>
 
-        <div className="w-full flex flex-wrap justify-center gap-4">
+        {/* Cards Grid */}
+        <div className="w-full md:w-3/4 flex flex-wrap justify-center gap-6">
           {filteredData.length > 0 ? (
             filteredData.map((tour) => (
-              <Card
+              /* هنا نستخدم الكارت الجديد */
+              <TripCard
                 key={`${tour.id}-${tour.title}`}
-                image={tour.image}
-                id={tour.id}
-                startDate={tour.startDate}
-                title={tour.title}
-                description={tour.description}
-                duration={tour.duration}
-                price={tour.price}
-                discount={tour.discount}
+                trip={tour}
               />
             ))
           ) : (
-            <p className="text-gray-500 col-span-full">No tours found matching filters.</p>
+            <div className="flex flex-col items-center justify-center w-full py-20 text-gray-500">
+               <p className="text-lg">No tours found matching filters.</p>
+            </div>
           )}
         </div>
       </div>
@@ -208,5 +259,6 @@ const uniqueTours = Array.from(
     </div>
   );
 };
+
 
 export default Religious;
