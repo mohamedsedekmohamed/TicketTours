@@ -378,6 +378,7 @@ setDiscounts(
     if (name === "city") setCity(value);
     if (name === "maxUsers") setMaxUsers(value);
     if (name === "points") setPoints(value);
+    if (name === "policy") setPolicy(value);
     if (name === "meetingPointLocation") SetMeetingPointLocation(value);
     if (name === "meetingPointAddress") setMeetingPointAddress(value);
     if (name === "durationHours") SetDurationHours(value);
@@ -915,7 +916,7 @@ currencyId: parseInt(prices[0].currencyId)
       });
   };
 
-  const tabs = ["Info", "Images", "Options", "Pricing", "Faq"];
+  const tabs = ["Info", "Images", "Options", "Pricing", "Faq","Policy"];
   if (loading) {
     return <Loading />;
   }
@@ -1606,14 +1607,31 @@ accept="application/pdf"
           </div>
 
 
-          <InputField
-              placeholder="policy"
-              name="title"
-              value={policy}
-              onChange={handleChange}
-            />
+        
         </div>
       )}
+      {activeTab === 5 && (
+        <div className="w-full ">
+<div className="flex flex-col gap-2 items-start">
+  <label className="text-one font-normal text-[18px]">Policy</label>
+  <textarea
+    name="policy"
+    value={policy}
+    onChange={handleChange}
+    placeholder="Policy"
+    rows="5" // عدد السطور المبدئية عشان يكون كبير شوية
+    className={`w-full rounded-2xl border px-4 py-3 sm:text-sm transition-all resize-y
+      focus:outline-none focus:ring-2 focus:ring-one focus:border-one
+      ${
+        policy && String(policy).trim() !== ""
+          ? "border-one/50 bg-green-50"
+          : "border-gray-300"
+      }
+    `}
+  ></textarea>
+</div>
+          </div>
+          )}
 <div className="pt-10 ">
 
       <ButtonDone

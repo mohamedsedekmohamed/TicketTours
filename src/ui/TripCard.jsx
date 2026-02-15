@@ -152,9 +152,9 @@ const TripCard = ({ trip }) => {
                           <span className={`font-semibold text-sm ${isSelected ? "text-blue-700" : "text-gray-800"}`}>
                             {formatDate(schedule.startDate)}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          {/* <span className="text-xs text-gray-500">
                              To {formatDate(schedule.endDate)}
-                          </span>
+                          </span> */}
                           <span className={`text-[10px] font-bold mt-1 ${isSoldOut ? "text-red-500" : "text-green-600"}`}>
                             {isSoldOut ? "SOLD OUT" : `${schedule.availableSeats} Seats Left`}
                           </span>
