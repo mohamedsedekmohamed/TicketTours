@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import Navtwo from "../../component/Navtwo";
 import axios from "axios";
@@ -9,10 +9,64 @@ import FileUploadButtontype from "./FileUploadButtontype";
 import MapPicker from "../../../ui/MapPicker";
 import { FaCheckCircle, FaTimesCircle, FaPercent, FaTag } from "react-icons/fa";
 import { MdLocalOffer } from "react-icons/md";
-
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 const CompleteBooking = () => {
     const token = localStorage.getItem("tokenuser");
+// --- PDF Generation Function ---
+  const generateBookingPDF = (apiData, localBookingData, tourDetails) => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(20);
+    doc.setTextColor(41, 128, 185);
+    doc.text("Booking Confirmation", 105, 20, { align: "center" });
 
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Booking Date: ${new Date().toLocaleDateString()}`, 14, 30);
+    doc.text(`Tour Name: ${tourDetails.title}`, 14, 38);
+    doc.text(`Location: ${tourDetails.country}, ${tourDetails.city}`, 14, 46);
+
+    const mainData = [
+      ["Customer Name", user.name || "N/A"],
+      ["Email", user.email || "N/A"],
+      ["Phone", formData.phone || "N/A"],
+      ["Tour Date", localBookingData.tourScheduldate || "N/A"],
+      ["Address/Meeting Point", description || "N/A"],
+    ];
+
+    autoTable(doc, {
+      startY: 55,
+      head: [["Detail", "Description"]],
+      body: mainData,
+      theme: 'striped',
+      headStyles: { fillColor: [41, 128, 185] }
+    });
+
+    const pricingData = [
+      ["Adults", `${localBookingData.adults} x $${tourDetails.price?.adult}`, `$${localBookingData.adultsTotal}`],
+      ["Children", `${localBookingData.children} x $${tourDetails.price?.child}`, `$${localBookingData.childrenTotal}`],
+      ["Infants", `${localBookingData.infants} x $${tourDetails.price?.infant}`, `$${localBookingData.infantsTotal}`],
+    ];
+
+    if (localBookingData.selectedExtras?.length > 0) {
+      localBookingData.selectedExtras.forEach(extra => {
+        pricingData.push([`Extra: ${extra.name}`, "Included", "Included in Total"]);
+      });
+    }
+
+    pricingData.push([{ content: "Final Total Amount", colSpan: 2, styles: { fontStyle: 'bold' } }, `$${calculateFinalTotal()}`]);
+
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 10,
+      head: [["Category", "Details", "Price"]],
+      body: pricingData,
+      headStyles: { fillColor: [46, 204, 113] }
+    });
+
+    doc.save(`Booking_${tourDetails.title}_${new Date().getTime()}.pdf`);
+  };
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -219,7 +273,7 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
         }));
       }
 
-      await axios.post(
+    const res =  await axios.post(
         "https://bcknd.tickethub-tours.com/api/user/landpage/book-tour",
         payload,
         {
@@ -228,23 +282,51 @@ const user = storedUser ? JSON.parse(storedUser) : { name: "", email: "" };
           },
         }
       );
+      const apiData = res.data;
+if (apiData?.success) {
+  generateBookingPDF(res.data.data, bookingData, data);
+  toast.success("Booking successful! PDF downloaded.");
+}
       localStorage.removeItem("bookingData");
       toast.success("Booking completed successfully!");
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+   
+      setFormData({
+    name: "",
+    email: "",
+    phone: "",
+    notes: "",
+  });
+  setimage(null);
+  setDescription("");
+  setCode("");
+  setDiscountcode("");
+  setDiscountType("");
+  setcodeid("");
+  setSelectedPayment(null);
     } catch (error) {
-  const err = error?.response?.data;
+ const err =
+  error?.response?.data?.error ||
+  error?.response?.error ||
+  error?.response?.data ||
+  error;
 
-  if (err?.details && Array.isArray(err.details)) {
-    err.details.forEach((detail) => {
-      toast.error(`${detail.field}: ${detail.message}`);
-    });
-  } else if (err?.message) {
-    toast.error(err.message);
-  } else {
-    toast.error("Something went wrong.");
-  }
+if (err?.details && Array.isArray(err.details)) {
+  err.details.forEach((detail) => {
+    toast.error(`${detail.field}: ${detail.message}`);
+  });
+} else if (Array.isArray(err?.errors)) {
+  // بعض الـ APIs بترجع errors كـ array
+  err.errors.forEach((e) => {
+    toast.error(e.message || e);
+  });
+} else if (typeof err === "string") {
+  toast.error(err);
+} else if (err?.message) {
+  toast.error(err.message);
+} else {
+  toast.error("Something went wrong. Please try again.");
+}
+
 }
 
   };
@@ -525,7 +607,7 @@ className="
               {data.country}, {data.city}
             </span>
           </div>
-<div className="text-sm text-gray-500 mb-4">
+{/* <div className="text-sm text-gray-500 mb-4">
   Days:
   {data?.daysOfWeek?.map((item, index) => {
     // 2. مقارنة اليوم الحالي في الـ Map مع يوم البداية
@@ -544,7 +626,7 @@ className="
       </span>
     );
   })}
-</div>
+</div> */}
 
 <div className="mb-4 flex gap-2 items-center">
   <h4 className="text-gray-500">Start Date:</h4>

@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import Navtwo from "../component/Navtwo";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaWhatsapp } from "react-icons/fa";
 
 const Contactus = () => {
   const [formData, setFormData] = useState({
@@ -170,7 +171,14 @@ const Contactus = () => {
       </div>
 
       <Footer />
-
+<a
+  href="https://wa.me/01035555313"  // <-- غير الرقم برقمك بصيغة دولية
+  target="_blank"
+  rel="noopener noreferrer"
+  className="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform"
+>
+  <FaWhatsapp size={28} />
+</a>
       {/* Toast container */}
       <ToastContainer position="top-center" autoClose={3000} />
     </div>

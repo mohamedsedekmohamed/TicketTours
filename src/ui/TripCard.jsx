@@ -93,7 +93,7 @@ const TripCard = ({ trip }) => {
           {/* زر فتح الـ Popup */}
           <button
             onClick={() => setShowModal(true)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-one font-semibold hover:bg-primary/90 transition shadow-sm active:scale-95"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-one text-white font-semibold hover:bg-primary/90 transition shadow-sm active:scale-95"
           >
             <IoMdCalendar className="text-lg" />
             Check Availability
