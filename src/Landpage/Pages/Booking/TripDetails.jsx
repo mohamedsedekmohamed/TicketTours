@@ -44,7 +44,7 @@ const state=location.state.scheduleId
   const [showPicker, setShowPicker] = useState(false);
   const [selectedExtraId, setSelectedExtraId] = useState("");
   const [selectedExtras, setSelectedExtras] = useState([]); 
-
+const [policy, setPolicy] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [open, setOpen] = useState(false); 
@@ -85,6 +85,7 @@ const state=location.state.scheduleId
         );
         const tour = res.data.data;
         setData(tour);
+        setPolicy(tour.policy??"");
         setStartDate(new Date(tour.startDate));
         setEndDate(new Date(tour.endDate));
       } catch (err) {
@@ -240,6 +241,7 @@ const getDiscount = (group, count) => {
       total,    
       tourScheduleId:state.id,
       tourScheduldate: state.date,
+      policy,
       // Store the array of selected extras
       selectedExtras,
     };
