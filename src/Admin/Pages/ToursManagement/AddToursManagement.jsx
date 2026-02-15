@@ -41,6 +41,7 @@ const [promocode,setPromocode]=useState([])
   const [startDate, setStartDate] = useState("");
   const [endDate, SetEndDate] = useState("");
   const [points, setPoints] = useState("");
+  const [policy, setPolicy] = useState("");
 
 
   const [file, setFile] = useState("");
@@ -173,6 +174,7 @@ const [promocode,setPromocode]=useState([])
             setFeatured(user.featured || false);
             SetDurationDays(String(user.durationDays) || 0);
             SetDurationHours(String(user.durationHours) || 0);
+            setPolicy(user.policy || "");
             setArrayImage(
               (user.images || []).map((img) => ({
                 imagePath: img.url,
@@ -218,24 +220,29 @@ const [promocode,setPromocode]=useState([])
             setFields(user.highlights || []);
             setFieldstwo(user.includes || []);
             setFieldsthree(user.excludes || []);
-            setPrices([
-              {
-                adult: user.price.adult,
-                child: user.price.child,
-                infant: user.price.infant,
-                currencyId: user.price.currencyId,
-              },
-            ]);
-            setDiscounts(
-              user?.discounts?.map((discount) => ({
-                kindBy: discount.kindBy,
-                targetGroup: discount.targetGroup,
-                type: discount.type,
-                value: discount.value,
-                minPeople: String(discount.minPeople),
-                maxPeople: String(discount.maxPeople),
-              })) || []
-            );
+    
+
+setPrices([
+  {
+    adult: String(user.price.adult ?? ""),
+    child: String(user.price.child ?? ""),
+    infant: String(user.price.infant ?? ""),
+    currencyId: Number(user.price.currencyId ?? ""),
+  },
+]);
+
+setDiscounts(
+  user?.discounts?.map((discount) => ({
+    kindBy: discount.kindBy,
+    targetGroup: discount.targetGroup,
+    type: discount.type,
+    value: String(discount.value ?? ""), // ✅ لازم تبقى String
+    minPeople: String(discount.minPeople ?? ""), // ✅ لازم تبقى String
+    maxPeople: String(discount.maxPeople ?? ""), // ✅ لازم تبقى String
+  })) || []
+);
+
+         
             setExtras(
               user?.extras?.map((ex) => ({
                 extraId: ex.id,
@@ -359,7 +366,8 @@ const [promocode,setPromocode]=useState([])
     arrayimage: "",
     status: "",
     featured: "",
-    Promocode:""
+    Promocode:"",
+    policy:""
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -596,6 +604,7 @@ const [promocode,setPromocode]=useState([])
     if (!city) formErrors.city = "city is required";
     if (!maxUsers) formErrors.maxUsers = "maxUsers is required";
     if (!points) formErrors.points = "points is required";
+    if (!policy) formErrors.points = "policy is required";
 
     if (!startDate) formErrors.startDate = "Start Date is required";
     if (!endDate) formErrors.endDate = "End Date Date is required";
@@ -638,35 +647,63 @@ const [promocode,setPromocode]=useState([])
     "All price fields (adult, child, infant, currency) are required";
 }
 
-    if (
-      !Array.isArray(discounts) ||
-      discounts.length === 0 ||
-      discounts.some(
-        (item) =>
-          !item.kindBy.toString().trim() ||
-          !item.targetGroup.toString().trim() ||
-          !item.type.toString().trim() ||
-          !item.value.toString().trim() ||
-          !item.minPeople.toString().trim() ||
-          !item.maxPeople.toString().trim()
-      )
-    ) {
-      formErrors.discounts = "All discount fields are required for each entry";
+
+
+// Validation for Discounts
+    if (Array.isArray(discounts) && discounts.length > 0) {
+      const hasInvalidDiscountRow = discounts.some((item) => {
+        // بنجيب القيم بأمان عشان لو مفيش قيمة ميديناش Error
+        const kindBy = item.kindBy?.toString().trim();
+        const targetGroup = item.targetGroup?.toString().trim();
+        const type = item.type?.toString().trim();
+        const value = item.value?.toString().trim();
+        const minPeople = item.minPeople?.toString().trim();
+        const maxPeople = item.maxPeople?.toString().trim();
+
+        // هل كتب في أي حقل من الحقول دي؟
+        const hasAnyValue = Boolean(kindBy || targetGroup || type || value || minPeople || maxPeople);
+        
+        // هل ملى كل الحقول دي؟
+        const hasAllValues = Boolean(kindBy && targetGroup && type && value && minPeople && maxPeople);
+
+        // بيطلع Error فقط لو هو بدأ يكتب بس مكملش كل الحقول
+        return hasAnyValue && !hasAllValues;
+      });
+
+      if (hasInvalidDiscountRow) {
+        formErrors.discounts = "Please fill all discount fields if you add a discount.";
+      }
     }
-    if (
-      !Array.isArray(extras) ||
-      extras.length === 0 ||
-      extras.some(
-        (item) =>
-          !item.extraId.toString().trim() ||
-          !item.price ||
-          !item.price.adult.toString().trim() ||
-          !item.price.child.toString().trim() ||
-          !item.price.infant.toString().trim() 
-      )
-    ) {
-      formErrors.extras = "All extras fields are required for each entry";
+
+    // Validation for Extras
+    if (Array.isArray(extras) && extras.length > 0) {
+      const hasInvalidExtraRow = extras.some((item) => {
+        const extraId = item.extraId?.toString().trim();
+        const adult = item.price?.adult?.toString().trim();
+        const child = item.price?.child?.toString().trim();
+        const infant = item.price?.infant?.toString().trim();
+
+        // هل اختار extra أو كتب أي سعر؟
+        const hasAnyValue = Boolean(extraId || adult || child || infant);
+        
+        // هل ملى كل بيانات الـ extra دي؟
+        const hasAllValues = Boolean(extraId && adult && child && infant);
+
+        // بيطلع Error فقط لو هو بدأ يكتب بس مكملش الأسعار أو نسي يختار الـ Extra
+        return hasAnyValue && !hasAllValues;
+      });
+
+      if (hasInvalidExtraRow) {
+        formErrors.extras = "Please fill all extra fields and prices if you add an extra.";
+      }
     }
+
+
+
+
+
+
+
 
     if (
       !Array.isArray(titles) ||
@@ -712,6 +749,7 @@ const [promocode,setPromocode]=useState([])
     
     const payload = {
       title,
+      policy,
       file:file ? base64File : null,
       description: describtion,
       startDate: String(startDate),
@@ -775,7 +813,7 @@ currencyId: parseInt(prices[0].currencyId)
     const itineraryupdata = buildItineraryPayload(faq, faqor);
     const payloadtwo = {
       title,
-            // file:file ? file : null,
+           policy, // file:file ? file : null,
      promoCodeIds: promocode,
       description: describtion,
       startDate: String(startDate),
@@ -1565,6 +1603,14 @@ accept="application/pdf"
               Add
             </button>
           </div>
+
+
+          <InputField
+              placeholder="policy"
+              name="title"
+              value={policy}
+              onChange={handleChange}
+            />
         </div>
       )}
 <div className="pt-10 ">

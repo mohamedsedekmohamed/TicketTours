@@ -631,11 +631,11 @@ className="
 <div className="mb-4 flex gap-2 items-center">
   <h4 className="text-gray-500">Start Date:</h4>
   <p className="text-one font-bold bg-one/10 px-2 rounded">
-    {new Date(tourScheduldate).toISOString().split("T")[0]} 
+    {/* حماية: لو مفيش تاريخ، اعرض N/A */}
+    {tourScheduldate ? new Date(tourScheduldate).toISOString().split("T")[0] : "N/A"} 
     <span className="text-xs ml-1">({startDayName})</span>
   </p>
 </div>
-
 
  <div className="text-sm text-gray-500 mb-4">
             Currency:{" "}
