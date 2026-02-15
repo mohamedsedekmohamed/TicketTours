@@ -353,6 +353,9 @@ const CompleteBooking = () => {
       <div>
         <Navtwo />
         <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 mt-10">
+                 <h2 className="text-4xl font-bold text-gray-800/70 mb-4">Thank You</h2>
+
+       
           <FaCheckCircle className="text-7xl text-green-500 mb-6 drop-shadow-lg" />
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Booking Completed Successfully!</h2>
           <p className="text-lg text-gray-600 mb-10 max-w-md">
