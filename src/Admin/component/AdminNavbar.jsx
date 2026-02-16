@@ -6,7 +6,7 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { TbBrandGmail } from "react-icons/tb";
 import { IoNotificationsSharp } from "react-icons/io5";
 
-const AdminNavbar = ({setIsLoggedIn}) => {
+const AdminNavbar = ({setIsLoggedIn ,unseenCount}) => {
   // const [data, setData] = useState([]);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -51,10 +51,19 @@ const loghandled = () => {
 
       <div className='flex items-center gap-1 px-4 lg:gap-4'>
        
-        <button onClick={() => navigate('/admin/notifications')}>
-          <IoNotificationsSharp className='text-[12px] md:text-2xl  text-one' />
+        <button 
+          onClick={() => navigate('/admin/notifications')}
+          className="relative p-1" // إضافة relative و padding بسيط
+        >
+          <IoNotificationsSharp className='text-[18px] md:text-2xl text-one' />
+          
+          {/* إظهار العداد فقط إذا كان أكبر من 0 */}
+          {unseenCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] md:text-[11px] font-bold w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full border-2 border-white animate-pulse">
+              {unseenCount > 99 ? '99+' : unseenCount}
+            </span>
+          )}
         </button>
-
         <button onClick={() => navigate('/admin/information')}>
           <IoPersonCircleSharp className='text-[12px] md:text-2xl text-one' />
         </button>
@@ -64,7 +73,7 @@ const loghandled = () => {
 
 
 
-      </div>
+      </div>  
  
 
 

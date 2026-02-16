@@ -817,7 +817,8 @@ currencyId: parseInt(prices[0].currencyId)
       featured,
     };
 if(file){
-  payload.mainImage = base64File
+  
+  payload.file = base64File
 }
     const itineraryupdata = buildItineraryPayload(faq, faqor);
     const payloadtwo = {

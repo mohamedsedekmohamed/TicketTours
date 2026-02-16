@@ -198,6 +198,14 @@ const handleLogout = () => {
                       <span>{item.bookingDetails?.phone}</span>
                     </div>
                   </div>
+                           <button
+      onClick={() => nav(`/infotour/${item.tour?.id}`)}
+      className="px-4 py-2 rounded-lg bg-one text-white font-semibold
+                 hover:bg-one/80 transition-all duration-300 shadow-md"
+    >
+      Tour Details
+    </button>
+
                 </div>
 
                 <div className="space-y-4">
@@ -278,6 +286,7 @@ const handleLogout = () => {
       </div>
     );
   };
+
 
   const renderPaymentList = (list) => {
     if (loading) {

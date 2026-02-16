@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useOutletContext } from "react-router-dom";
 
 const Notifications = () => {
   const [activeTab, setActiveTab] = useState('all');
@@ -9,6 +10,7 @@ const Notifications = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+const { fetchUnseenCount } = useOutletContext();
 
   const token = localStorage.getItem('token'); 
   const API_BASE = 'https://bcknd.tickethub-tours.com/api/admin/notifications';
@@ -26,6 +28,7 @@ const Notifications = () => {
           ? response.data.data.AllNotifications 
           : response.data.data.unReadNotifications;
         setNotifications(data);
+        if (fetchUnseenCount) fetchUnseenCount();
       }
     } catch (error) {
       toast.error("Failed to load notifications");

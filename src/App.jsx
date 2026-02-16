@@ -18,6 +18,7 @@ import CompleteBooking from '../src/Landpage/Pages/Booking/CompleteBooking'
 import ProfileUser from './Landpage/Pages/ProfileUser'
 import GoogleAuthHandler from './Landpage/Pages/GoogleAuthHandler'
 import Dashboard from "./Landpage/Pages/Dashboard";
+import InfoTour from "./Landpage/Pages/Booking/InfoTour";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const stored = sessionStorage.getItem("isLoggedIn");
@@ -55,6 +56,7 @@ function App() {
               <Route path="/tripdetails/:id" element={<TripDetails />} />
               <Route path="/forgotpassword" element={<ForgotPasswordFlow />} />
               <Route path="/completebooking/:id" element={<CompleteBooking />} />
+              <Route path="/infotour/:id" element={<InfoTour />} />
               <Route path="/profileuser" element={<ProfileUser />} />
             </>
           ) : (
