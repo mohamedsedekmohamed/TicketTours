@@ -144,7 +144,14 @@ const [promocode,setPromocode]=useState([])
     { label: "Saturday", value: "Saturday" },
   ];
   const [selectedDays, setSelectedDays] = useState([]);
-
+const handleSelectAllDays = () => {
+  // إذا كان المستخدم مختار كل الأيام فعلاً، نمسحهم (Toggle) أو نثبتهم
+  if (selectedDays.length === days.length) {
+    setSelectedDays([]);
+  } else {
+    setSelectedDays(days);
+  }
+};
   useEffect(() => {
     if (sendData) {
       setEdit(true);
@@ -751,7 +758,6 @@ setDiscounts(
     const payload = {
       title,
       policy,
-      file:file ? base64File : null,
       description: describtion,
       startDate: String(startDate),
       endDate: String(endDate),
@@ -810,7 +816,9 @@ currencyId: parseInt(prices[0].currencyId)
       status,
       featured,
     };
-
+if(file){
+  payload.mainImage = base64File
+}
     const itineraryupdata = buildItineraryPayload(faq, faqor);
     const payloadtwo = {
       title,
@@ -867,6 +875,7 @@ currencyId: parseInt(prices[0].currencyId)
       status,
       featured,
     };
+
     if (file !== fileactive) {payloadtwo.file = await convertToBase64(file); }
     if (mainImage !== mainImagecheck) {
       payloadtwo.mainImage = mainImage;
@@ -1075,19 +1084,31 @@ currencyId: parseInt(prices[0].currencyId)
               title="Meeting Point"
             />
            
-             <div className="flex flex-col">
-              <label className="mb-2 font-medium text-one">Select Days</label>
-             <Select
-  isMulti
-  options={days}
-  value={selectedDays} 
-  onChange={handleSelectChange}
-  // السطر ده هو اللي هيمنع التكرار ويخفي العنصر المختار
-  isOptionSelected={(option) => selectedDays.some((v) => v.value === option.value)}
-  className="basic-multi-select w-75 h-[80px] rounded-2xl"
-  classNamePrefix="select"
-/>
-            </div>
+       <div className="flex flex-col w-[300px]">
+  <div className="flex justify-between items-center mb-2">
+    <label className="font-medium text-one">Select Days</label>
+    <button
+      type="button"
+      onClick={handleSelectAllDays}
+      className="text-xs bg-one text-white px-2 py-1 rounded-md hover:bg-opacity-80 transition-all"
+    >
+      {selectedDays.length === days.length ? "Deselect All" : "Select All Days"}
+    </button>
+  </div>
+  
+  <Select
+    isMulti
+    options={days}
+    value={selectedDays}
+    onChange={handleSelectChange}
+    isOptionSelected={(option) =>
+      selectedDays.some((v) => v.value === option.value)
+    }
+    className="basic-multi-select rounded-2xl"
+    classNamePrefix="select"
+    placeholder={selectedDays.length === days.length ? "All Days Selected" : "Select..."}
+  />
+</div>
             {meetingPoint ? (
               <div className=" flex   w-full flex-col gap-3">
                 {" "}

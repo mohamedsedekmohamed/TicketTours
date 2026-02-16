@@ -40,6 +40,7 @@ import ProtectedRoute from "../Admin/ProtectedRoute/ProtectedRoute.jsx";
 import Medical from "../Admin/Pages/Medical/Medical.jsx";
 import AddMedical from "../Admin/Pages/Medical/AddMedical.jsx";
 import MedicalReqest from "../Admin/Pages/MedicalReqest/MedicalReqest.jsx";
+import Notifications from "../Admin/Pages/Notifications/Notifications.jsx";
 // import ErrorPage from "../Admi/ErrorPage.jsx";
 const AppRoutes = ({ setIsLoggedIn }) => {
   return (
@@ -347,6 +348,12 @@ const AppRoutes = ({ setIsLoggedIn }) => {
             <ProtectedRoute moduleName="Medical" requiredAction={["Add", "Edit"]}>
               <AddMedical />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="notifications"
+          element={
+              <Notifications />
           }
         />
 

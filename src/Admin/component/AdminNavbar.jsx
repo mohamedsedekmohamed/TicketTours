@@ -4,6 +4,7 @@ import { IoPersonCircleSharp } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineLogout } from "react-icons/hi";
 import { TbBrandGmail } from "react-icons/tb";
+import { IoNotificationsSharp } from "react-icons/io5";
 
 const AdminNavbar = ({setIsLoggedIn}) => {
   // const [data, setData] = useState([]);
@@ -48,8 +49,11 @@ const loghandled = () => {
       </div>
       </div>
 
-      <div className='flex items-center gap-0.5'>
+      <div className='flex items-center gap-1 px-4 lg:gap-4'>
        
+        <button onClick={() => navigate('/admin/notifications')}>
+          <IoNotificationsSharp className='text-[12px] md:text-2xl  text-one' />
+        </button>
 
         <button onClick={() => navigate('/admin/information')}>
           <IoPersonCircleSharp className='text-[12px] md:text-2xl text-one' />
