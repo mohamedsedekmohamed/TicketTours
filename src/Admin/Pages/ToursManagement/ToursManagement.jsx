@@ -548,7 +548,7 @@ const ToursManagement = () => {
           <span>Available Seats: {s.availableSeats}</span>
         </div>
 
-        <div className="flex items-center gap-2 text-purple-700 mt-2">
+        {/* <div className="flex items-center gap-2 text-purple-700 mt-2">
           <MdOutlineAccessTime />
           <span>Start: {s.startDate}</span>
         </div>
@@ -556,7 +556,7 @@ const ToursManagement = () => {
         <div className="flex items-center gap-2 text-red-600 mt-2">
           <AiOutlineCalendar />
           <span>End: {s.endDate}</span>
-        </div>
+        </div> */}
       </div>
     ))
   ) : (

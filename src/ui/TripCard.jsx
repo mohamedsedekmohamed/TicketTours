@@ -34,7 +34,10 @@ const TripCard = ({ trip }) => {
       navigate(`/tripdetails/${trip.id}`, { state: { scheduleId: selectedSchedule } });
     }
   };
-
+const getDayName = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-EG', { weekday: 'long' });
+};
   return (
     <>
       {/* --- بداية الكارت (لم يتغير) --- */}
@@ -63,33 +66,17 @@ const TripCard = ({ trip }) => {
             <p className="text-gray-500 text-sm flex items-center gap-1 mt-1">
               📍 {trip.country}, {trip.city}
             </p>
-            <p className="text-gray-500 text-sm flex items-center gap-1 mt-1">
-📍Start: {formatDate(trip.startDate)} ➜ End:{formatDate(trip.endDate)}
-            </p>
+        
           </div>
 
           {/* أيام الأسبوع */}
-          <div className="flex flex-wrap gap-1">
-   {trip.daysOfWeek?.slice(0, 4).map((day, idx) => (
-  <span 
-    key={idx} 
-    className="px-2 py-0.5 text-[10px] rounded-full bg-blue-50 text-blue-600 font-medium border border-blue-100"
-  >
-    {day.charAt(0).toUpperCase() + day.slice(1)} 
+        
+<p className="flex items-center gap-2 my-4 rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-800">
+  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+    ℹ️
   </span>
-))}
-
-{/* اختياري: إذا كان هناك أكثر من 4، أظهر عدداً لباقي الأيام */}
-{trip.daysOfWeek?.length > 4 && (
-  <span className="px-2 py-0.5 text-[10px] rounded-full bg-gray-100 text-gray-500 font-medium border border-gray-200">
-    +{trip.daysOfWeek.length - 4}
-  </span>
-)}
-            
-          </div>
-
-          <div className="flex-grow"></div>
-
+  Price includes VAT
+</p>
           {/* زر فتح الـ Popup */}
           <button
             onClick={() => setShowModal(true)}
@@ -150,7 +137,7 @@ const TripCard = ({ trip }) => {
                       >
                         <div className="flex flex-col">
                           <span className={`font-semibold text-sm ${isSelected ? "text-blue-700" : "text-gray-800"}`}>
-                            {formatDate(schedule.startDate)}
+                            {formatDate(schedule.startDate)} {getDayName(schedule.startDate)}
                           </span>
                           {/* <span className="text-xs text-gray-500">
                              To {formatDate(schedule.endDate)}
